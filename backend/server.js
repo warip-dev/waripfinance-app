@@ -1,11 +1,12 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const app = require('./src/app');
 
 const PORT = process.env.PORT || 8080;
 
-// Chemin absolu vers le dossier public_html (où sont les fichiers React)
-const frontendPath = path.join(__dirname, '../public_html');
+// Chemin vers le frontend dans nodejs/frontend
+const frontendPath = path.join(__dirname, 'frontend');
 
 // Servir les fichiers statiques
 app.use(express.static(frontendPath));
@@ -13,7 +14,7 @@ app.use(express.static(frontendPath));
 // Pour toutes les routes non-API, servir index.html
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) {
-    return; // Laisser l'API gérer
+    return;
   }
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
