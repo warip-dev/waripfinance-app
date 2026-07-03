@@ -1,6 +1,5 @@
--- Création de la base de données
-CREATE DATABASE IF NOT EXISTS waripfinance;
-USE waripfinance;
+-- Utiliser la base de données existante
+USE u120682741_waripfinanc_db;
 
 -- Table des utilisateurs
 CREATE TABLE IF NOT EXISTS users (
@@ -51,7 +50,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     FOREIGN KEY (validated_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
--- Index pour optimiser les recherches
+-- Index
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_status ON users(status);
 CREATE INDEX idx_transactions_user_id ON transactions(user_id);
