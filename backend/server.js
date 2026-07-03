@@ -5,7 +5,7 @@ const app = require('./src/app');
 const PORT = process.env.PORT || 8080;
 
 // Chemin ABSOLU vers le dossier public_html
-const frontendPath = path.join(__dirname, '../../public_html');
+const frontendPath = path.join(__dirname, 'frontend');
 
 // Servir les fichiers statiques
 app.use(express.static(frontendPath));
