@@ -1,6 +1,7 @@
 const pool = require('../config/database');
 
 class User {
+    // Créer un utilisateur
     static async create(userData) {
         const {
             email, password_hash, first_name, last_name, phone, country,
@@ -28,6 +29,7 @@ class User {
         return rows[0];
     }
 
+    // Trouver un utilisateur par son email
     static async findByEmail(email) {
         const [rows] = await pool.execute(
             'SELECT * FROM users WHERE email = ?',
@@ -36,6 +38,7 @@ class User {
         return rows[0];
     }
 
+    // Trouver un utilisateur par son ID
     static async findById(id) {
         const [rows] = await pool.execute(
             `SELECT id, email, first_name, last_name, phone, country, 
@@ -49,6 +52,7 @@ class User {
         return rows[0];
     }
 
+    // Mettre à jour le statut d'un utilisateur
     static async updateStatus(id, status, btcAddress = null, ethAddress = null) {
         await pool.execute(
             `UPDATE users 
@@ -66,6 +70,7 @@ class User {
         return rows[0];
     }
 
+    // Récupérer tous les utilisateurs
     static async findAll(limit = 50, offset = 0) {
         const [rows] = await pool.execute(
             `SELECT id, email, first_name, last_name, phone, status, role, created_at 
@@ -77,6 +82,7 @@ class User {
         return rows;
     }
 
+    // Récupérer les utilisateurs en attente
     static async findPending() {
         const [rows] = await pool.execute(
             `SELECT id, email, first_name, last_name, phone, created_at 

@@ -1,6 +1,7 @@
 const pool = require('../config/database');
 
 class Transaction {
+    // Créer un virement
     static async createTransfer(userId, data) {
         const {
             asset = 'EUR',
@@ -39,6 +40,7 @@ class Transaction {
         return rows[0];
     }
 
+    // Récupérer les virements d'un utilisateur
     static async getUserTransfers(userId, limit = 50, offset = 0) {
         const [rows] = await pool.execute(
             `SELECT id, amount, recipient_name, status, admin_comment, 
@@ -52,6 +54,7 @@ class Transaction {
         return rows;
     }
 
+    // Récupérer tous les virements en attente
     static async getPendingTransfers() {
         const [rows] = await pool.execute(
             `SELECT t.*, u.email, u.first_name, u.last_name
@@ -63,6 +66,7 @@ class Transaction {
         return rows;
     }
 
+    // Récupérer tous les virements
     static async getAllTransfers(limit = 100, offset = 0) {
         const [rows] = await pool.execute(
             `SELECT t.*, u.email, u.first_name, u.last_name
@@ -76,6 +80,7 @@ class Transaction {
         return rows;
     }
 
+    // Valider un virement
     static async validateTransfer(transferId, adminId, status, adminComment = null) {
         await pool.execute(
             `UPDATE transactions 
@@ -94,6 +99,7 @@ class Transaction {
         return rows[0];
     }
 
+    // Trouver une transaction par son ID
     static async findById(id) {
         const [rows] = await pool.execute(
             `SELECT t.*, u.email, u.first_name, u.last_name
