@@ -11,13 +11,11 @@ const Register = () => {
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
-    // Étape 1
     first_name: '',
     last_name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    // Étape 2
     phone: '',
     country: 'FR',
     city: '',
@@ -30,47 +28,16 @@ const Register = () => {
     marital_status: ''
   });
 
-  // Liste des professions
   const professionList = [
-    'Agent immobilier',
-    'Agriculteur / Exploitant agricole',
-    'Artiste / Créateur',
-    'Artisan',
-    'Avocat / Juriste',
-    'Cadre dirigeant',
-    'Cadre supérieur',
-    'Commerçant',
-    'Comptable / Expert-comptable',
-    'Consultant',
-    'Conseiller financier',
-    'Développeur / Ingénieur informatique',
-    'Dirigeant d\'entreprise',
-    'Économiste',
-    'Employé de bureau',
-    'Employé du secteur public',
-    'Enseignant / Professeur',
-    'Entrepreneur',
-    'Étudiant',
-    'Fonctionnaire',
-    'Gestionnaire de patrimoine',
-    'Ingénieur',
-    'Journaliste',
-    'Médecin / Professionnel de santé',
-    'Notaire',
-    'Ouvrier / Technicien',
-    'Pharmacien',
-    'Pilote / Navigateur',
-    'Plombier / Électricien',
-    'Policier / Gendarme',
-    'Profession libérale',
-    'Retraité',
-    'Sans emploi',
-    'Scientifique / Chercheur',
-    'Sportif professionnel',
-    'Traducteur / Interprète',
-    'Transporteur / Chauffeur',
-    'Vendeur / Commercial',
-    'Autre'
+    'Agent immobilier', 'Agriculteur', 'Artiste', 'Artisan', 'Avocat',
+    'Cadre dirigeant', 'Cadre supérieur', 'Commerçant', 'Comptable',
+    'Consultant', 'Conseiller financier', 'Développeur', 'Dirigeant',
+    'Économiste', 'Employé de bureau', 'Enseignant', 'Entrepreneur',
+    'Étudiant', 'Fonctionnaire', 'Gestionnaire de patrimoine',
+    'Ingénieur', 'Journaliste', 'Médecin', 'Notaire', 'Ouvrier',
+    'Pharmacien', 'Profession libérale', 'Retraité', 'Sans emploi',
+    'Scientifique', 'Sportif', 'Traducteur', 'Transporteur',
+    'Vendeur', 'Autre'
   ];
 
   const handleChange = (e) => {
@@ -86,11 +53,7 @@ const Register = () => {
 
     if (name === 'profession') {
       setShowOtherProfession(value === 'Autre');
-      setFormData({
-        ...formData,
-        [name]: value,
-        profession_other: ''
-      });
+      setFormData({ ...formData, [name]: value, profession_other: '' });
       return;
     }
 
@@ -117,7 +80,7 @@ const Register = () => {
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
     if (!passwordRegex.test(formData.password)) {
-      setError('Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre');
+      setError('Le mot de passe doit contenir une majuscule, une minuscule et un chiffre');
       return;
     }
 
@@ -158,20 +121,15 @@ const Register = () => {
     setError('');
 
     try {
-      await axios.post('http://localhost:5001/api/auth/register', submitData);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, submitData);
       setRegistrationSuccess(true);
-      
-      setTimeout(() => {
-        navigate('/pending');
-      }, 4000);
-      
+      setTimeout(() => navigate('/pending'), 4000);
     } catch (err) {
       setError(err.response?.data?.error || 'Erreur lors de l\'inscription');
       setLoading(false);
     }
   };
 
-  // Écran de confirmation après inscription
   if (registrationSuccess) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
@@ -189,7 +147,7 @@ const Register = () => {
             <p className="text-gray-400">Vous recevrez un email une fois votre inscription validée.</p>
           </div>
           <div className="mt-6 p-4 bg-gray-700/50 rounded-lg">
-            <p className="text-sm text-gray-400">⏳ Redirection vers la page d'attente dans quelques secondes...</p>
+            <p className="text-sm text-gray-400">⏳ Redirection vers la page d'attente...</p>
           </div>
         </div>
       </div>
@@ -214,72 +172,31 @@ const Register = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-gray-300 mb-2 text-sm">Prénom</label>
-                <input
-                  type="text"
-                  name="first_name"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold"
-                  required
-                />
+                <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold" required />
               </div>
               <div>
                 <label className="block text-gray-300 mb-2 text-sm">Nom</label>
-                <input
-                  type="text"
-                  name="last_name"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold"
-                  required
-                />
+                <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold" required />
               </div>
             </div>
 
             <div>
               <label className="block text-gray-300 mb-2 text-sm">Email</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold"
-                required
-              />
+              <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold" required />
             </div>
 
             <div>
               <label className="block text-gray-300 mb-2 text-sm">Mot de passe</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold"
-                required
-                minLength="8"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Min. 8 caractères, 1 majuscule, 1 minuscule, 1 chiffre
-              </p>
+              <input type="password" name="password" value={formData.password} onChange={handleChange} className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold" required minLength="8" />
+              <p className="text-xs text-gray-500 mt-1">Min. 8 caractères, 1 majuscule, 1 minuscule, 1 chiffre</p>
             </div>
 
             <div>
               <label className="block text-gray-300 mb-2 text-sm">Confirmer le mot de passe</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold"
-                required
-              />
+              <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold" required />
             </div>
 
-            <button
-              type="submit"
-              className="w-full py-3 bg-gold text-gray-900 rounded-lg font-semibold hover:bg-yellow-500 transition text-lg"
-            >
+            <button type="submit" className="w-full py-3 bg-gold text-gray-900 rounded-lg font-semibold hover:bg-yellow-500 transition text-lg">
               Suivant →
             </button>
           </form>
@@ -289,12 +206,7 @@ const Register = () => {
           <form onSubmit={handleFinalSubmit} className="space-y-4">
             <div>
               <label className="block text-gray-300 mb-2 text-sm">Pays</label>
-              <select
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold"
-              >
+              <select name="country" value={formData.country} onChange={handleChange} className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold">
                 <option value="FR">🇫🇷 France (+33)</option>
                 <option value="BE">🇧🇪 Belgique (+32)</option>
                 <option value="CH">🇨🇭 Suisse (+41)</option>
@@ -305,84 +217,38 @@ const Register = () => {
 
             <div>
               <label className="block text-gray-300 mb-2 text-sm">Téléphone</label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="612345678"
-                className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold"
-                required
-              />
+              <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="612345678" className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold" required />
               <p className="text-xs text-gray-500 mt-1">Saisir uniquement les chiffres locaux (sans indicatif)</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-gray-300 mb-2 text-sm">Ville</label>
-                <input
-                  type="text"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold"
-                  required
-                />
+                <input type="text" name="city" value={formData.city} onChange={handleChange} className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold" required />
               </div>
               <div>
                 <label className="block text-gray-300 mb-2 text-sm">Code postal</label>
-                <input
-                  type="text"
-                  name="postal_code"
-                  value={formData.postal_code}
-                  onChange={handleChange}
-                  placeholder="75001"
-                  className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold"
-                  required
-                  maxLength="5"
-                />
+                <input type="text" name="postal_code" value={formData.postal_code} onChange={handleChange} placeholder="75001" className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold" required maxLength="5" />
                 <p className="text-xs text-gray-500 mt-1">Uniquement des chiffres</p>
               </div>
             </div>
 
             <div>
               <label className="block text-gray-300 mb-2 text-sm">Nom de rue</label>
-              <input
-                type="text"
-                name="street_name"
-                value={formData.street_name}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold"
-                required
-              />
+              <input type="text" name="street_name" value={formData.street_name} onChange={handleChange} className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold" required />
             </div>
 
             <div>
               <label className="block text-gray-300 mb-2 text-sm">Numéro de rue</label>
-              <input
-                type="text"
-                name="street_number"
-                value={formData.street_number}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold"
-                required
-              />
+              <input type="text" name="street_number" value={formData.street_number} onChange={handleChange} className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold" required />
             </div>
 
             <div>
               <label className="block text-gray-300 mb-2 text-sm">Profession</label>
-              <select
-                name="profession"
-                value={formData.profession}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold"
-                required
-              >
+              <select name="profession" value={formData.profession} onChange={handleChange} className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold" required>
                 <option value="">Sélectionner une profession</option>
                 {professionList.map((prof) => (
-                  <option key={prof} value={prof}>
-                    {prof}
-                  </option>
+                  <option key={prof} value={prof}>{prof}</option>
                 ))}
               </select>
             </div>
@@ -390,28 +256,14 @@ const Register = () => {
             {showOtherProfession && (
               <div className="animate-fade-in">
                 <label className="block text-gray-300 mb-2 text-sm">Précisez votre profession</label>
-                <input
-                  type="text"
-                  name="profession_other"
-                  value={formData.profession_other}
-                  onChange={handleChange}
-                  placeholder="Ex: Designer UX"
-                  className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold"
-                  required={showOtherProfession}
-                />
+                <input type="text" name="profession_other" value={formData.profession_other} onChange={handleChange} placeholder="Ex: Designer UX" className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold" required />
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-gray-300 mb-2 text-sm">Sexe</label>
-                <select
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold"
-                  required
-                >
+                <select name="gender" value={formData.gender} onChange={handleChange} className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold" required>
                   <option value="">Sélectionner</option>
                   <option value="M">Masculin</option>
                   <option value="F">Féminin</option>
@@ -420,13 +272,7 @@ const Register = () => {
               </div>
               <div>
                 <label className="block text-gray-300 mb-2 text-sm">Situation</label>
-                <select
-                  name="marital_status"
-                  value={formData.marital_status}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold"
-                  required
-                >
+                <select name="marital_status" value={formData.marital_status} onChange={handleChange} className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold" required>
                   <option value="">Sélectionner</option>
                   <option value="SINGLE">Célibataire</option>
                   <option value="MARRIED">Marié(e)</option>
@@ -438,20 +284,10 @@ const Register = () => {
             </div>
 
             <div className="flex gap-4 pt-2">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="flex-1 py-3 border border-gray-600 text-gray-300 rounded-lg font-semibold hover:bg-gray-700 transition"
-              >
+              <button type="button" onClick={() => setStep(1)} className="flex-1 py-3 border border-gray-600 text-gray-300 rounded-lg font-semibold hover:bg-gray-700 transition">
                 ← Retour
               </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className={`flex-1 py-3 rounded-lg font-semibold text-lg transition ${
-                  loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-gold text-gray-900 hover:bg-yellow-500'
-                }`}
-              >
+              <button type="submit" disabled={loading} className={`flex-1 py-3 rounded-lg font-semibold text-lg transition ${loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-gold text-gray-900 hover:bg-yellow-500'}`}>
                 {loading ? '⏳ Envoi...' : 'Valider'}
               </button>
             </div>
@@ -459,10 +295,7 @@ const Register = () => {
         )}
 
         <p className="text-center text-gray-400 mt-4 text-sm">
-          Déjà un compte ?{' '}
-          <Link to="/login" className="text-gold hover:underline">
-            Se connecter
-          </Link>
+          Déjà un compte ? <Link to="/login" className="text-gold hover:underline">Se connecter</Link>
         </p>
       </div>
     </div>

@@ -5,20 +5,14 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
       <div className="text-center px-4">
-        <h1 className="text-6xl font-bold text-gold mb-4">Warip Bank</h1>
+        <h1 className="text-6xl font-bold text-gold mb-4">Warip Finance</h1>
         <p className="text-xl text-gray-400 mb-8">La banque qui réinvente la crypto</p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            to="/login"
-            className="px-8 py-3 bg-gold text-gray-900 rounded-lg font-semibold hover:bg-yellow-500 transition"
-          >
+          <Link to="/login" className="px-8 py-3 bg-gold text-gray-900 rounded-lg font-semibold hover:bg-yellow-500 transition">
             Se connecter
           </Link>
-          <Link
-            to="/register"
-            className="px-8 py-3 border border-gold text-gold rounded-lg font-semibold hover:bg-gold hover:text-gray-900 transition"
-          >
+          <Link to="/register" className="px-8 py-3 border border-gold text-gold rounded-lg font-semibold hover:bg-gold hover:text-gray-900 transition">
             S'inscrire
           </Link>
         </div>

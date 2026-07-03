@@ -1,7 +1,7 @@
 {
   "name": "warip-bank-backend",
   "version": "1.0.0",
-  "description": "Backend de Warip Bank",
+  "description": "Backend de Warip Finance",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

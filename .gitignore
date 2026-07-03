@@ -18,8 +18,3 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
-
-# Docker
-*.pid
-*.seed
-*.pid.lock
