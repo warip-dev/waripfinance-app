@@ -1,12 +1,11 @@
-require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const app = require('./src/app');
 
 const PORT = process.env.PORT || 8080;
 
-// Chemin vers le frontend dans nodejs/frontend
-const frontendPath = path.join(__dirname, 'frontend');
+// Chemin vers le frontend (dans le projet)
+const frontendPath = path.join(__dirname, '../frontend_build');
 
 // Servir les fichiers statiques
 app.use(express.static(frontendPath));
