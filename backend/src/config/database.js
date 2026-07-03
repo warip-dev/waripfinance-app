@@ -1,19 +1,25 @@
-const { Pool } = require('pg');
+const mysql = require('mysql2/promise');
 
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+// Créer le pool de connexions
+const pool = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT) || 3306,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'waripfinance',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
-pool.on('connect', () => {
-  console.log('✅ Connecté à PostgreSQL');
-});
-
-pool.on('error', (err) => {
-  console.error('❌ Erreur PostgreSQL:', err.message);
-});
+// Tester la connexion
+pool.getConnection()
+    .then(connection => {
+        console.log('✅ Connecté à MySQL');
+        connection.release();
+    })
+    .catch(err => {
+        console.error('❌ Erreur de connexion MySQL:', err.message);
+    });
 
 module.exports = pool;

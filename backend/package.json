@@ -1,7 +1,7 @@
 {
   "name": "warip-bank-backend",
   "version": "1.0.0",
-  "description": "Backend de Warip Bank - Banque hybride crypto",
+  "description": "Backend de Warip Bank",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -15,7 +15,7 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
-    "pg": "^8.11.3"
+    "mysql2": "^3.11.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const {
-  createTransfer,
-  getUserTransfers,
-  getPendingTransfers,
-  getAllTransfers,
-  validateTransfer,
-  getTransferDetails
+    createTransfer,
+    getUserTransfers,
+    getPendingTransfers,
+    getAllTransfers,
+    validateTransfer,
+    getTransferDetails
 } = require('../controllers/transactionController');
 const { authenticate, isAdmin } = require('../middleware/auth');
 
