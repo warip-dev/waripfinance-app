@@ -1,4 +1,4 @@
-const Transaction = require('../models/transaction'); // ← Attention : 'transaction' en minuscule
+const Transaction = require('../models/Transaction'); // ← T majuscule
 
 const createTransfer = async (req, res) => {
     try {

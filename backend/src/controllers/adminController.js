@@ -1,4 +1,4 @@
-const User = require('../models/user'); // ← Correction ici
+const User = require('../models/User'); // ← U majuscule
 
 const getAllUsers = async (req, res) => {
     try {

@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user'); // ← Attention : 'user' en minuscule
+const User = require('../models/User'); // ← U majuscule
 
 const register = async (req, res) => {
     try {
@@ -12,23 +12,19 @@ const register = async (req, res) => {
             gender, marital_status
         } = req.body;
 
-        // Vérification des champs obligatoires
         if (!email || !password || !first_name || !last_name) {
             return res.status(400).json({
                 error: 'Champs obligatoires manquants (email, password, first_name, last_name)'
             });
         }
 
-        // Vérifier si l'email existe déjà
         const existingUser = await User.findByEmail(email);
         if (existingUser) {
             return res.status(400).json({ error: 'Cet email est déjà utilisé' });
         }
 
-        // Hacher le mot de passe
         const password_hash = await bcrypt.hash(password, 10);
 
-        // Créer l'utilisateur
         const user = await User.create({
             email,
             password_hash,
