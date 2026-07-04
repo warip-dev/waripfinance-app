@@ -29,6 +29,7 @@ const AdminLogin = () => {
                 return;
             }
 
+            // Stocker les informations
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('user', JSON.stringify(user));
 
@@ -46,7 +47,8 @@ const AdminLogin = () => {
         <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
             <div className="bg-gray-800 p-8 rounded-2xl max-w-md w-full">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gold">👑 Administration</h1>
+                    <div className="text-5xl mb-3">👑</div>
+                    <h1 className="text-3xl font-bold text-gold">Administration</h1>
                     <p className="text-gray-400 mt-2">Espace réservé aux administrateurs</p>
                 </div>
 
@@ -63,7 +65,8 @@ const AdminLogin = () => {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold"
+                            placeholder="admin@waripfinance.com"
+                            className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold"
                             required
                         />
                     </div>
@@ -74,7 +77,8 @@ const AdminLogin = () => {
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gold"
+                            placeholder="••••••••"
+                            className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold"
                             required
                         />
                     </div>
@@ -86,9 +90,13 @@ const AdminLogin = () => {
                             loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-gold text-gray-900 hover:bg-yellow-500'
                         }`}
                     >
-                        {loading ? '⏳ Connexion...' : 'Se connecter'}
+                        {loading ? '⏳ Connexion...' : '🔑 Se connecter'}
                     </button>
                 </form>
+
+                <p className="text-center text-gray-500 text-sm mt-6">
+                    Accès réservé aux administrateurs
+                </p>
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const AdminDashboard = () => {
@@ -80,17 +80,20 @@ const AdminDashboard = () => {
                         <h1 className="text-3xl font-bold text-gold">👑 Administration</h1>
                         <p className="text-gray-400">Gestion des utilisateurs inscrits</p>
                     </div>
-                    <button
-                        onClick={handleLogout}
-                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-                    >
-                        Déconnexion
-                    </button>
+                    <div className="flex items-center gap-4">
+                        <span className="text-gray-300 text-sm">Admin</span>
+                        <button
+                            onClick={handleLogout}
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm"
+                        >
+                            Déconnexion
+                        </button>
+                    </div>
                 </div>
 
                 {/* Statistiques */}
                 <div className="bg-gray-800 p-4 rounded-2xl mb-6">
-                    <p className="text-gray-400">Total des utilisateurs en attente :</p>
+                    <p className="text-gray-400">Utilisateurs en attente de validation</p>
                     <p className="text-3xl font-bold text-gold">{users.length}</p>
                 </div>
 
