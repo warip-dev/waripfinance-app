@@ -15,7 +15,6 @@ import Pending from './pages/user/Pending';
 // Pages administrateur
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminTransfers from './pages/admin/AdminTransfers';
 
 const App = () => {
   // Récupérer les informations de l'utilisateur connecté
@@ -29,18 +28,16 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Routes publiques */}
+        {/* ==================== */}
+        {/* SITE PUBLIC */}
+        {/* ==================== */}
         <Route path="/" element={<Home />} />
-        <Route
-          path="/login"
-          element={!token ? <Login /> : <Navigate to={isAdmin ? '/admin/dashboard' : '/dashboard'} />}
-        />
-        <Route
-          path="/register"
-          element={!token ? <Register /> : <Navigate to={isAdmin ? '/admin/dashboard' : '/dashboard'} />}
-        />
+        <Route path="/register" element={!token ? <Register /> : <Navigate to={isAdmin ? '/admin/dashboard' : '/dashboard'} />} />
+        <Route path="/login" element={!token ? <Login /> : <Navigate to={isAdmin ? '/admin/dashboard' : '/dashboard'} />} />
 
-        {/* Routes utilisateur */}
+        {/* ==================== */}
+        {/* ESPACE UTILISATEUR */}
+        {/* ==================== */}
         <Route
           path="/dashboard"
           element={token && !isAdmin ? <Dashboard /> : <Navigate to={isAdmin ? '/admin/dashboard' : '/login'} />}
@@ -58,7 +55,9 @@ const App = () => {
           element={token ? <Pending /> : <Navigate to="/login" />}
         />
 
-        {/* Routes administrateur */}
+        {/* ==================== */}
+        {/* ESPACE ADMIN */}
+        {/* ==================== */}
         <Route
           path="/admin"
           element={!token ? <AdminLogin /> : <Navigate to="/admin/dashboard" />}
@@ -67,12 +66,10 @@ const App = () => {
           path="/admin/dashboard"
           element={isAdmin ? <AdminDashboard /> : <Navigate to="/admin" />}
         />
-        <Route
-          path="/admin/transfers"
-          element={isAdmin ? <AdminTransfers /> : <Navigate to="/admin" />}
-        />
 
-        {/* Route 404 */}
+        {/* ==================== */}
+        {/* REDIRECTION 404 */}
+        {/* ==================== */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
