@@ -1,5 +1,6 @@
-const User = require('../models/User'); // ← U majuscule
+const User = require('../models/User');
 
+// Récupérer tous les utilisateurs (avec pagination)
 const getAllUsers = async (req, res) => {
     try {
         const { limit = 50, offset = 0 } = req.query;
@@ -11,6 +12,7 @@ const getAllUsers = async (req, res) => {
     }
 };
 
+// Récupérer les utilisateurs en attente
 const getPendingUsers = async (req, res) => {
     try {
         const users = await User.findPending();
@@ -21,18 +23,34 @@ const getPendingUsers = async (req, res) => {
     }
 };
 
+// Récupérer les utilisateurs actifs
+const getActiveUsers = async (req, res) => {
+    try {
+        const users = await User.findActive();
+        res.json({ users });
+    } catch (error) {
+        console.error('Erreur récupération utilisateurs actifs:', error);
+        res.status(500).json({ error: 'Erreur lors de la récupération' });
+    }
+};
+
+// Valider ou rejeter un utilisateur
 const validateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const { btc_address, eth_address } = req.body;
+        const { status, admin_comment } = req.body;
 
-        const user = await User.updateStatus(id, 'ACTIVE', btc_address, eth_address);
+        if (!['ACTIVE', 'BLOCKED'].includes(status)) {
+            return res.status(400).json({ error: 'Statut invalide. Utilisez ACTIVE ou BLOCKED' });
+        }
+
+        const user = await User.updateStatus(id, status, admin_comment);
         if (!user) {
             return res.status(404).json({ error: 'Utilisateur non trouvé' });
         }
 
         res.json({
-            message: '✅ Utilisateur validé avec succès',
+            message: `✅ Utilisateur ${status === 'ACTIVE' ? 'validé' : 'rejeté'} avec succès`,
             user
         });
 
@@ -42,6 +60,7 @@ const validateUser = async (req, res) => {
     }
 };
 
+// Récupérer les détails d'un utilisateur
 const getUserDetails = async (req, res) => {
     try {
         const { id } = req.params;
@@ -59,6 +78,7 @@ const getUserDetails = async (req, res) => {
 module.exports = {
     getAllUsers,
     getPendingUsers,
+    getActiveUsers,
     validateUser,
     getUserDetails
 };
