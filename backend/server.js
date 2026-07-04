@@ -14,41 +14,26 @@ app.use(express.urlencoded({ extended: true }));
 // Dossier public (frontend)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ROUTES API - Vérifiez que ces fichiers existent
-try {
-  const authRoutes = require('./src/routes/authRoutes');
-  const userRoutes = require('./src/routes/userRoutes');
-  const adminRoutes = require('./src/routes/adminRoutes');
-  const transactionRoutes = require('./src/routes/transactionRoutes');
+// ROUTES API
+const authRoutes = require('./src/routes/authRoutes');
+app.use('/api/auth', authRoutes);
 
-  app.use('/api/auth', authRoutes);
-  app.use('/api/user', userRoutes);
-  app.use('/api/admin', adminRoutes);
-  app.use('/api/transactions', transactionRoutes);
-} catch (error) {
-  console.error('❌ Erreur d\'import des routes:', error.message);
-}
-
-// Route API de test
+// Route de test API
 app.get('/api', (req, res) => {
   res.json({ message: '🚀 Warip Finance API', status: 'online' });
 });
 
 // TOUTES LES AUTRES ROUTES → Frontend
 app.get('*', (req, res) => {
-  const indexPath = path.join(__dirname, 'public', 'index.html');
-  console.log('📁 index.html path:', indexPath);
-  res.sendFile(indexPath);
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Gestionnaire d'erreurs
 app.use((err, req, res, next) => {
   console.error('❌ Erreur:', err.message);
-  res.status(500).json({ error: 'Erreur interne du serveur', details: err.message });
+  res.status(500).json({ error: 'Erreur interne du serveur' });
 });
 
-// Démarrer
 app.listen(PORT, () => {
   console.log(`🚀 Warip Finance démarrée sur http://localhost:${PORT}`);
-  console.log(`📁 Dossier public : ${path.join(__dirname, 'public')}`);
 });
