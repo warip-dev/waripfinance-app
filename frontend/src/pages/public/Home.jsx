@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true); // true = connexion, false = inscription
+  const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -22,8 +22,6 @@ const Home = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  // Pour l'inscription (étape 2)
   const [step, setStep] = useState(1);
 
   const handleChange = (e) => {
@@ -37,7 +35,9 @@ const Home = () => {
 
     try {
       if (isLogin) {
+        // ============================================
         // CONNEXION
+        // ============================================
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
           email: formData.email,
           password: formData.password
@@ -54,9 +54,10 @@ const Home = () => {
           navigate('/dashboard');
         }
       } else {
+        // ============================================
         // INSCRIPTION
+        // ============================================
         if (step === 1) {
-          // Vérifier les champs de base
           if (!formData.first_name || !formData.last_name || !formData.email || !formData.password) {
             setError('Tous les champs sont obligatoires');
             setLoading(false);
@@ -72,7 +73,6 @@ const Home = () => {
           return;
         }
 
-        // Étape 2 : Envoyer l'inscription complète
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, formData);
         navigate('/pending');
       }
@@ -83,7 +83,6 @@ const Home = () => {
     }
   };
 
-  // Basculer entre connexion et inscription
   const toggleMode = () => {
     setIsLogin(!isLogin);
     setStep(1);
@@ -108,7 +107,9 @@ const Home = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* INSCRIPTION : Étape 1 */}
+          {/* ========================================== */}
+          {/* INSCRIPTION - ÉTAPE 1 */}
+          {/* ========================================== */}
           {!isLogin && step === 1 && (
             <>
               <div className="grid grid-cols-2 gap-4">
@@ -149,7 +150,9 @@ const Home = () => {
             </>
           )}
 
-          {/* INSCRIPTION : Étape 2 */}
+          {/* ========================================== */}
+          {/* INSCRIPTION - ÉTAPE 2 */}
+          {/* ========================================== */}
           {!isLogin && step === 2 && (
             <>
               <div className="grid grid-cols-2 gap-4">
@@ -233,7 +236,9 @@ const Home = () => {
             </>
           )}
 
+          {/* ========================================== */}
           {/* CONNEXION */}
+          {/* ========================================== */}
           {isLogin && (
             <>
               <input
@@ -255,6 +260,9 @@ const Home = () => {
             </>
           )}
 
+          {/* ========================================== */}
+          {/* BOUTON */}
+          {/* ========================================== */}
           <button
             type="submit"
             disabled={loading}
@@ -272,8 +280,21 @@ const Home = () => {
           </button>
         </form>
 
-        {/* Bouton pour basculer entre Connexion et Inscription */}
-        <div className="text-center mt-6">
+        {/* ========================================== */}
+        {/* MOT DE PASSE OUBLIÉ - UNIQUEMENT EN CONNEXION */}
+        {/* ========================================== */}
+        {isLogin && (
+          <div className="text-center mt-3">
+            <a href="/forgot-password" className="text-sm text-gray-400 hover:text-gold transition">
+              🔑 Mot de passe oublié ?
+            </a>
+          </div>
+        )}
+
+        {/* ========================================== */}
+        {/* BAS CULER ENTRE CONNEXION ET INSCRIPTION */}
+        {/* ========================================== */}
+        <div className="text-center mt-4">
           <p className="text-gray-400">
             {isLogin ? 'Pas encore de compte ?' : 'Déjà un compte ?'}
             <button
@@ -285,7 +306,9 @@ const Home = () => {
           </p>
         </div>
 
-        {/* Lien vers Admin (pour l'administrateur) */}
+        {/* ========================================== */}
+        {/* LIEN VERS ADMIN */}
+        {/* ========================================== */}
         <div className="text-center mt-4">
           <a href="/admin" className="text-gray-500 text-sm hover:text-gold transition">
             🔑 Espace administrateur

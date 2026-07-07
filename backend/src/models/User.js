@@ -103,6 +103,49 @@ class User {
         );
         return rows;
     }
+
+    // ============================================
+    // MOT DE PASSE OUBLIÉ
+    // ============================================
+    static async findByEmailForReset(email) {
+        const [rows] = await pool.execute(
+            'SELECT id, email, first_name FROM users WHERE email = ?',
+            [email]
+        );
+        return rows[0];
+    }
+
+    static async saveResetToken(email, token, expiresAt) {
+        await pool.execute(
+            `UPDATE users 
+             SET reset_token = ?, 
+                 reset_token_expires = ? 
+             WHERE email = ?`,
+            [token, expiresAt, email]
+        );
+    }
+
+    static async findByResetToken(token) {
+        const [rows] = await pool.execute(
+            `SELECT id, email, first_name 
+             FROM users 
+             WHERE reset_token = ? 
+             AND reset_token_expires > NOW()`,
+            [token]
+        );
+        return rows[0];
+    }
+
+    static async resetPassword(email, newPasswordHash) {
+        await pool.execute(
+            `UPDATE users 
+             SET password_hash = ?, 
+                 reset_token = NULL, 
+                 reset_token_expires = NULL 
+             WHERE email = ?`,
+            [newPasswordHash, email]
+        );
+    }
 }
 
 module.exports = User;

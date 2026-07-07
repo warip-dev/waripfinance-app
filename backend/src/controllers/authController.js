@@ -1,11 +1,27 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User'); // ← U majuscule
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const User = require('../models/User');
 
+// ============================================
+// CONFIGURATION EMAIL
+// ============================================
+const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.EMAIL_PORT) || 587,
+    secure: false,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
+// ============================================
+// INSCRIPTION
+// ============================================
 const register = async (req, res) => {
     try {
-        console.log('📝 Corps de la requête reçu:', req.body);
-
         const {
             email, password, first_name, last_name, phone, country,
             city, postal_code, street_name, street_number, profession,
@@ -13,9 +29,7 @@ const register = async (req, res) => {
         } = req.body;
 
         if (!email || !password || !first_name || !last_name) {
-            return res.status(400).json({
-                error: 'Champs obligatoires manquants (email, password, first_name, last_name)'
-            });
+            return res.status(400).json({ error: 'Champs obligatoires manquants' });
         }
 
         const existingUser = await User.findByEmail(email);
@@ -26,19 +40,9 @@ const register = async (req, res) => {
         const password_hash = await bcrypt.hash(password, 10);
 
         const user = await User.create({
-            email,
-            password_hash,
-            first_name,
-            last_name,
-            phone: phone || '',
-            country: country || 'FR',
-            city: city || '',
-            postal_code: postal_code || '',
-            street_name: street_name || '',
-            street_number: street_number || '',
-            profession: profession || '',
-            gender: gender || '',
-            marital_status: marital_status || ''
+            email, password_hash, first_name, last_name, phone, country,
+            city, postal_code, street_name, street_number, profession,
+            gender, marital_status
         });
 
         res.status(201).json({
@@ -47,17 +51,14 @@ const register = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('❌ ERREUR COMPLÈTE:', error);
-        console.error('❌ MESSAGE:', error.message);
-        console.error('❌ STACK:', error.stack);
-
-        res.status(500).json({
-            error: 'Erreur lors de l\'inscription',
-            details: error.message
-        });
+        console.error('❌ Erreur inscription:', error);
+        res.status(500).json({ error: 'Erreur lors de l\'inscription' });
     }
 };
 
+// ============================================
+// CONNEXION
+// ============================================
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -101,6 +102,9 @@ const login = async (req, res) => {
     }
 };
 
+// ============================================
+// PROFIL
+// ============================================
 const getProfile = async (req, res) => {
     try {
         const user = await User.findById(req.userId);
@@ -114,4 +118,135 @@ const getProfile = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getProfile };
+// ============================================
+// MOT DE PASSE OUBLIÉ - DEMANDE
+// ============================================
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email requis' });
+        }
+
+        const user = await User.findByEmailForReset(email);
+        if (!user) {
+            return res.status(404).json({ error: 'Aucun compte associé à cet email' });
+        }
+
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 3600000);
+
+        await User.saveResetToken(email, resetToken, expiresAt);
+
+        const resetUrl = `https://waripfinance.com/reset-password?token=${resetToken}`;
+
+        const mailOptions = {
+            from: `"Warip Finance" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: '🔐 Réinitialisation de votre mot de passe',
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #1a1a2e; color: #fff; border-radius: 10px;">
+                    <h1 style="color: #e9b64a; text-align: center;">Warip Finance</h1>
+                    <h2 style="text-align: center; color: #e9b64a;">🔐 Réinitialisation de mot de passe</h2>
+                    <p style="color: #ccc;">Bonjour ${user.first_name},</p>
+                    <p style="color: #ccc;">Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous :</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="${resetUrl}" style="background: #e9b64a; color: #1a1a2e; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                            🔑 Réinitialiser mon mot de passe
+                        </a>
+                    </div>
+                    <p style="color: #888; font-size: 12px;">Ce lien est valable 1 heure. Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
+                    <hr style="border: 1px solid #333; margin: 20px 0;">
+                    <p style="color: #555; font-size: 11px; text-align: center;">Warip Finance - La banque qui réinvente la crypto</p>
+                </div>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.json({
+            message: '✅ Un email de réinitialisation a été envoyé à votre adresse email.',
+            success: true
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur forgotPassword:', error);
+        res.status(500).json({ error: 'Erreur lors de l\'envoi de l\'email' });
+    }
+};
+
+// ============================================
+// VÉRIFIER LE TOKEN DE RÉINITIALISATION
+// ============================================
+const verifyResetToken = async (req, res) => {
+    try {
+        const { token } = req.query;
+
+        if (!token) {
+            return res.status(400).json({ error: 'Token requis' });
+        }
+
+        const user = await User.findByResetToken(token);
+        if (!user) {
+            return res.status(400).json({ error: 'Token invalide ou expiré' });
+        }
+
+        res.json({
+            valid: true,
+            email: user.email,
+            message: '✅ Token valide'
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur verifyResetToken:', error);
+        res.status(500).json({ error: 'Erreur lors de la vérification' });
+    }
+};
+
+// ============================================
+// RÉINITIALISER LE MOT DE PASSE
+// ============================================
+const resetPassword = async (req, res) => {
+    try {
+        const { token, newPassword, confirmPassword } = req.body;
+
+        if (!token || !newPassword || !confirmPassword) {
+            return res.status(400).json({ error: 'Tous les champs sont requis' });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ error: 'Les mots de passe ne correspondent pas' });
+        }
+
+        if (newPassword.length < 8) {
+            return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères' });
+        }
+
+        const user = await User.findByResetToken(token);
+        if (!user) {
+            return res.status(400).json({ error: 'Token invalide ou expiré' });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await User.resetPassword(user.email, hashedPassword);
+
+        res.json({
+            message: '✅ Mot de passe réinitialisé avec succès !',
+            success: true
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur resetPassword:', error);
+        res.status(500).json({ error: 'Erreur lors de la réinitialisation' });
+    }
+};
+
+module.exports = {
+    register,
+    login,
+    getProfile,
+    forgotPassword,
+    verifyResetToken,
+    resetPassword
+};
