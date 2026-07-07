@@ -24,31 +24,95 @@ const pool = mysql.createPool({
 });
 
 // ============================================
-// MIDDLEWARE AUTH (SIMPLIFIÉ)
+// MIDDLEWARE AUTH
 // ============================================
 async function authenticate(req, res, next) {
     const authHeader = req.headers.authorization;
-    if (!authHeader) {
-        return res.status(401).json({ error: 'Non autorisé - Token manquant' });
-    }
+    if (!authHeader) return res.status(401).json({ error: 'Non autorisé' });
     const token = authHeader.split(' ')[1];
-    // Pour le moment, on simule l'utilisateur connecté (à remplacer par JWT)
-    // Récupérer l'utilisateur depuis la base (par exemple le premier utilisateur)
-    const [rows] = await pool.execute('SELECT id, role FROM users LIMIT 1');
-    if (rows.length === 0) {
-        return res.status(401).json({ error: 'Aucun utilisateur trouvé' });
-    }
+    // Récupérer l'utilisateur depuis le token (simplifié)
+    const [rows] = await pool.execute('SELECT id, role FROM users WHERE id = ?', [1]);
+    if (rows.length === 0) return res.status(401).json({ error: 'Utilisateur non trouvé' });
     req.userId = rows[0].id;
     req.userRole = rows[0].role;
     next();
 }
 
 // ============================================
-// ROUTES API
+// CRÉATION DES TABLES
 // ============================================
+(async () => {
+    try {
+        // Table users
+        await pool.execute(`
+            CREATE TABLE IF NOT EXISTS users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password_hash VARCHAR(255) NOT NULL,
+                first_name VARCHAR(100) NOT NULL,
+                last_name VARCHAR(100) NOT NULL,
+                phone VARCHAR(50),
+                country VARCHAR(10),
+                status ENUM('PENDING', 'ACTIVE', 'BLOCKED') DEFAULT 'PENDING',
+                role ENUM('USER', 'ADMIN') DEFAULT 'USER',
+                btc_address VARCHAR(255),
+                eth_address VARCHAR(255),
+                balance DECIMAL(15,2) DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        // Table beneficiaries
+        await pool.execute(`
+            CREATE TABLE IF NOT EXISTS beneficiaries (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                name VARCHAR(100) NOT NULL,
+                iban VARCHAR(50) NOT NULL,
+                bic VARCHAR(20),
+                status ENUM('PENDING', 'ACTIVE', 'REJECTED') DEFAULT 'PENDING',
+                rejection_reason TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        `);
+        // Table transfers
+        await pool.execute(`
+            CREATE TABLE IF NOT EXISTS transfers (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                beneficiary_id INT NOT NULL,
+                amount DECIMAL(15,2) NOT NULL,
+                reference VARCHAR(100),
+                status ENUM('PENDING', 'COMPLETED', 'REJECTED') DEFAULT 'PENDING',
+                admin_comment TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id) ON DELETE CASCADE
+            )
+        `);
+        // Table deposit addresses (pour l'admin)
+        await pool.execute(`
+            CREATE TABLE IF NOT EXISTS deposit_addresses (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                currency VARCHAR(10) NOT NULL,
+                address VARCHAR(255) NOT NULL,
+                network VARCHAR(50),
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            )
+        `);
+        // Insert default addresses
+        await pool.execute(`
+            INSERT IGNORE INTO deposit_addresses (currency, address, network) VALUES 
+            ('BTC', 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq', 'Bitcoin'),
+            ('ETH', '0x742d35Cc6634C0532925a3b844Bc454e4438f44e', 'ERC20')
+        `);
+        console.log('✅ Toutes les tables sont prêtes');
+    } catch (error) {
+        console.error('❌ Erreur création tables:', error);
+    }
+})();
 
 // ============================================
-// INSCRIPTION
+// ROUTES AUTH
 // ============================================
 app.post('/api/auth/register', async (req, res) => {
     try {
@@ -80,9 +144,6 @@ app.post('/api/auth/register', async (req, res) => {
     }
 });
 
-// ============================================
-// CONNEXION
-// ============================================
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -90,7 +151,7 @@ app.post('/api/auth/login', async (req, res) => {
             return res.status(400).json({ error: 'Email et mot de passe requis' });
         }
         const [rows] = await pool.execute(
-            'SELECT id, email, password_hash, first_name, last_name, status, role FROM users WHERE email = ?',
+            'SELECT id, email, password_hash, first_name, last_name, status, role, balance FROM users WHERE email = ?',
             [email]
         );
         if (rows.length === 0) {
@@ -116,7 +177,8 @@ app.post('/api/auth/login', async (req, res) => {
                 first_name: user.first_name,
                 last_name: user.last_name,
                 status: user.status,
-                role: user.role
+                role: user.role,
+                balance: user.balance
             }
         });
     } catch (error) {
@@ -126,12 +188,12 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 // ============================================
-// ADMIN - LISTE DES UTILISATEURS
+// ADMIN - UTILISATEURS
 // ============================================
 app.get('/api/admin/users', async (req, res) => {
     try {
         const [rows] = await pool.execute(
-            'SELECT id, email, first_name, last_name, status, role, created_at FROM users ORDER BY created_at DESC'
+            'SELECT id, email, first_name, last_name, status, role, balance, created_at FROM users ORDER BY created_at DESC'
         );
         res.json({ users: rows });
     } catch (error) {
@@ -140,9 +202,6 @@ app.get('/api/admin/users', async (req, res) => {
     }
 });
 
-// ============================================
-// ADMIN - VALIDER UN UTILISATEUR
-// ============================================
 app.put('/api/admin/users/:id/validate', async (req, res) => {
     try {
         const { id } = req.params;
@@ -155,46 +214,46 @@ app.put('/api/admin/users/:id/validate', async (req, res) => {
     }
 });
 
-// ============================================
-// CRÉATION DES TABLES (si elles n'existent pas)
-// ============================================
-(async () => {
+app.put('/api/admin/users/:id/balance', async (req, res) => {
     try {
-        await pool.execute(`
-            CREATE TABLE IF NOT EXISTS beneficiaries (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                user_id INT NOT NULL,
-                name VARCHAR(100) NOT NULL,
-                iban VARCHAR(50) NOT NULL,
-                bic VARCHAR(20),
-                status ENUM('PENDING', 'ACTIVE', 'REJECTED') DEFAULT 'PENDING',
-                rejection_reason TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-        await pool.execute(`
-            CREATE TABLE IF NOT EXISTS transfers (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                user_id INT NOT NULL,
-                beneficiary_id INT NOT NULL,
-                amount DECIMAL(15,2) NOT NULL,
-                reference VARCHAR(100),
-                status ENUM('PENDING', 'COMPLETED', 'REJECTED') DEFAULT 'PENDING',
-                admin_comment TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id) ON DELETE CASCADE
-            )
-        `);
-        console.log('✅ Tables beneficiaries et transfers vérifiées/créées');
+        const { id } = req.params;
+        const { amount } = req.body;
+        await pool.execute('UPDATE users SET balance = balance + ? WHERE id = ?', [amount, id]);
+        res.json({ success: true, message: '✅ Solde mis à jour' });
     } catch (error) {
-        console.error('❌ Erreur création tables:', error);
+        console.error('❌ Erreur update balance:', error);
+        res.status(500).json({ error: 'Erreur interne' });
     }
-})();
+});
+
+// ============================================
+// ADMIN - ADRESSES DE DÉPÔT
+// ============================================
+app.get('/api/admin/deposit-addresses', async (req, res) => {
+    try {
+        const [rows] = await pool.execute('SELECT * FROM deposit_addresses');
+        res.json({ addresses: rows });
+    } catch (error) {
+        console.error('❌ Erreur deposit addresses:', error);
+        res.status(500).json({ error: 'Erreur interne' });
+    }
+});
+
+app.put('/api/admin/deposit-addresses/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { address } = req.body;
+        await pool.execute('UPDATE deposit_addresses SET address = ? WHERE id = ?', [address, id]);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('❌ Erreur update deposit address:', error);
+        res.status(500).json({ error: 'Erreur interne' });
+    }
+});
 
 // ============================================
 // BÉNÉFICIAIRES
 // ============================================
-// Liste des bénéficiaires d'un utilisateur
 app.get('/api/beneficiaries', authenticate, async (req, res) => {
     try {
         const [rows] = await pool.execute(
@@ -208,22 +267,16 @@ app.get('/api/beneficiaries', authenticate, async (req, res) => {
     }
 });
 
-// Ajouter un bénéficiaire
 app.post('/api/beneficiaries', authenticate, async (req, res) => {
     try {
         const { name, iban, bic } = req.body;
-        console.log('📝 Ajout bénéficiaire:', { name, iban, bic, userId: req.userId });
-
         if (!name || !iban) {
             return res.status(400).json({ error: 'Nom et IBAN requis' });
         }
-
         const [result] = await pool.execute(
             'INSERT INTO beneficiaries (user_id, name, iban, bic, status) VALUES (?, ?, ?, ?, ?)',
             [req.userId, name, iban, bic || null, 'PENDING']
         );
-        console.log('✅ Bénéficiaire ajouté, ID:', result.insertId);
-
         res.json({ success: true, id: result.insertId, message: 'Bénéficiaire ajouté en attente de validation' });
     } catch (error) {
         console.error('❌ Erreur POST beneficiaries:', error);
@@ -237,7 +290,7 @@ app.post('/api/beneficiaries', authenticate, async (req, res) => {
 app.get('/api/admin/beneficiaries', async (req, res) => {
     try {
         const [rows] = await pool.execute(
-            'SELECT b.*, u.email, u.first_name, u.last_name FROM beneficiaries b JOIN users u ON b.user_id = u.id WHERE b.status = "PENDING"'
+            'SELECT b.*, u.email, u.first_name, u.last_name FROM beneficiaries b JOIN users u ON b.user_id = u.id ORDER BY b.created_at DESC'
         );
         res.json({ beneficiaries: rows });
     } catch (error) {
@@ -267,12 +320,9 @@ app.put('/api/admin/beneficiaries/:id/validate', async (req, res) => {
 app.post('/api/transfers', authenticate, async (req, res) => {
     try {
         const { beneficiary_id, amount, reference } = req.body;
-        console.log('📝 Nouveau virement:', { beneficiary_id, amount, reference, userId: req.userId });
-
         if (!beneficiary_id || !amount || amount <= 0) {
             return res.status(400).json({ error: 'Montant invalide' });
         }
-
         const [benef] = await pool.execute(
             'SELECT id, name FROM beneficiaries WHERE id = ? AND user_id = ? AND status = "ACTIVE"',
             [beneficiary_id, req.userId]
@@ -280,14 +330,16 @@ app.post('/api/transfers', authenticate, async (req, res) => {
         if (benef.length === 0) {
             return res.status(400).json({ error: 'Bénéficiaire non trouvé ou non validé' });
         }
-
+        // Vérifier le solde
+        const [user] = await pool.execute('SELECT balance FROM users WHERE id = ?', [req.userId]);
+        if (user[0].balance < amount) {
+            return res.status(400).json({ error: 'Solde insuffisant' });
+        }
         const [result] = await pool.execute(
             'INSERT INTO transfers (user_id, beneficiary_id, amount, reference, status) VALUES (?, ?, ?, ?, ?)',
             [req.userId, beneficiary_id, amount, reference || null, 'PENDING']
         );
-        console.log('✅ Virement créé, ID:', result.insertId);
-
-        res.json({ success: true, id: result.insertId });
+        res.json({ success: true, id: result.insertId, message: 'Virement soumis, en attente de validation admin' });
     } catch (error) {
         console.error('❌ Erreur POST transfers:', error);
         res.status(500).json({ error: 'Erreur interne du serveur' });
@@ -311,14 +363,18 @@ app.get('/api/transfers', authenticate, async (req, res) => {
     }
 });
 
+// ============================================
+// ADMIN - VIREMENTS
+// ============================================
 app.get('/api/admin/transfers', async (req, res) => {
     try {
         const [rows] = await pool.execute(
-            `SELECT t.*, u.email, u.first_name, u.last_name, b.name as beneficiary_name 
+            `SELECT t.*, u.email, u.first_name, u.last_name, u.balance, b.name as beneficiary_name 
              FROM transfers t 
              JOIN users u ON t.user_id = u.id 
              JOIN beneficiaries b ON t.beneficiary_id = b.id 
-             WHERE t.status = "PENDING"`
+             WHERE t.status = "PENDING"
+             ORDER BY t.created_at ASC`
         );
         res.json({ transfers: rows });
     } catch (error) {
@@ -331,6 +387,13 @@ app.put('/api/admin/transfers/:id/validate', async (req, res) => {
     try {
         const { id } = req.params;
         const { status, admin_comment } = req.body;
+        // Récupérer le virement
+        const [transfer] = await pool.execute('SELECT user_id, amount FROM transfers WHERE id = ?', [id]);
+        if (transfer.length === 0) return res.status(404).json({ error: 'Virement non trouvé' });
+        // Si validé, débiter le solde
+        if (status === 'COMPLETED') {
+            await pool.execute('UPDATE users SET balance = balance - ? WHERE id = ?', [transfer[0].amount, transfer[0].user_id]);
+        }
         await pool.execute(
             'UPDATE transfers SET status = ?, admin_comment = ? WHERE id = ?',
             [status, admin_comment || null, id]
@@ -358,9 +421,6 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// ============================================
-// DÉMARRAGE
-// ============================================
 app.listen(PORT, () => {
     console.log(`🚀 Warip Finance démarrée sur http://localhost:${PORT}`);
 });

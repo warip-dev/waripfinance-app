@@ -30,7 +30,6 @@
 </head>
 <body>
 
-    <!-- HEADER -->
     <header class="gradient-header fixed w-full z-50 top-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -45,38 +44,45 @@
         </div>
     </header>
 
-    <!-- Main -->
     <div class="pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
         <h1 class="text-3xl font-bold text-dark mb-6">👑 Administration</h1>
 
-        <!-- Tabs -->
-        <div class="flex gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow">
+        <div class="flex gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow flex-wrap">
             <button id="tabUsers" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark">Utilisateurs</button>
             <button id="tabBeneficiaries" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Bénéficiaires</button>
             <button id="tabTransfers" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Virements</button>
+            <button id="tabAddresses" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Adresses</button>
         </div>
 
-        <!-- Utilisateurs -->
+        <!-- UTILISATEURS -->
         <div id="usersContent">
             <div class="bg-white rounded-2xl p-6 card-shadow">
-                <h3 class="font-semibold text-dark mb-4">👥 Gestion des utilisateurs</h3>
+                <h3 class="font-semibold text-dark mb-4">👥 Utilisateurs</h3>
                 <div id="usersList" class="space-y-3"></div>
             </div>
         </div>
 
-        <!-- Bénéficiaires -->
+        <!-- BÉNÉFICIAIRES -->
         <div id="beneficiariesContent" class="hidden">
             <div class="bg-white rounded-2xl p-6 card-shadow">
-                <h3 class="font-semibold text-dark mb-4">📋 Bénéficiaires en attente</h3>
+                <h3 class="font-semibold text-dark mb-4">📋 Bénéficiaires</h3>
                 <div id="adminBeneficiariesList" class="space-y-3"></div>
             </div>
         </div>
 
-        <!-- Virements -->
+        <!-- VIREMENTS -->
         <div id="transfersContent" class="hidden">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">💸 Virements en attente</h3>
                 <div id="adminTransfersList" class="space-y-3"></div>
+            </div>
+        </div>
+
+        <!-- ADRESSES -->
+        <div id="addressesContent" class="hidden">
+            <div class="bg-white rounded-2xl p-6 card-shadow">
+                <h3 class="font-semibold text-dark mb-4">🔑 Adresses de dépôt</h3>
+                <div id="addressesList" class="space-y-3"></div>
             </div>
         </div>
     </div>
@@ -84,44 +90,24 @@
     <script>
         const token = localStorage.getItem('admin_token');
         const user = JSON.parse(localStorage.getItem('admin_user') || '{}');
-        if (!token || user.role !== 'ADMIN') {
-            window.location.href = '/admin';
-        }
+        if (!token || user.role !== 'ADMIN') window.location.href = '/admin';
 
-        // ============================================
         // TABS
-        // ============================================
-        document.getElementById('tabUsers').addEventListener('click', function() {
-            document.getElementById('usersContent').classList.remove('hidden');
-            document.getElementById('beneficiariesContent').classList.add('hidden');
-            document.getElementById('transfersContent').classList.add('hidden');
-            this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
-            document.getElementById('tabBeneficiaries').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
-            document.getElementById('tabTransfers').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
-            loadUsers();
+        ['Users', 'Beneficiaries', 'Transfers', 'Addresses'].forEach((tab, i) => {
+            document.getElementById('tab' + tab).addEventListener('click', function() {
+                document.querySelectorAll('[id$="Content"]').forEach(el => el.classList.add('hidden'));
+                document.getElementById(tab.toLowerCase() + 'Content').classList.remove('hidden');
+                document.querySelectorAll('.tab-btn').forEach(b => b.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50');
+                this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
+                if (tab === 'Users') loadUsers();
+                else if (tab === 'Beneficiaries') loadAdminBeneficiaries();
+                else if (tab === 'Transfers') loadAdminTransfers();
+                else if (tab === 'Addresses') loadAddresses();
+            });
         });
-        document.getElementById('tabBeneficiaries').addEventListener('click', function() {
-            document.getElementById('beneficiariesContent').classList.remove('hidden');
-            document.getElementById('usersContent').classList.add('hidden');
-            document.getElementById('transfersContent').classList.add('hidden');
-            this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
-            document.getElementById('tabUsers').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
-            document.getElementById('tabTransfers').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
-            loadAdminBeneficiaries();
-        });
-        document.getElementById('tabTransfers').addEventListener('click', function() {
-            document.getElementById('transfersContent').classList.remove('hidden');
-            document.getElementById('usersContent').classList.add('hidden');
-            document.getElementById('beneficiariesContent').classList.add('hidden');
-            this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
-            document.getElementById('tabUsers').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
-            document.getElementById('tabBeneficiaries').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
-            loadAdminTransfers();
-        });
+        document.querySelectorAll('.tab-btn').forEach(b => b.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50');
 
-        // ============================================
         // LOGOUT
-        // ============================================
         document.getElementById('adminLogout').addEventListener('click', function() {
             localStorage.removeItem('admin_token');
             localStorage.removeItem('admin_user');
@@ -145,13 +131,18 @@
                             <div>
                                 <p class="font-semibold text-dark">${u.first_name} ${u.last_name}</p>
                                 <p class="text-sm text-gray-500">${u.email}</p>
+                                <p class="text-xs text-gray-400">Solde: ${u.balance || 0} €</p>
                                 <span class="${u.status === 'PENDING' ? 'status-pending' : u.status === 'ACTIVE' ? 'status-active' : 'status-rejected'}">${u.status}</span>
                             </div>
-                            <div>
+                            <div class="text-right">
                                 ${u.status === 'PENDING' ? `
                                     <button onclick="validateUser(${u.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1"><i class="fas fa-check"></i> Valider</button>
                                     <button onclick="validateUser(${u.id}, 'BLOCKED')" class="btn-danger px-3 py-1 text-xs"><i class="fas fa-times"></i> Rejeter</button>
                                 ` : ''}
+                                <div class="mt-1">
+                                    <input type="number" id="balance_${u.id}" placeholder="+ montant" class="w-24 px-2 py-1 border rounded text-xs">
+                                    <button onclick="updateBalance(${u.id})" class="btn-primary px-2 py-1 text-xs"><i class="fas fa-plus"></i></button>
+                                </div>
                             </div>
                         </div>
                     `).join('');
@@ -167,8 +158,18 @@
             }).then(() => loadUsers());
         };
 
+        window.updateBalance = function(id) {
+            const amount = parseFloat(document.getElementById('balance_' + id).value);
+            if (!amount || amount <= 0) return alert('Montant invalide');
+            fetch(`/api/admin/users/${id}/balance`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('admin_token') },
+                body: JSON.stringify({ amount })
+            }).then(() => loadUsers());
+        };
+
         // ============================================
-        // BÉNÉFICIAIRES (Admin)
+        // BÉNÉFICIAIRES
         // ============================================
         function loadAdminBeneficiaries() {
             fetch('/api/admin/beneficiaries', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('admin_token') } })
@@ -176,7 +177,7 @@
                 .then(data => {
                     const list = document.getElementById('adminBeneficiariesList');
                     if (!data.beneficiaries || data.beneficiaries.length === 0) {
-                        list.innerHTML = '<p class="text-gray-400 text-sm">Aucun bénéficiaire en attente.</p>';
+                        list.innerHTML = '<p class="text-gray-400 text-sm">Aucun bénéficiaire.</p>';
                         return;
                     }
                     list.innerHTML = data.beneficiaries.map(b => `
@@ -185,10 +186,14 @@
                                 <p class="font-semibold text-dark">${b.name}</p>
                                 <p class="text-sm text-gray-500 font-mono">${b.iban}</p>
                                 <p class="text-xs text-gray-400">Utilisateur: ${b.first_name} ${b.last_name}</p>
+                                <span class="${b.status === 'PENDING' ? 'status-pending' : b.status === 'ACTIVE' ? 'status-active' : 'status-rejected'}">${b.status}</span>
+                                ${b.rejection_reason ? `<p class="text-xs text-red-500 mt-1">Motif: ${b.rejection_reason}</p>` : ''}
                             </div>
                             <div>
-                                <button onclick="validateBeneficiary(${b.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1"><i class="fas fa-check"></i> Valider</button>
-                                <button onclick="validateBeneficiary(${b.id}, 'REJECTED')" class="btn-danger px-3 py-1 text-xs"><i class="fas fa-times"></i> Rejeter</button>
+                                ${b.status === 'PENDING' ? `
+                                    <button onclick="validateBeneficiary(${b.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1"><i class="fas fa-check"></i> Valider</button>
+                                    <button onclick="validateBeneficiary(${b.id}, 'REJECTED')" class="btn-danger px-3 py-1 text-xs"><i class="fas fa-times"></i> Rejeter</button>
+                                ` : ''}
                             </div>
                         </div>
                     `).join('');
@@ -206,7 +211,7 @@
         };
 
         // ============================================
-        // VIREMENTS (Admin)
+        // VIREMENTS
         // ============================================
         function loadAdminTransfers() {
             fetch('/api/admin/transfers', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('admin_token') } })
@@ -223,6 +228,7 @@
                                 <p class="font-semibold text-dark">${t.amount} €</p>
                                 <p class="text-sm text-gray-500">Bénéficiaire: ${t.beneficiary_name}</p>
                                 <p class="text-xs text-gray-400">Utilisateur: ${t.first_name} ${t.last_name}</p>
+                                <p class="text-xs text-gray-400">Solde: ${t.balance || 0} €</p>
                                 <p class="text-xs text-gray-400">${new Date(t.created_at).toLocaleDateString('fr-FR')}</p>
                             </div>
                             <div>
@@ -245,8 +251,43 @@
         };
 
         // ============================================
-        // INIT
+        // ADRESSES
         // ============================================
+        function loadAddresses() {
+            fetch('/api/admin/deposit-addresses', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('admin_token') } })
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById('addressesList');
+                    if (!data.addresses || data.addresses.length === 0) {
+                        list.innerHTML = '<p class="text-gray-400 text-sm">Aucune adresse.</p>';
+                        return;
+                    }
+                    list.innerHTML = data.addresses.map(a => `
+                        <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
+                            <div>
+                                <p class="font-semibold text-dark">${a.currency}</p>
+                                <p class="text-sm text-gray-500 font-mono">${a.address}</p>
+                                <p class="text-xs text-gray-400">Réseau: ${a.network}</p>
+                            </div>
+                            <div>
+                                <button onclick="editAddress(${a.id})" class="btn-warning px-3 py-1 text-xs"><i class="fas fa-edit"></i> Modifier</button>
+                            </div>
+                        </div>
+                    `).join('');
+                });
+        }
+
+        window.editAddress = function(id) {
+            const newAddress = prompt('Nouvelle adresse:');
+            if (!newAddress) return;
+            fetch(`/api/admin/deposit-addresses/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('admin_token') },
+                body: JSON.stringify({ address: newAddress })
+            }).then(() => loadAddresses());
+        };
+
+        // INIT
         loadUsers();
     </script>
 </body>
