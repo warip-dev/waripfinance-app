@@ -20,12 +20,19 @@
         .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
         .btn-outline { border: 2px solid #e9b64a; color: #e9b64a; background: transparent; font-weight: 600; padding: 10px 24px; border-radius: 50px; transition: all 0.3s; cursor: pointer; font-size: 14px; }
         .btn-outline:hover { background: #e9b64a; color: #1a1a2e; transform: translateY(-2px); }
+        .btn-success { background: #22c55e; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .btn-success:hover { background: #16a34a; transform: translateY(-2px); }
+        .btn-warning { background: #f59e0b; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .btn-warning:hover { background: #d97706; transform: translateY(-2px); }
         .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
         .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
         .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
         .balance-card { background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%); }
         .copy-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; transition: all 0.3s; }
         .copy-btn:hover { background: rgba(255,255,255,0.15); }
+        .status-pending { background: #fef9c3; color: #854d0e; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-active { background: #dcfce7; color: #166534; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-rejected { background: #fee2e2; color: #991b1b; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -60,82 +67,69 @@
                 </div>
                 <div class="flex flex-wrap gap-3">
                     <button id="openDepositModal" class="btn-primary"><i class="fas fa-arrow-down mr-2"></i>Déposer</button>
-                    <button id="openTransferModal" class="btn-outline"><i class="fas fa-arrow-up mr-2"></i>Virement</button>
+                    <button id="openBeneficiaryModal" class="btn-outline"><i class="fas fa-user-plus mr-2"></i>Bénéficiaire</button>
                 </div>
             </div>
         </div>
 
-        <!-- Actions rapides -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white rounded-2xl p-6 card-shadow">
-                <h3 class="font-semibold text-dark">💰 Dernières transactions</h3>
-                <p class="text-gray-400 text-sm mt-2">Aucune transaction pour le moment.</p>
-            </div>
-            <div class="bg-white rounded-2xl p-6 card-shadow">
-                <h3 class="font-semibold text-dark">📊 Résumé</h3>
-                <div class="flex justify-between mt-4 text-sm">
-                    <span class="text-gray-500">Compte actif depuis</span>
-                    <span class="text-dark font-medium" id="memberSince">Aujourd'hui</span>
+        <!-- Tabs -->
+        <div class="flex gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow">
+            <button id="tabBeneficiaries" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark">Mes bénéficiaires</button>
+            <button id="tabTransfers" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Mes virements</button>
+        </div>
+
+        <!-- Contenu Bénéficiaires -->
+        <div id="beneficiariesContent">
+            <div class="bg-white rounded-2xl p-6 card-shadow mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-dark">📋 Mes bénéficiaires</h3>
+                    <button id="openAddBeneficiary" class="btn-primary px-4 py-2 text-sm">
+                        <i class="fas fa-plus mr-1"></i>Ajouter
+                    </button>
                 </div>
-                <div class="flex justify-between mt-2 text-sm">
-                    <span class="text-gray-500">Statut</span>
-                    <span class="text-green-500 font-medium">✅ Actif</span>
+                <div id="beneficiariesList" class="space-y-3">
+                    <p class="text-gray-400 text-sm">Aucun bénéficiaire enregistré.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu Virements -->
+        <div id="transfersContent" class="hidden">
+            <div class="bg-white rounded-2xl p-6 card-shadow">
+                <h3 class="font-semibold text-dark mb-4">📤 Historique des virements</h3>
+                <div id="transfersList">
+                    <p class="text-gray-400 text-sm">Aucun virement effectué.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DÉPÔT -->
-    <div id="depositModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
+    <!-- MODAL AJOUT BÉNÉFICIAIRE -->
+    <div id="addBeneficiaryModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full p-8 relative card-shadow">
-            <button id="closeDepositModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
+            <button id="closeAddBeneficiary" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
                 <i class="fas fa-times"></i>
             </button>
-            <h2 class="text-2xl font-bold text-dark mb-2">📥 Déposer des cryptos</h2>
-            <p class="text-gray-500 text-sm mb-6">Sélectionnez la cryptomonnaie pour voir votre adresse de dépôt.</p>
-
-            <!-- BTC -->
-            <div class="border border-gray-200 rounded-xl p-4 mb-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <span class="text-2xl">₿</span>
-                        <div>
-                            <h4 class="font-semibold text-dark">Bitcoin</h4>
-                            <span class="text-xs text-gray-400">Réseau Bitcoin</span>
-                        </div>
-                    </div>
-                    <button onclick="copyAddress('btc')" class="copy-btn">
-                        <i class="fas fa-copy mr-1"></i>Copier
-                    </button>
+            <h2 class="text-2xl font-bold text-dark mb-2">➕ Ajouter un bénéficiaire</h2>
+            <p class="text-gray-500 text-sm mb-6">Le bénéficiaire sera soumis à validation par notre équipe.</p>
+            <div id="beneficiaryMessage" class="text-sm mb-4"></div>
+            <form id="addBeneficiaryForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nom du bénéficiaire</label>
+                    <input type="text" id="beneficiaryName" placeholder="Dupont Jean" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
                 </div>
-                <p id="btcAddress" class="text-gray-600 text-sm font-mono mt-2 break-all bg-gray-50 p-2 rounded-lg">
-                    bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq
-                </p>
-            </div>
-
-            <!-- ETH -->
-            <div class="border border-gray-200 rounded-xl p-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <span class="text-2xl">⟠</span>
-                        <div>
-                            <h4 class="font-semibold text-dark">Ethereum</h4>
-                            <span class="text-xs text-gray-400">Réseau ERC20</span>
-                        </div>
-                    </div>
-                    <button onclick="copyAddress('eth')" class="copy-btn">
-                        <i class="fas fa-copy mr-1"></i>Copier
-                    </button>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">IBAN</label>
+                    <input type="text" id="beneficiaryIban" placeholder="FR76 1234 5678 9012 3456 7890 123" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
                 </div>
-                <p id="ethAddress" class="text-gray-600 text-sm font-mono mt-2 break-all bg-gray-50 p-2 rounded-lg">
-                    0x742d35Cc6634C0532925a3b844Bc454e4438f44e
-                </p>
-            </div>
-
-            <div class="mt-4 p-3 bg-yellow-50 rounded-xl text-xs text-yellow-700">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
-                Envoyez uniquement les cryptos correspondantes sur ces adresses.
-            </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">BIC (optionnel)</label>
+                    <input type="text" id="beneficiaryBic" placeholder="BNPAFRPP" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus">
+                </div>
+                <button type="submit" id="addBeneficiaryBtn" class="w-full btn-primary py-3 text-lg">
+                    <i class="fas fa-save mr-2"></i>Enregistrer le bénéficiaire
+                </button>
+            </form>
         </div>
     </div>
 
@@ -146,30 +140,23 @@
                 <i class="fas fa-times"></i>
             </button>
             <h2 class="text-2xl font-bold text-dark mb-2">💸 Virement SEPA</h2>
-            <p class="text-gray-500 text-sm mb-6">Remplissez les informations du bénéficiaire.</p>
-
+            <p class="text-gray-500 text-sm mb-6">Sélectionnez un bénéficiaire validé.</p>
+            <div id="transferMessage" class="text-sm mb-4"></div>
             <form id="transferForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Bénéficiaire</label>
+                    <select id="transferBeneficiary" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                        <option value="">-- Sélectionnez un bénéficiaire --</option>
+                    </select>
+                </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Montant (EUR)</label>
                     <input type="number" id="transferAmount" placeholder="0,00" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required step="0.01" min="0.01">
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Nom du bénéficiaire</label>
-                    <input type="text" id="transferRecipient" placeholder="Dupont Jean" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">IBAN du bénéficiaire</label>
-                    <input type="text" id="transferIban" placeholder="FR76 1234 5678 9012 3456 7890 123" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">BIC (optionnel)</label>
-                    <input type="text" id="transferBic" placeholder="BNPAFRPP" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus">
-                </div>
-                <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Référence (optionnel)</label>
                     <input type="text" id="transferRef" placeholder="Facture #12345" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus">
                 </div>
-                <div id="transferMessage" class="text-sm mb-4"></div>
                 <button type="submit" id="transferBtn" class="w-full btn-primary py-3 text-lg">
                     <i class="fas fa-paper-plane mr-2"></i>Envoyer le virement
                 </button>
@@ -177,38 +164,258 @@
         </div>
     </div>
 
+    <!-- MODAL DÉPÔT -->
+    <div id="depositModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-8 relative card-shadow">
+            <button id="closeDepositModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="text-2xl font-bold text-dark mb-2">📥 Déposer des cryptos</h2>
+            <div class="border border-gray-200 rounded-xl p-4 mb-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">₿</span>
+                        <div><h4 class="font-semibold text-dark">Bitcoin</h4><span class="text-xs text-gray-400">Réseau Bitcoin</span></div>
+                    </div>
+                    <button onclick="copyAddress('btc')" class="copy-btn"><i class="fas fa-copy mr-1"></i>Copier</button>
+                </div>
+                <p id="btcAddress" class="text-gray-600 text-sm font-mono mt-2 break-all bg-gray-50 p-2 rounded-lg">bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq</p>
+            </div>
+            <div class="border border-gray-200 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">⟠</span>
+                        <div><h4 class="font-semibold text-dark">Ethereum</h4><span class="text-xs text-gray-400">Réseau ERC20</span></div>
+                    </div>
+                    <button onclick="copyAddress('eth')" class="copy-btn"><i class="fas fa-copy mr-1"></i>Copier</button>
+                </div>
+                <p id="ethAddress" class="text-gray-600 text-sm font-mono mt-2 break-all bg-gray-50 p-2 rounded-lg">0x742d35Cc6634C0532925a3b844Bc454e4438f44e</p>
+            </div>
+            <div class="mt-4 p-3 bg-yellow-50 rounded-xl text-xs text-yellow-700">
+                <i class="fas fa-exclamation-triangle mr-2"></i>Envoyez uniquement les cryptos correspondantes sur ces adresses.
+            </div>
+        </div>
+    </div>
+
     <script>
-        // ============================================
-        // VÉRIFICATION CONNEXION
-        // ============================================
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        if (!user.email) {
-            window.location.href = '/';
-        }
+        if (!user.email) window.location.href = '/';
         document.getElementById('userName').textContent = user.first_name || 'Client';
 
         // ============================================
-        // DÉCONNEXION
+        // TABS
         // ============================================
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/';
+        document.getElementById('tabBeneficiaries').addEventListener('click', function() {
+            document.getElementById('beneficiariesContent').classList.remove('hidden');
+            document.getElementById('transfersContent').classList.add('hidden');
+            this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
+            document.getElementById('tabTransfers').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
+        });
+        document.getElementById('tabTransfers').addEventListener('click', function() {
+            document.getElementById('transfersContent').classList.remove('hidden');
+            document.getElementById('beneficiariesContent').classList.add('hidden');
+            this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
+            document.getElementById('tabBeneficiaries').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
+            loadTransfers();
         });
 
         // ============================================
-        // MODAL DÉPÔT
+        // LOGOUT
+        // ============================================
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/';
+        });
+
+        // ============================================
+        // BÉNÉFICIAIRES
+        // ============================================
+        function loadBeneficiaries() {
+            const token = localStorage.getItem('token');
+            fetch('/api/beneficiaries', { headers: { 'Authorization': 'Bearer ' + token } })
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById('beneficiariesList');
+                    if (!data.beneficiaries || data.beneficiaries.length === 0) {
+                        list.innerHTML = '<p class="text-gray-400 text-sm">Aucun bénéficiaire enregistré.</p>';
+                        return;
+                    }
+                    list.innerHTML = data.beneficiaries.map(b => `
+                        <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
+                            <div>
+                                <p class="font-semibold text-dark">${b.name}</p>
+                                <p class="text-xs text-gray-400 font-mono">${b.iban}</p>
+                                <span class="${b.status === 'ACTIVE' ? 'status-active' : b.status === 'REJECTED' ? 'status-rejected' : 'status-pending'}">${b.status === 'ACTIVE' ? '✅ Validé' : b.status === 'REJECTED' ? '❌ Rejeté' : '⏳ En attente'}</span>
+                                ${b.status === 'ACTIVE' ? `<button onclick="openTransferForBeneficiary('${b.id}', '${b.name}', '${b.iban}')" class="btn-primary px-3 py-1 text-xs ml-2"><i class="fas fa-paper-plane mr-1"></i>Virement</button>` : ''}
+                                ${b.rejection_reason ? `<p class="text-xs text-red-500 mt-1">Motif: ${b.rejection_reason}</p>` : ''}
+                            </div>
+                            <div>
+                                ${b.status === 'PENDING' ? '<span class="text-xs text-yellow-600">En attente de validation admin</span>' : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                });
+        }
+
+        // ============================================
+        // AJOUT BÉNÉFICIAIRE
+        // ============================================
+        document.getElementById('openAddBeneficiary').addEventListener('click', () => {
+            document.getElementById('addBeneficiaryModal').classList.remove('hidden');
+            document.getElementById('beneficiaryMessage').innerHTML = '';
+        });
+        document.getElementById('closeAddBeneficiary').addEventListener('click', () => {
+            document.getElementById('addBeneficiaryModal').classList.add('hidden');
+        });
+
+        document.getElementById('addBeneficiaryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('addBeneficiaryBtn');
+            const msg = document.getElementById('beneficiaryMessage');
+            const token = localStorage.getItem('token');
+            const name = document.getElementById('beneficiaryName').value;
+            const iban = document.getElementById('beneficiaryIban').value;
+            const bic = document.getElementById('beneficiaryBic').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi...';
+
+            try {
+                const res = await fetch('/api/beneficiaries', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ name, iban, bic })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    msg.innerHTML = '<span class="text-red-500">' + (data.error || 'Erreur') + '</span>';
+                } else {
+                    msg.innerHTML = '<span class="text-green-500">✅ Bénéficiaire ajouté, en attente de validation admin.</span>';
+                    document.getElementById('addBeneficiaryForm').reset();
+                    loadBeneficiaries();
+                    setTimeout(() => document.getElementById('addBeneficiaryModal').classList.add('hidden'), 2000);
+                }
+            } catch (err) {
+                msg.innerHTML = '<span class="text-red-500">Erreur de connexion</span>';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save mr-2"></i>Enregistrer le bénéficiaire';
+            }
+        });
+
+        // ============================================
+        // VIREMENT
+        // ============================================
+        function openTransferForBeneficiary(id, name, iban) {
+            const modal = document.getElementById('transferModal');
+            modal.classList.remove('hidden');
+            const select = document.getElementById('transferBeneficiary');
+            select.innerHTML = `<option value="${id}">${name} - ${iban}</option>`;
+            document.getElementById('transferMessage').innerHTML = '';
+            document.getElementById('transferAmount').value = '';
+            document.getElementById('transferRef').value = '';
+        }
+
+        document.getElementById('openTransferModal').addEventListener('click', function() {
+            const modal = document.getElementById('transferModal');
+            modal.classList.remove('hidden');
+            document.getElementById('transferMessage').innerHTML = '';
+            // Charger les bénéficiaires actifs
+            const token = localStorage.getItem('token');
+            fetch('/api/beneficiaries', { headers: { 'Authorization': 'Bearer ' + token } })
+                .then(res => res.json())
+                .then(data => {
+                    const select = document.getElementById('transferBeneficiary');
+                    const active = (data.beneficiaries || []).filter(b => b.status === 'ACTIVE');
+                    if (active.length === 0) {
+                        select.innerHTML = '<option value="">-- Aucun bénéficiaire validé --</option>';
+                    } else {
+                        select.innerHTML = '<option value="">-- Sélectionnez un bénéficiaire --</option>' +
+                            active.map(b => `<option value="${b.id}">${b.name} - ${b.iban}</option>`).join('');
+                    }
+                });
+        });
+
+        document.getElementById('closeTransferModal').addEventListener('click', () => {
+            document.getElementById('transferModal').classList.add('hidden');
+        });
+
+        document.getElementById('transferForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('transferBtn');
+            const msg = document.getElementById('transferMessage');
+            const token = localStorage.getItem('token');
+            const beneficiaryId = document.getElementById('transferBeneficiary').value;
+            const amount = document.getElementById('transferAmount').value;
+            const reference = document.getElementById('transferRef').value;
+
+            if (!beneficiaryId) {
+                msg.innerHTML = '<span class="text-red-500">Veuillez sélectionner un bénéficiaire.</span>';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi...';
+
+            try {
+                const res = await fetch('/api/transfers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ beneficiary_id: beneficiaryId, amount, reference })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    msg.innerHTML = '<span class="text-red-500">' + (data.error || 'Erreur') + '</span>';
+                } else {
+                    msg.innerHTML = '<span class="text-green-500">✅ Virement envoyé, en attente de validation admin.</span>';
+                    document.getElementById('transferForm').reset();
+                    loadTransfers();
+                    setTimeout(() => document.getElementById('transferModal').classList.add('hidden'), 2000);
+                }
+            } catch (err) {
+                msg.innerHTML = '<span class="text-red-500">Erreur de connexion</span>';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Envoyer le virement';
+            }
+        });
+
+        // ============================================
+        // HISTORIQUE VIREMENTS
+        // ============================================
+        function loadTransfers() {
+            const token = localStorage.getItem('token');
+            fetch('/api/transfers', { headers: { 'Authorization': 'Bearer ' + token } })
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById('transfersList');
+                    if (!data.transfers || data.transfers.length === 0) {
+                        list.innerHTML = '<p class="text-gray-400 text-sm">Aucun virement effectué.</p>';
+                        return;
+                    }
+                    list.innerHTML = data.transfers.map(t => `
+                        <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl mb-2">
+                            <div>
+                                <p class="font-semibold text-dark">${t.amount} €</p>
+                                <p class="text-xs text-gray-500">Bénéficiaire: ${t.beneficiary_name}</p>
+                                <p class="text-xs text-gray-400">${new Date(t.created_at).toLocaleDateString('fr-FR')}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="${t.status === 'PENDING' ? 'status-pending' : t.status === 'COMPLETED' ? 'status-active' : 'status-rejected'}">
+                                    ${t.status === 'PENDING' ? '⏳ En attente' : t.status === 'COMPLETED' ? '✅ Validé' : '❌ Rejeté'}
+                                </span>
+                                ${t.admin_comment ? `<p class="text-xs text-red-500 mt-1">Motif: ${t.admin_comment}</p>` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                });
+        }
+
+        // ============================================
+        // DEPOT
         // ============================================
         const depositModal = document.getElementById('depositModal');
-        document.getElementById('openDepositModal').addEventListener('click', () => {
-            depositModal.classList.remove('hidden');
-        });
-        document.getElementById('closeDepositModal').addEventListener('click', () => {
-            depositModal.classList.add('hidden');
-        });
-        depositModal.addEventListener('click', (e) => {
-            if (e.target === depositModal) depositModal.classList.add('hidden');
-        });
+        document.getElementById('openDepositModal').addEventListener('click', () => depositModal.classList.remove('hidden'));
+        document.getElementById('closeDepositModal').addEventListener('click', () => depositModal.classList.add('hidden'));
 
         function copyAddress(type) {
             const addr = type === 'btc' ? document.getElementById('btcAddress').textContent : document.getElementById('ethAddress').textContent;
@@ -217,64 +424,9 @@
         }
 
         // ============================================
-        // MODAL VIREMENT
+        // INIT
         // ============================================
-        const transferModal = document.getElementById('transferModal');
-        document.getElementById('openTransferModal').addEventListener('click', () => {
-            transferModal.classList.remove('hidden');
-        });
-        document.getElementById('closeTransferModal').addEventListener('click', () => {
-            transferModal.classList.add('hidden');
-        });
-        transferModal.addEventListener('click', (e) => {
-            if (e.target === transferModal) transferModal.classList.add('hidden');
-        });
-
-        document.getElementById('transferForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('transferBtn');
-            const msg = document.getElementById('transferMessage');
-
-            const amount = document.getElementById('transferAmount').value;
-            const recipient = document.getElementById('transferRecipient').value;
-            const iban = document.getElementById('transferIban').value;
-
-            if (!amount || !recipient || !iban) {
-                msg.innerHTML = '<span class="text-red-500">Tous les champs obligatoires doivent être remplis.</span>';
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi...';
-
-            try {
-                const token = localStorage.getItem('token');
-                const res = await fetch('/api/transactions/transfer', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                    body: JSON.stringify({
-                        amount,
-                        recipient_name: recipient,
-                        recipient_iban: iban,
-                        recipient_bic: document.getElementById('transferBic').value,
-                        reference: document.getElementById('transferRef').value
-                    })
-                });
-                const data = await res.json();
-
-                if (!res.ok) {
-                    msg.innerHTML = '<span class="text-red-500">' + (data.error || 'Erreur') + '</span>';
-                } else {
-                    msg.innerHTML = '<span class="text-green-500">✅ Virement envoyé avec succès !</span>';
-                    document.getElementById('transferForm').reset();
-                }
-            } catch (err) {
-                msg.innerHTML = '<span class="text-red-500">Erreur de connexion au serveur</span>';
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Envoyer le virement';
-            }
-        });
+        loadBeneficiaries();
     </script>
 
 </body>

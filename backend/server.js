@@ -23,16 +23,23 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
-console.log('✅ Connexion à MySQL établie');
+// ============================================
+// MIDDLEWARE AUTH
+// ============================================
+async function authenticate(req, res, next) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: 'Non autorisé' });
+    const token = authHeader.split(' ')[1];
+    // Ici tu peux vérifier le token JWT, on fait simple pour le moment
+    const [rows] = await pool.execute('SELECT id, role FROM users WHERE id = ?', [1]);
+    req.userId = rows[0]?.id;
+    req.userRole = rows[0]?.role;
+    next();
+}
 
 // ============================================
 // ROUTES API
 // ============================================
-
-// Test API
-app.get('/api', (req, res) => {
-    res.json({ message: '🚀 Warip Finance API en ligne', status: 'online' });
-});
 
 // ============================================
 // INSCRIPTION
@@ -40,44 +47,27 @@ app.get('/api', (req, res) => {
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { first_name, last_name, email, password, country } = req.body;
-
-        // Validation
         if (!first_name || !last_name || !email || !password) {
             return res.status(400).json({ error: 'Tous les champs sont obligatoires' });
         }
         if (password.length < 8) {
             return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères' });
         }
-
-        // Vérifier si l'email existe
         const [existing] = await pool.execute('SELECT id FROM users WHERE email = ?', [email]);
         if (existing.length > 0) {
             return res.status(400).json({ error: 'Cet email est déjà utilisé' });
         }
-
-        // Hacher le mot de passe
         const password_hash = await bcrypt.hash(password, 10);
-
-        // Insérer l'utilisateur
         const [result] = await pool.execute(
             `INSERT INTO users (email, password_hash, first_name, last_name, phone, country, status, role)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [email, password_hash, first_name, last_name, '', country || 'FR', 'PENDING', 'USER']
         );
-
         res.status(201).json({
             success: true,
             message: '✅ Compte créé avec succès',
-            user: { 
-                id: result.insertId, 
-                email, 
-                first_name, 
-                last_name, 
-                status: 'PENDING', 
-                role: 'USER' 
-            }
+            user: { id: result.insertId, email, first_name, last_name, status: 'PENDING', role: 'USER' }
         });
-
     } catch (error) {
         console.error('❌ Erreur inscription:', error);
         res.status(500).json({ error: 'Erreur interne du serveur' });
@@ -90,43 +80,27 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-
         if (!email || !password) {
             return res.status(400).json({ error: 'Email et mot de passe requis' });
         }
-
         const [rows] = await pool.execute(
             'SELECT id, email, password_hash, first_name, last_name, status, role FROM users WHERE email = ?',
             [email]
         );
-
         if (rows.length === 0) {
             return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
         }
-
         const user = rows[0];
         const validPassword = await bcrypt.compare(password, user.password_hash);
-
         if (!validPassword) {
             return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
         }
-
-        // Si le compte est en attente
         if (user.status === 'PENDING') {
-            return res.status(403).json({ 
-                error: 'Votre compte est en attente de validation. Veuillez patienter.',
-                status: 'PENDING'
-            });
+            return res.status(403).json({ error: 'Votre compte est en attente de validation.', status: 'PENDING' });
         }
-
-        // Si le compte est bloqué
         if (user.status === 'BLOCKED') {
-            return res.status(403).json({ 
-                error: 'Votre compte a été bloqué. Contactez le support.',
-                status: 'BLOCKED'
-            });
+            return res.status(403).json({ error: 'Votre compte a été bloqué.', status: 'BLOCKED' });
         }
-
         res.json({
             success: true,
             token: 'token-' + Date.now(),
@@ -139,7 +113,6 @@ app.post('/api/auth/login', async (req, res) => {
                 role: user.role
             }
         });
-
     } catch (error) {
         console.error('❌ Erreur connexion:', error);
         res.status(500).json({ error: 'Erreur interne du serveur' });
@@ -177,50 +150,188 @@ app.put('/api/admin/users/:id/validate', async (req, res) => {
 });
 
 // ============================================
-// MOT DE PASSE OUBLIÉ
+// BÉNÉFICIAIRES
 // ============================================
-app.post('/api/auth/forgot-password', async (req, res) => {
-    const { email } = req.body;
-    if (!email) return res.status(400).json({ error: 'Email requis' });
+// Créer les tables si elles n'existent pas
+(async () => {
+    await pool.execute(`
+        CREATE TABLE IF NOT EXISTS beneficiaries (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            name VARCHAR(100) NOT NULL,
+            iban VARCHAR(50) NOT NULL,
+            bic VARCHAR(20),
+            status ENUM('PENDING', 'ACTIVE', 'REJECTED') DEFAULT 'PENDING',
+            rejection_reason TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    `);
+    await pool.execute(`
+        CREATE TABLE IF NOT EXISTS transfers (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            beneficiary_id INT NOT NULL,
+            amount DECIMAL(15,2) NOT NULL,
+            reference VARCHAR(100),
+            status ENUM('PENDING', 'COMPLETED', 'REJECTED') DEFAULT 'PENDING',
+            admin_comment TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id) ON DELETE CASCADE
+        )
+    `);
+})();
 
+// Liste des bénéficiaires d'un utilisateur
+app.get('/api/beneficiaries', authenticate, async (req, res) => {
     try {
-        const [rows] = await pool.execute('SELECT id, first_name FROM users WHERE email = ?', [email]);
-        if (rows.length === 0) {
-            return res.json({ message: 'Si un compte existe avec cet email, un lien a été envoyé.' });
-        }
-
-        // Ici tu peux ajouter l'envoi d'email
-        res.json({ message: '✅ Un email de réinitialisation a été envoyé' });
+        const [rows] = await pool.execute(
+            'SELECT * FROM beneficiaries WHERE user_id = ? ORDER BY created_at DESC',
+            [req.userId]
+        );
+        res.json({ beneficiaries: rows });
     } catch (error) {
-        res.status(500).json({ error: 'Erreur interne' });
+        res.status(500).json({ error: 'Erreur' });
     }
 });
 
-app.post('/api/auth/reset-password', (req, res) => {
-    res.json({ message: '✅ Mot de passe réinitialisé avec succès' });
+// Ajouter un bénéficiaire
+app.post('/api/beneficiaries', authenticate, async (req, res) => {
+    try {
+        const { name, iban, bic } = req.body;
+        if (!name || !iban) {
+            return res.status(400).json({ error: 'Nom et IBAN requis' });
+        }
+        const [result] = await pool.execute(
+            'INSERT INTO beneficiaries (user_id, name, iban, bic, status) VALUES (?, ?, ?, ?, ?)',
+            [req.userId, name, iban, bic || null, 'PENDING']
+        );
+        res.json({ success: true, id: result.insertId });
+    } catch (error) {
+        res.status(500).json({ error: 'Erreur' });
+    }
+});
+
+// Admin - Liste des bénéficiaires en attente
+app.get('/api/admin/beneficiaries', async (req, res) => {
+    try {
+        const [rows] = await pool.execute(
+            'SELECT b.*, u.email, u.first_name, u.last_name FROM beneficiaries b JOIN users u ON b.user_id = u.id WHERE b.status = "PENDING"'
+        );
+        res.json({ beneficiaries: rows });
+    } catch (error) {
+        res.status(500).json({ error: 'Erreur' });
+    }
+});
+
+// Admin - Valider/rejeter un bénéficiaire
+app.put('/api/admin/beneficiaries/:id/validate', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status, rejection_reason } = req.body;
+        await pool.execute(
+            'UPDATE beneficiaries SET status = ?, rejection_reason = ? WHERE id = ?',
+            [status, rejection_reason || null, id]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Erreur' });
+    }
 });
 
 // ============================================
-// ROUTES STATIQUES (pages HTML)
+// VIREMENTS
+// ============================================
+// Créer un virement
+app.post('/api/transfers', authenticate, async (req, res) => {
+    try {
+        const { beneficiary_id, amount, reference } = req.body;
+        if (!beneficiary_id || !amount || amount <= 0) {
+            return res.status(400).json({ error: 'Montant invalide' });
+        }
+        // Vérifier que le bénéficiaire appartient à l'utilisateur et est actif
+        const [benef] = await pool.execute(
+            'SELECT id, name FROM beneficiaries WHERE id = ? AND user_id = ? AND status = "ACTIVE"',
+            [beneficiary_id, req.userId]
+        );
+        if (benef.length === 0) {
+            return res.status(400).json({ error: 'Bénéficiaire non trouvé ou non validé' });
+        }
+        const [result] = await pool.execute(
+            'INSERT INTO transfers (user_id, beneficiary_id, amount, reference, status) VALUES (?, ?, ?, ?, ?)',
+            [req.userId, beneficiary_id, amount, reference || null, 'PENDING']
+        );
+        res.json({ success: true, id: result.insertId });
+    } catch (error) {
+        res.status(500).json({ error: 'Erreur' });
+    }
+});
+
+// Liste des virements d'un utilisateur
+app.get('/api/transfers', authenticate, async (req, res) => {
+    try {
+        const [rows] = await pool.execute(
+            `SELECT t.*, b.name as beneficiary_name 
+             FROM transfers t 
+             JOIN beneficiaries b ON t.beneficiary_id = b.id 
+             WHERE t.user_id = ? 
+             ORDER BY t.created_at DESC`,
+            [req.userId]
+        );
+        res.json({ transfers: rows });
+    } catch (error) {
+        res.status(500).json({ error: 'Erreur' });
+    }
+});
+
+// Admin - Liste des virements en attente
+app.get('/api/admin/transfers', async (req, res) => {
+    try {
+        const [rows] = await pool.execute(
+            `SELECT t.*, u.email, u.first_name, u.last_name, b.name as beneficiary_name 
+             FROM transfers t 
+             JOIN users u ON t.user_id = u.id 
+             JOIN beneficiaries b ON t.beneficiary_id = b.id 
+             WHERE t.status = "PENDING"`
+        );
+        res.json({ transfers: rows });
+    } catch (error) {
+        res.status(500).json({ error: 'Erreur' });
+    }
+});
+
+// Admin - Valider/rejeter un virement
+app.put('/api/admin/transfers/:id/validate', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status, admin_comment } = req.body;
+        await pool.execute(
+            'UPDATE transfers SET status = ?, admin_comment = ? WHERE id = ?',
+            [status, admin_comment || null, id]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Erreur' });
+    }
+});
+
+// ============================================
+// ROUTES STATIQUES
 // ============================================
 app.get('/confirmation.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'confirmation.html'));
 });
-
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
-
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
 });
-
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // ============================================
-// DÉMARRAGE DU SERVEUR
+// DÉMARRAGE
 // ============================================
 app.listen(PORT, () => {
     console.log(`🚀 Warip Finance démarrée sur http://localhost:${PORT}`);
