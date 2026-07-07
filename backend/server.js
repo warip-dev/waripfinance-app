@@ -2,20 +2,27 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
-const app = require('./src/app');
 
+const app = express();
 const PORT = process.env.PORT || 8080;
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Dossier public (frontend)
 const publicPath = path.join(__dirname, 'public');
 app.use(express.static(publicPath));
 
 // Routes API
-app.use('/api', app);
+const authRoutes = require('./src/routes/authRoutes');
+const adminRoutes = require('./src/routes/adminRoutes');
+const transactionRoutes = require('./src/routes/transactionRoutes');
+
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 // Route de test API
 app.get('/api', (req, res) => {
@@ -26,13 +33,8 @@ app.get('/api', (req, res) => {
   });
 });
 
-// Pour toutes les autres routes → index.html (React Router gère)
+// Pour toutes les autres routes → index.html (React)
 app.get('*', (req, res) => {
-  // Ne pas interférer avec les routes API
-  if (req.path.startsWith('/api')) {
-    return;
-  }
-  // Servir le frontend React
   res.sendFile(path.join(publicPath, 'index.html'));
 });
 
