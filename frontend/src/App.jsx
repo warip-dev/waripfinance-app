@@ -1,15 +1,11 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-// Pages publiques
+// Pages publiques (tout sur la page d'accueil)
 import Home from './pages/public/Home';
-import Login from './pages/public/Login';
-import Register from './pages/public/Register';
 
 // Pages utilisateur
 import Dashboard from './pages/user/Dashboard';
-import Deposit from './pages/user/Deposit';
-import Transfer from './pages/user/Transfer';
 import Pending from './pages/user/Pending';
 
 // Pages administrateur
@@ -29,30 +25,20 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         {/* ==================== */}
-        {/* SITE PUBLIC */}
+        {/* PAGE PRINCIPALE : Inscription + Connexion */}
         {/* ==================== */}
         <Route path="/" element={<Home />} />
-        <Route path="/register" element={!token ? <Register /> : <Navigate to={isAdmin ? '/admin/dashboard' : '/dashboard'} />} />
-        <Route path="/login" element={!token ? <Login /> : <Navigate to={isAdmin ? '/admin/dashboard' : '/dashboard'} />} />
 
         {/* ==================== */}
         {/* ESPACE UTILISATEUR */}
         {/* ==================== */}
         <Route
           path="/dashboard"
-          element={token && !isAdmin ? <Dashboard /> : <Navigate to={isAdmin ? '/admin/dashboard' : '/login'} />}
-        />
-        <Route
-          path="/deposit"
-          element={token && !isAdmin ? <Deposit /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/transfer"
-          element={token && !isAdmin ? <Transfer /> : <Navigate to="/login" />}
+          element={token && !isAdmin ? <Dashboard /> : <Navigate to="/" />}
         />
         <Route
           path="/pending"
-          element={token ? <Pending /> : <Navigate to="/login" />}
+          element={token ? <Pending /> : <Navigate to="/" />}
         />
 
         {/* ==================== */}
