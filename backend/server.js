@@ -24,16 +24,22 @@ const pool = mysql.createPool({
 });
 
 // ============================================
-// MIDDLEWARE AUTH
+// MIDDLEWARE AUTH (SIMPLIFIÉ)
 // ============================================
 async function authenticate(req, res, next) {
     const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ error: 'Non autorisé' });
+    if (!authHeader) {
+        return res.status(401).json({ error: 'Non autorisé - Token manquant' });
+    }
     const token = authHeader.split(' ')[1];
-    // Ici tu peux vérifier le token JWT, on fait simple pour le moment
-    const [rows] = await pool.execute('SELECT id, role FROM users WHERE id = ?', [1]);
-    req.userId = rows[0]?.id;
-    req.userRole = rows[0]?.role;
+    // Pour le moment, on simule l'utilisateur connecté (à remplacer par JWT)
+    // Récupérer l'utilisateur depuis la base (par exemple le premier utilisateur)
+    const [rows] = await pool.execute('SELECT id, role FROM users LIMIT 1');
+    if (rows.length === 0) {
+        return res.status(401).json({ error: 'Aucun utilisateur trouvé' });
+    }
+    req.userId = rows[0].id;
+    req.userRole = rows[0].role;
     next();
 }
 
@@ -150,37 +156,44 @@ app.put('/api/admin/users/:id/validate', async (req, res) => {
 });
 
 // ============================================
-// BÉNÉFICIAIRES
+// CRÉATION DES TABLES (si elles n'existent pas)
 // ============================================
-// Créer les tables si elles n'existent pas
 (async () => {
-    await pool.execute(`
-        CREATE TABLE IF NOT EXISTS beneficiaries (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            user_id INT NOT NULL,
-            name VARCHAR(100) NOT NULL,
-            iban VARCHAR(50) NOT NULL,
-            bic VARCHAR(20),
-            status ENUM('PENDING', 'ACTIVE', 'REJECTED') DEFAULT 'PENDING',
-            rejection_reason TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    `);
-    await pool.execute(`
-        CREATE TABLE IF NOT EXISTS transfers (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            user_id INT NOT NULL,
-            beneficiary_id INT NOT NULL,
-            amount DECIMAL(15,2) NOT NULL,
-            reference VARCHAR(100),
-            status ENUM('PENDING', 'COMPLETED', 'REJECTED') DEFAULT 'PENDING',
-            admin_comment TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id) ON DELETE CASCADE
-        )
-    `);
+    try {
+        await pool.execute(`
+            CREATE TABLE IF NOT EXISTS beneficiaries (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                name VARCHAR(100) NOT NULL,
+                iban VARCHAR(50) NOT NULL,
+                bic VARCHAR(20),
+                status ENUM('PENDING', 'ACTIVE', 'REJECTED') DEFAULT 'PENDING',
+                rejection_reason TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        await pool.execute(`
+            CREATE TABLE IF NOT EXISTS transfers (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                beneficiary_id INT NOT NULL,
+                amount DECIMAL(15,2) NOT NULL,
+                reference VARCHAR(100),
+                status ENUM('PENDING', 'COMPLETED', 'REJECTED') DEFAULT 'PENDING',
+                admin_comment TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id) ON DELETE CASCADE
+            )
+        `);
+        console.log('✅ Tables beneficiaries et transfers vérifiées/créées');
+    } catch (error) {
+        console.error('❌ Erreur création tables:', error);
+    }
 })();
 
+// ============================================
+// BÉNÉFICIAIRES
+// ============================================
 // Liste des bénéficiaires d'un utilisateur
 app.get('/api/beneficiaries', authenticate, async (req, res) => {
     try {
@@ -190,7 +203,8 @@ app.get('/api/beneficiaries', authenticate, async (req, res) => {
         );
         res.json({ beneficiaries: rows });
     } catch (error) {
-        res.status(500).json({ error: 'Erreur' });
+        console.error('❌ Erreur GET beneficiaries:', error);
+        res.status(500).json({ error: 'Erreur interne' });
     }
 });
 
@@ -198,20 +212,28 @@ app.get('/api/beneficiaries', authenticate, async (req, res) => {
 app.post('/api/beneficiaries', authenticate, async (req, res) => {
     try {
         const { name, iban, bic } = req.body;
+        console.log('📝 Ajout bénéficiaire:', { name, iban, bic, userId: req.userId });
+
         if (!name || !iban) {
             return res.status(400).json({ error: 'Nom et IBAN requis' });
         }
+
         const [result] = await pool.execute(
             'INSERT INTO beneficiaries (user_id, name, iban, bic, status) VALUES (?, ?, ?, ?, ?)',
             [req.userId, name, iban, bic || null, 'PENDING']
         );
-        res.json({ success: true, id: result.insertId });
+        console.log('✅ Bénéficiaire ajouté, ID:', result.insertId);
+
+        res.json({ success: true, id: result.insertId, message: 'Bénéficiaire ajouté en attente de validation' });
     } catch (error) {
-        res.status(500).json({ error: 'Erreur' });
+        console.error('❌ Erreur POST beneficiaries:', error);
+        res.status(500).json({ error: 'Erreur interne du serveur' });
     }
 });
 
-// Admin - Liste des bénéficiaires en attente
+// ============================================
+// ADMIN - BÉNÉFICIAIRES
+// ============================================
 app.get('/api/admin/beneficiaries', async (req, res) => {
     try {
         const [rows] = await pool.execute(
@@ -219,11 +241,11 @@ app.get('/api/admin/beneficiaries', async (req, res) => {
         );
         res.json({ beneficiaries: rows });
     } catch (error) {
-        res.status(500).json({ error: 'Erreur' });
+        console.error('❌ Erreur admin beneficiaries:', error);
+        res.status(500).json({ error: 'Erreur interne' });
     }
 });
 
-// Admin - Valider/rejeter un bénéficiaire
 app.put('/api/admin/beneficiaries/:id/validate', async (req, res) => {
     try {
         const { id } = req.params;
@@ -234,21 +256,23 @@ app.put('/api/admin/beneficiaries/:id/validate', async (req, res) => {
         );
         res.json({ success: true });
     } catch (error) {
-        res.status(500).json({ error: 'Erreur' });
+        console.error('❌ Erreur admin beneficiaries validate:', error);
+        res.status(500).json({ error: 'Erreur interne' });
     }
 });
 
 // ============================================
 // VIREMENTS
 // ============================================
-// Créer un virement
 app.post('/api/transfers', authenticate, async (req, res) => {
     try {
         const { beneficiary_id, amount, reference } = req.body;
+        console.log('📝 Nouveau virement:', { beneficiary_id, amount, reference, userId: req.userId });
+
         if (!beneficiary_id || !amount || amount <= 0) {
             return res.status(400).json({ error: 'Montant invalide' });
         }
-        // Vérifier que le bénéficiaire appartient à l'utilisateur et est actif
+
         const [benef] = await pool.execute(
             'SELECT id, name FROM beneficiaries WHERE id = ? AND user_id = ? AND status = "ACTIVE"',
             [beneficiary_id, req.userId]
@@ -256,17 +280,20 @@ app.post('/api/transfers', authenticate, async (req, res) => {
         if (benef.length === 0) {
             return res.status(400).json({ error: 'Bénéficiaire non trouvé ou non validé' });
         }
+
         const [result] = await pool.execute(
             'INSERT INTO transfers (user_id, beneficiary_id, amount, reference, status) VALUES (?, ?, ?, ?, ?)',
             [req.userId, beneficiary_id, amount, reference || null, 'PENDING']
         );
+        console.log('✅ Virement créé, ID:', result.insertId);
+
         res.json({ success: true, id: result.insertId });
     } catch (error) {
-        res.status(500).json({ error: 'Erreur' });
+        console.error('❌ Erreur POST transfers:', error);
+        res.status(500).json({ error: 'Erreur interne du serveur' });
     }
 });
 
-// Liste des virements d'un utilisateur
 app.get('/api/transfers', authenticate, async (req, res) => {
     try {
         const [rows] = await pool.execute(
@@ -279,11 +306,11 @@ app.get('/api/transfers', authenticate, async (req, res) => {
         );
         res.json({ transfers: rows });
     } catch (error) {
-        res.status(500).json({ error: 'Erreur' });
+        console.error('❌ Erreur GET transfers:', error);
+        res.status(500).json({ error: 'Erreur interne' });
     }
 });
 
-// Admin - Liste des virements en attente
 app.get('/api/admin/transfers', async (req, res) => {
     try {
         const [rows] = await pool.execute(
@@ -295,11 +322,11 @@ app.get('/api/admin/transfers', async (req, res) => {
         );
         res.json({ transfers: rows });
     } catch (error) {
-        res.status(500).json({ error: 'Erreur' });
+        console.error('❌ Erreur admin transfers:', error);
+        res.status(500).json({ error: 'Erreur interne' });
     }
 });
 
-// Admin - Valider/rejeter un virement
 app.put('/api/admin/transfers/:id/validate', async (req, res) => {
     try {
         const { id } = req.params;
@@ -310,7 +337,8 @@ app.put('/api/admin/transfers/:id/validate', async (req, res) => {
         );
         res.json({ success: true });
     } catch (error) {
-        res.status(500).json({ error: 'Erreur' });
+        console.error('❌ Erreur admin transfers validate:', error);
+        res.status(500).json({ error: 'Erreur interne' });
     }
 });
 
