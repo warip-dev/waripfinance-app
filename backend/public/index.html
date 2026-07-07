@@ -227,7 +227,7 @@
         });
 
         // ============================================
-        // INSCRIPTION - CORRIGÉE
+        // INSCRIPTION - AVEC REDIRECTION VERS /pending
         // ============================================
         document.getElementById('registerFormSubmit').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -268,7 +268,7 @@
                     return;
                 }
 
-                // Redirection vers la page d'attente
+                // ✅ REDIRECTION VERS LA PAGE D'ATTENTE
                 window.location.href = '/pending';
 
             } catch (err) {
