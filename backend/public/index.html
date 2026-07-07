@@ -1,13 +1,312 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
+<head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Warip Finance</title>
-    <script type="module" crossorigin src="/assets/index-i90t9P62.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-KkNy-nid.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Warip Finance - Banque nouvelle génération</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <style>
+        body { background: #f5f7fa; font-family: 'Inter', sans-serif; }
+        .gold { color: #e9b64a; }
+        .bg-gold { background: #e9b64a; }
+        .hover-bg-gold:hover { background: #d4a03a; }
+        .text-dark { color: #1a1a2e; }
+        .bg-dark { background: #1a1a2e; }
+        .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+        .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
+        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 12px 28px; border-radius: 8px; transition: all 0.3s; border: none; }
+        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); }
+        .btn-outline { border: 2px solid #e9b64a; color: #e9b64a; background: transparent; padding: 10px 24px; border-radius: 8px; font-weight: 600; transition: all 0.3s; }
+        .btn-outline:hover { background: #e9b64a; color: #1a1a2e; }
+        .nav-link { color: #4a5568; font-weight: 500; transition: color 0.3s; }
+        .nav-link:hover { color: #e9b64a; }
+        .feature-card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); transition: all 0.3s; border: 1px solid #edf2f7; }
+        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
+        .footer-link { color: #a0aec0; transition: color 0.3s; }
+        .footer-link:hover { color: #e9b64a; }
+        .modal-overlay { background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================== -->
+    <!-- HEADER / NAVIGATION -->
+    <!-- ========================================== -->
+    <header class="bg-white border-b border-gray-200 fixed w-full z-50 top-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-dark">
+                        <span class="gold">Warip</span> Finance
+                    </span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="nav-link">Particuliers</a>
+                    <a href="#" class="nav-link">Professionnels</a>
+                    <a href="#" class="nav-link">Entreprises</a>
+                    <button id="openLoginModal" class="btn-primary">
+                        <i class="fas fa-user mr-2"></i>Se connecter
+                    </button>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobileMenuBtn" class="text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MODAL CONNEXION / INSCRIPTION -->
+    <!-- ========================================== -->
+    <div id="authModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-8 relative card-shadow">
+            <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="authContent">
+                <!-- Login form -->
+                <div id="loginForm">
+                    <h2 class="text-2xl font-bold text-dark mb-2">Connexion</h2>
+                    <p class="text-gray-500 text-sm mb-6">Accédez à votre espace client</p>
+                    <div id="loginError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
+                    <form id="loginFormSubmit">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="loginEmail" placeholder="exemple@email.com" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                            <input type="password" id="loginPassword" placeholder="••••••••" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <a href="/forgot-password.html" class="text-sm text-gold hover:underline">Mot de passe oublié ?</a>
+                        </div>
+                        <button type="submit" class="w-full btn-primary py-3 text-lg">Se connecter</button>
+                    </form>
+                    <p class="text-center text-gray-500 text-sm mt-4">
+                        Pas encore de compte ?
+                        <button id="showRegister" class="text-gold font-semibold hover:underline">Créer un compte</button>
+                    </p>
+                </div>
+                <!-- Register form -->
+                <div id="registerForm" class="hidden">
+                    <h2 class="text-2xl font-bold text-dark mb-2">Créer un compte</h2>
+                    <p class="text-gray-500 text-sm mb-6">Rejoignez Warip Finance en quelques clics</p>
+                    <div id="registerError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
+                    <form id="registerFormSubmit">
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <input type="text" id="regFirstName" placeholder="Prénom" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                            <input type="text" id="regLastName" placeholder="Nom" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" id="regEmail" placeholder="Email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" id="regPassword" placeholder="Mot de passe (min 8 caractères)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required minlength="8">
+                        </div>
+                        <button type="submit" class="w-full btn-primary py-3 text-lg">Créer mon compte</button>
+                    </form>
+                    <p class="text-center text-gray-500 text-sm mt-4">
+                        Déjà un compte ?
+                        <button id="showLogin" class="text-gold font-semibold hover:underline">Se connecter</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SECTION HERO -->
+    <!-- ========================================== -->
+    <section class="pt-24 pb-16 bg-gradient-to-r from-gray-50 to-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-bold text-dark leading-tight">
+                        La banque qui <span class="gold">réinvente</span> votre argent
+                    </h1>
+                    <p class="text-gray-600 text-lg mt-4 leading-relaxed">
+                        Ouvrez un compte en 5 minutes, gérez vos cryptos et vos euros en toute simplicité.
+                        Sécurité, transparence et innovation.
+                    </p>
+                    <div class="flex flex-wrap gap-4 mt-8">
+                        <button id="heroOpenRegister" class="btn-primary px-8 py-4 text-lg">
+                            <i class="fas fa-rocket mr-2"></i>Ouvrir un compte
+                        </button>
+                        <a href="#" class="btn-outline px-8 py-4 text-lg">
+                            <i class="fas fa-play-circle mr-2"></i>En savoir plus
+                        </a>
+                    </div>
+                    <div class="flex items-center gap-6 mt-6 text-sm text-gray-500">
+                        <span><i class="fas fa-check-circle text-green-500 mr-1"></i> 100% sécurisé</span>
+                        <span><i class="fas fa-check-circle text-green-500 mr-1"></i> IBAN français</span>
+                        <span><i class="fas fa-check-circle text-green-500 mr-1"></i> Support 7/7</span>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=400&fit=crop" alt="Banque" class="rounded-2xl shadow-xl w-full object-cover" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION AVANTAGES -->
+    <!-- ========================================== -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-dark">Pourquoi choisir <span class="gold">Warip Finance</span> ?</h2>
+                <p class="text-gray-500 mt-2">Une banque pensée pour vous, avec des services innovants</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="feature-card text-center">
+                    <div class="text-4xl gold mb-4"><i class="fas fa-shield-alt"></i></div>
+                    <h3 class="text-xl font-bold text-dark">Sécurité maximale</h3>
+                    <p class="text-gray-500 text-sm mt-2">Vos données et vos fonds sont protégés par les meilleures technologies.</p>
+                </div>
+                <div class="feature-card text-center">
+                    <div class="text-4xl gold mb-4"><i class="fas fa-bolt"></i></div>
+                    <h3 class="text-xl font-bold text-dark">Transactions instantanées</h3>
+                    <p class="text-gray-500 text-sm mt-2">Envoyez et recevez des virements en temps réel, 24h/24.</p>
+                </div>
+                <div class="feature-card text-center">
+                    <div class="text-4xl gold mb-4"><i class="fas fa-globe"></i></div>
+                    <h3 class="text-xl font-bold text-dark">100% mobile</h3>
+                    <p class="text-gray-500 text-sm mt-2">Gérez votre compte où que vous soyez, depuis votre smartphone.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- FOOTER -->
+    <!-- ========================================== -->
+    <footer class="bg-dark text-gray-400 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-white font-bold text-lg"><span class="gold">Warip</span> Finance</h3>
+                    <p class="text-sm mt-2">La banque qui réinvente la crypto.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold">Produits</h4>
+                    <ul class="mt-2 space-y-1 text-sm">
+                        <li><a href="#" class="footer-link">Compte courant</a></li>
+                        <li><a href="#" class="footer-link">Épargne</a></li>
+                        <li><a href="#" class="footer-link">Crypto</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold">À propos</h4>
+                    <ul class="mt-2 space-y-1 text-sm">
+                        <li><a href="#" class="footer-link">Qui sommes-nous ?</a></li>
+                        <li><a href="#" class="footer-link">Carrières</a></li>
+                        <li><a href="#" class="footer-link">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold">Légal</h4>
+                    <ul class="mt-2 space-y-1 text-sm">
+                        <li><a href="#" class="footer-link">Mentions légales</a></li>
+                        <li><a href="#" class="footer-link">Politique de confidentialité</a></li>
+                        <li><a href="#" class="footer-link">CGU</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
+                &copy; 2025 Warip Finance. Tous droits réservés.
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- SCRIPTS -->
+    <!-- ========================================== -->
+    <script>
+        // ============================================
+        // GESTION DU MODAL
+        // ============================================
+        const modal = document.getElementById('authModal');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginError = document.getElementById('loginError');
+        const registerError = document.getElementById('registerError');
+
+        function openModal() { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+        function closeModal() { modal.classList.add('hidden'); document.body.style.overflow = ''; }
+
+        document.getElementById('openLoginModal').addEventListener('click', openModal);
+        document.getElementById('heroOpenRegister').addEventListener('click', () => { openModal(); showRegister(); });
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+        function showLogin() { loginForm.classList.remove('hidden'); registerForm.classList.add('hidden'); loginError.classList.add('hidden'); }
+        function showRegister() { loginForm.classList.add('hidden'); registerForm.classList.remove('hidden'); registerError.classList.add('hidden'); }
+
+        document.getElementById('showRegister').addEventListener('click', showRegister);
+        document.getElementById('showLogin').addEventListener('click', showLogin);
+
+        // ============================================
+        // LOGIN
+        // ============================================
+        document.getElementById('loginFormSubmit').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            loginError.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (!res.ok) { loginError.textContent = data.error || 'Erreur'; loginError.classList.remove('hidden'); return; }
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                window.location.href = data.user.role === 'ADMIN' ? '/admin/dashboard' : '/dashboard';
+            } catch (err) {
+                loginError.textContent = 'Erreur de connexion au serveur';
+                loginError.classList.remove('hidden');
+            }
+        });
+
+        // ============================================
+        // REGISTER
+        // ============================================
+        document.getElementById('registerFormSubmit').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const first_name = document.getElementById('regFirstName').value;
+            const last_name = document.getElementById('regLastName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            registerError.classList.add('hidden');
+
+            if (password.length < 8) {
+                registerError.textContent = 'Le mot de passe doit contenir au moins 8 caractères';
+                registerError.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ first_name, last_name, email, password, country: 'FR' })
+                });
+                const data = await res.json();
+                if (!res.ok) { registerError.textContent = data.error || 'Erreur'; registerError.classList.remove('hidden'); return; }
+                window.location.href = '/pending';
+            } catch (err) {
+                registerError.textContent = 'Erreur de connexion au serveur';
+                registerError.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
 </html>
