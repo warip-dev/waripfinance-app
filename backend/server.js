@@ -6,10 +6,11 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
-// Dossier public (frontend)
+// Dossier public (frontend) - NE PAS SUPPRIMER
 const publicPath = path.join(__dirname, 'public');
 app.use(express.static(publicPath));
 
@@ -29,14 +30,25 @@ app.get('/admin', (req, res) => {
 
 // Route de test API
 app.get('/api', (req, res) => {
-    res.json({ message: '🚀 Warip Finance API - Bienvenue !', status: 'online' });
+    res.json({
+        message: '🚀 Warip Finance API - Bienvenue !',
+        status: 'online',
+        version: '1.0.0'
+    });
 });
 
-// Toutes les autres routes → index.html
+// Toutes les autres routes → index.html (React)
 app.get('*', (req, res) => {
     res.sendFile(path.join(publicPath, 'index.html'));
 });
 
+// Gestionnaire d'erreurs
+app.use((err, req, res, next) => {
+    console.error('❌ Erreur:', err.message);
+    res.status(500).json({ error: 'Erreur interne du serveur' });
+});
+
 app.listen(PORT, () => {
     console.log(`🚀 Warip Finance démarrée sur http://localhost:${PORT}`);
+    console.log(`📁 Frontend : ${publicPath}`);
 });
