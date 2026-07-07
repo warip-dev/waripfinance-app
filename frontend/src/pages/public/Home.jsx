@@ -35,7 +35,6 @@ const Home = () => {
 
     try {
       if (isLogin) {
-        // CONNEXION
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
           email: formData.email,
           password: formData.password
@@ -52,7 +51,6 @@ const Home = () => {
           navigate('/dashboard');
         }
       } else {
-        // INSCRIPTION
         if (step === 1) {
           if (!formData.first_name || !formData.last_name || !formData.email || !formData.password) {
             setError('Tous les champs sont obligatoires');
@@ -69,7 +67,7 @@ const Home = () => {
           return;
         }
 
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, formData);
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, formData);
         navigate('/pending');
       }
     } catch (err) {
@@ -88,7 +86,6 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
       <div className="bg-gray-800 p-8 rounded-2xl max-w-lg w-full">
-        {/* Logo / Titre */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gold">🏦 Warip Finance</h1>
           <p className="text-gray-400 mt-2">
@@ -103,7 +100,6 @@ const Home = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* INSCRIPTION - ÉTAPE 1 */}
           {!isLogin && step === 1 && (
             <>
               <div className="grid grid-cols-2 gap-4">
@@ -144,7 +140,6 @@ const Home = () => {
             </>
           )}
 
-          {/* INSCRIPTION - ÉTAPE 2 */}
           {!isLogin && step === 2 && (
             <>
               <div className="grid grid-cols-2 gap-4">
@@ -228,7 +223,6 @@ const Home = () => {
             </>
           )}
 
-          {/* CONNEXION */}
           {isLogin && (
             <>
               <input
@@ -247,10 +241,18 @@ const Home = () => {
                 onChange={handleChange}
                 required
               />
+
+              {/* ========================================== */}
+              {/* MOT DE PASSE OUBLIÉ - ICI, AVANT LE BOUTON */}
+              {/* ========================================== */}
+              <div className="text-center mt-2">
+                <a href="/forgot-password" className="text-sm text-gray-400 hover:text-gold transition inline-block">
+                  🔑 Mot de passe oublié ?
+                </a>
+              </div>
             </>
           )}
 
-          {/* BOUTON */}
           <button
             type="submit"
             disabled={loading}
@@ -268,18 +270,6 @@ const Home = () => {
           </button>
         </form>
 
-        {/* ========================================== */}
-        {/* MOT DE PASSE OUBLIÉ - UNIQUEMENT EN CONNEXION */}
-        {/* ========================================== */}
-        {isLogin && (
-          <div className="text-center mt-3">
-            <a href="/forgot-password" className="text-sm text-gray-400 hover:text-gold transition">
-              🔑 Mot de passe oublié ?
-            </a>
-          </div>
-        )}
-
-        {/* BAS CULER ENTRE CONNEXION ET INSCRIPTION */}
         <div className="text-center mt-4">
           <p className="text-gray-400">
             {isLogin ? 'Pas encore de compte ?' : 'Déjà un compte ?'}
@@ -292,7 +282,6 @@ const Home = () => {
           </p>
         </div>
 
-        {/* LIEN VERS ADMIN */}
         <div className="text-center mt-4">
           <a href="/admin" className="text-gray-500 text-sm hover:text-gold transition">
             🔑 Espace administrateur
