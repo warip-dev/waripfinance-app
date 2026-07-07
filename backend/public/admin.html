@@ -5,56 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Warip Finance - Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #111827; }
+        .gold { color: #e9b64a; }
+        .bg-gold { background: #e9b64a; }
+        .hover-bg-gold:hover { background: #d4a03a; }
+    </style>
 </head>
 <body>
     <div id="admin-root"></div>
-    <script type="module">
-        import React from 'https://esm.sh/react';
-        import ReactDOM from 'https://esm.sh/react-dom/client';
-        import { useState, useEffect } from 'https://esm.sh/react';
 
-        const AdminApp = () => {
-            const [isLoggedIn, setIsLoggedIn] = useState(false);
-            const [email, setEmail] = useState('');
-            const [password, setPassword] = useState('');
-            const [error, setError] = useState('');
-            const [loading, setLoading] = useState(false);
-            const [users, setUsers] = useState([]);
-            const [selectedUser, setSelectedUser] = useState(null);
-            const [adminComment, setAdminComment] = useState('');
-            const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+    <script>
+        // ============================================
+        // PAGE ADMIN COMPLETE (sans React)
+        // ============================================
+        (function() {
+            'use strict';
 
             const API_URL = '';
+            let currentUser = null;
+            let users = [];
 
-            useEffect(() => {
-                const token = localStorage.getItem('admin_token');
-                const user = JSON.parse(localStorage.getItem('admin_user') || '{}');
-                if (token && user.role === 'ADMIN') {
-                    setIsLoggedIn(true);
-                    fetchUsers(token);
-                }
-            }, []);
-
-            const fetchUsers = async (token) => {
-                setIsLoadingUsers(true);
-                try {
-                    const res = await fetch(`/api/admin/users/pending`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if (!res.ok) throw new Error('Erreur chargement');
-                    const data = await res.json();
-                    setUsers(data.users || []);
-                } catch (error) {
-                    console.error('Erreur:', error);
-                } finally {
-                    setIsLoadingUsers(false);
-                }
+            // ========== ÉTAT ==========
+            let state = {
+                isLoggedIn: false,
+                email: '',
+                password: '',
+                error: '',
+                loading: false,
+                users: [],
+                selectedUser: null,
+                adminComment: '',
+                isLoadingUsers: false
             };
 
-            const handleLogin = async (e) => {
+            // ========== RENDER ==========
+            function render() {
+                const root = document.getElementById('admin-root');
+                if (!root) return;
+
+                if (!state.isLoggedIn) {
+                    root.innerHTML = renderLogin();
+                    attachLoginEvents();
+                } else {
+                    root.innerHTML = renderDashboard();
+                    attachDashboardEvents();
+                }
+            }
+
+            // ========== LOGIN ==========
+            function renderLogin() {
+                return `
+                    <div class="min-h-screen flex items-center justify-center p-4">
+                        <div class="bg-gray-800 p-8 rounded-2xl max-w-md w-full shadow-xl border border-gray-700">
+                            <div class="text-center mb-8">
+                                <div class="text-5xl mb-3">👑</div>
+                                <h1 class="text-3xl font-bold gold">Accès Admin</h1>
+                                <p class="text-gray-400 mt-2">Espace réservé au propriétaire</p>
+                            </div>
+
+                            ${state.error ? `<div class="bg-red-900/50 border border-red-500 text-red-300 p-3 rounded-lg mb-4 text-sm">${state.error}</div>` : ''}
+
+                            <form id="admin-login-form" class="space-y-4">
+                                <div>
+                                    <label class="block text-gray-300 mb-2 text-sm font-medium">Email admin</label>
+                                    <input type="email" id="admin-email" value="${state.email}" placeholder="admin@waripfinance.com" class="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-300 mb-2 text-sm font-medium">Mot de passe admin</label>
+                                    <input type="password" id="admin-password" value="${state.password}" placeholder="••••••••" class="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                                </div>
+                                <button type="submit" id="admin-login-btn" class="w-full py-3 rounded-lg font-semibold text-lg transition bg-gold text-gray-900 hover-bg-gold">
+                                    ${state.loading ? '⏳ Connexion...' : '🔑 Se connecter'}
+                                </button>
+                            </form>
+                            <p class="text-center text-gray-500 text-xs mt-6">Accès réservé au propriétaire</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function attachLoginEvents() {
+                const form = document.getElementById('admin-login-form');
+                if (form) {
+                    form.addEventListener('submit', handleLogin);
+                }
+            }
+
+            async function handleLogin(e) {
                 e.preventDefault();
-                setLoading(true);
-                setError('');
+                const email = document.getElementById('admin-email').value;
+                const password = document.getElementById('admin-password').value;
+
+                state.loading = true;
+                state.error = '';
+                render();
 
                 try {
                     const res = await fetch(`/api/auth/login`, {
@@ -64,31 +109,193 @@
                     });
                     const data = await res.json();
 
-                    if (!res.ok) {
-                        setError(data.error || 'Erreur de connexion');
-                        setLoading(false);
-                        return;
-                    }
-
-                    if (data.user.role !== 'ADMIN') {
-                        setError('Accès refusé. Vous n\'êtes pas administrateur.');
-                        setLoading(false);
+                    if (!res.ok || data.user?.role !== 'ADMIN') {
+                        state.error = data.error || 'Accès refusé. Vous n\'êtes pas administrateur.';
+                        state.loading = false;
+                        render();
                         return;
                     }
 
                     localStorage.setItem('admin_token', data.token);
                     localStorage.setItem('admin_user', JSON.stringify(data.user));
-                    setIsLoggedIn(true);
-                    fetchUsers(data.token);
+                    state.isLoggedIn = true;
+                    state.loading = false;
+                    currentUser = data.user;
+                    render();
+                    fetchUsers();
 
                 } catch (err) {
-                    setError('Erreur de connexion au serveur');
-                } finally {
-                    setLoading(false);
+                    state.error = 'Erreur de connexion au serveur';
+                    state.loading = false;
+                    render();
                 }
-            };
+            }
 
-            const handleValidate = async (userId, status) => {
+            // ========== DASHBOARD ==========
+            function renderDashboard() {
+                const userCount = state.users.length;
+                return `
+                    <div class="min-h-screen p-4 md:p-8">
+                        <div class="max-w-6xl mx-auto">
+                            <div class="flex justify-between items-center mb-8">
+                                <div>
+                                    <h1 class="text-3xl font-bold gold">👑 Administration</h1>
+                                    <p class="text-gray-400">Gestion des utilisateurs inscrits</p>
+                                </div>
+                                <button id="admin-logout-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm">
+                                    Déconnexion
+                                </button>
+                            </div>
+
+                            <div class="bg-gray-800 p-4 rounded-2xl mb-6">
+                                <p class="text-gray-400 text-sm">Utilisateurs en attente de validation</p>
+                                <p class="text-3xl font-bold gold">${userCount}</p>
+                            </div>
+
+                            ${state.isLoadingUsers ? `
+                                <div class="text-center text-gray-400 bg-gray-800 p-12 rounded-2xl">⏳ Chargement des utilisateurs...</div>
+                            ` : userCount === 0 ? `
+                                <div class="text-center text-gray-400 bg-gray-800 p-12 rounded-2xl">🎉 Aucun utilisateur en attente de validation</div>
+                            ` : `
+                                <div class="bg-gray-800 rounded-2xl overflow-hidden">
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-sm">
+                                            <thead class="bg-gray-700">
+                                                <tr>
+                                                    <th class="px-4 py-3 text-left text-gray-300">Nom</th>
+                                                    <th class="px-4 py-3 text-left text-gray-300">Email</th>
+                                                    <th class="px-4 py-3 text-left text-gray-300">Téléphone</th>
+                                                    <th class="px-4 py-3 text-left text-gray-300">Date</th>
+                                                    <th class="px-4 py-3 text-left text-gray-300">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${state.users.map(user => `
+                                                    <tr class="border-t border-gray-700 hover:bg-gray-700/50">
+                                                        <td class="px-4 py-3 text-white">${user.first_name} ${user.last_name}</td>
+                                                        <td class="px-4 py-3 text-gray-300">${user.email}</td>
+                                                        <td class="px-4 py-3 text-gray-300">${user.phone}</td>
+                                                        <td class="px-4 py-3 text-gray-400 text-sm">${new Date(user.created_at).toLocaleDateString('fr-FR')}</td>
+                                                        <td class="px-4 py-3">
+                                                            <button class="treat-btn px-3 py-1 bg-yellow-500/20 text-yellow-500 rounded-lg hover:bg-yellow-500/30 transition text-xs font-semibold" data-user='${JSON.stringify(user).replace(/'/g, "&#39;")}'>
+                                                                🔍 Traiter
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="p-4 text-xs text-gray-500 border-t border-gray-700">
+                                        Total : ${userCount} utilisateur${userCount > 1 ? 's' : ''} en attente
+                                    </div>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                    ${state.selectedUser ? renderModal() : ''}
+                `;
+            }
+
+            function renderModal() {
+                const user = state.selectedUser;
+                return `
+                    <div class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                        <div class="bg-gray-800 rounded-2xl p-8 max-w-md w-full">
+                            <h2 class="text-2xl font-bold gold mb-4">Traiter l'utilisateur</h2>
+                            <div class="space-y-2 text-gray-300 mb-6 text-sm">
+                                <p><strong>Nom :</strong> ${user.first_name} ${user.last_name}</p>
+                                <p><strong>Email :</strong> ${user.email}</p>
+                                <p><strong>Téléphone :</strong> ${user.phone}</p>
+                                <p><strong>Inscription :</strong> ${new Date(user.created_at).toLocaleDateString('fr-FR')}</p>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-300 mb-2 text-sm">Commentaire (optionnel)</label>
+                                <textarea id="admin-comment" class="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-none" rows="3" placeholder="Motif du rejet...">${state.adminComment}</textarea>
+                            </div>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button id="validate-btn" class="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold">✅ Valider</button>
+                                <button id="reject-btn" class="flex-1 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold">❌ Rejeter</button>
+                            </div>
+                            <button id="modal-close-btn" class="w-full mt-4 py-2 text-gray-400 hover:text-white transition text-sm">Annuler</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function attachDashboardEvents() {
+                const logoutBtn = document.getElementById('admin-logout-btn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', handleLogout);
+                }
+
+                // Traiter les boutons "Traiter"
+                document.querySelectorAll('.treat-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        try {
+                            state.selectedUser = JSON.parse(this.dataset.user);
+                            state.adminComment = '';
+                            render();
+                            attachModalEvents();
+                        } catch (e) {
+                            console.error('Erreur parsing user:', e);
+                        }
+                    });
+                });
+            }
+
+            function attachModalEvents() {
+                const validateBtn = document.getElementById('validate-btn');
+                const rejectBtn = document.getElementById('reject-btn');
+                const closeBtn = document.getElementById('modal-close-btn');
+                const comment = document.getElementById('admin-comment');
+
+                if (validateBtn) {
+                    validateBtn.addEventListener('click', () => {
+                        state.adminComment = comment ? comment.value : '';
+                        handleValidate(state.selectedUser.id, 'ACTIVE');
+                    });
+                }
+                if (rejectBtn) {
+                    rejectBtn.addEventListener('click', () => {
+                        state.adminComment = comment ? comment.value : '';
+                        handleValidate(state.selectedUser.id, 'BLOCKED');
+                    });
+                }
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => {
+                        state.selectedUser = null;
+                        state.adminComment = '';
+                        render();
+                        attachDashboardEvents();
+                    });
+                }
+            }
+
+            // ========== API ==========
+            async function fetchUsers() {
+                state.isLoadingUsers = true;
+                render();
+
+                try {
+                    const token = localStorage.getItem('admin_token');
+                    const res = await fetch(`/api/admin/users/pending`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!res.ok) throw new Error('Erreur chargement');
+                    const data = await res.json();
+                    state.users = data.users || [];
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    state.users = [];
+                } finally {
+                    state.isLoadingUsers = false;
+                    render();
+                    attachDashboardEvents();
+                }
+            }
+
+            async function handleValidate(userId, status) {
                 try {
                     const token = localStorage.getItem('admin_token');
                     await fetch(`/api/admin/users/${userId}/validate`, {
@@ -97,211 +304,42 @@
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
                         },
-                        body: JSON.stringify({ status, admin_comment: adminComment })
+                        body: JSON.stringify({ status, admin_comment: state.adminComment || '' })
                     });
-                    setAdminComment('');
-                    setSelectedUser(null);
-                    fetchUsers(token);
+                    state.selectedUser = null;
+                    state.adminComment = '';
+                    fetchUsers();
                 } catch (error) {
                     console.error('Erreur validation:', error);
                     alert('Erreur lors de la validation');
                 }
-            };
-
-            const handleLogout = () => {
-                localStorage.removeItem('admin_token');
-                localStorage.removeItem('admin_user');
-                setIsLoggedIn(false);
-                setUsers([]);
-            };
-
-            if (!isLoggedIn) {
-                return (
-                    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-                        <div className="bg-gray-800 p-8 rounded-2xl max-w-md w-full shadow-xl border border-gray-700">
-                            <div className="text-center mb-8">
-                                <div className="text-5xl mb-3">👑</div>
-                                <h1 className="text-3xl font-bold text-yellow-500">Accès Admin</h1>
-                                <p className="text-gray-400 mt-2">Espace réservé au propriétaire</p>
-                            </div>
-
-                            {error && (
-                                <div className="bg-red-900/50 border border-red-500 text-red-300 p-3 rounded-lg mb-4 text-sm">
-                                    {error}
-                                </div>
-                            )}
-
-                            <form onSubmit={handleLogin} className="space-y-4">
-                                <div>
-                                    <label className="block text-gray-300 mb-2 text-sm font-medium">Email admin</label>
-                                    <input
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="admin@waripfinance.com"
-                                        className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                                        required
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-gray-300 mb-2 text-sm font-medium">Mot de passe admin</label>
-                                    <input
-                                        type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        placeholder="••••••••"
-                                        className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                                        required
-                                    />
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className={`w-full py-3 rounded-lg font-semibold text-lg transition ${
-                                        loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-yellow-500 text-gray-900 hover:bg-yellow-400'
-                                    }`}
-                                >
-                                    {loading ? '⏳ Connexion...' : '🔑 Se connecter'}
-                                </button>
-                            </form>
-
-                            <p className="text-center text-gray-500 text-xs mt-6">
-                                Accès réservé au propriétaire
-                            </p>
-                        </div>
-                    </div>
-                );
             }
 
-            return (
-                <div className="min-h-screen bg-gray-900 p-4 md:p-8">
-                    <div className="max-w-6xl mx-auto">
-                        <div className="flex justify-between items-center mb-8">
-                            <div>
-                                <h1 className="text-3xl font-bold text-yellow-500">👑 Administration</h1>
-                                <p className="text-gray-400">Gestion des utilisateurs inscrits</p>
-                            </div>
-                            <button
-                                onClick={handleLogout}
-                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm"
-                            >
-                                Déconnexion
-                            </button>
-                        </div>
+            function handleLogout() {
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_user');
+                state.isLoggedIn = false;
+                state.users = [];
+                state.selectedUser = null;
+                render();
+            }
 
-                        <div className="bg-gray-800 p-4 rounded-2xl mb-6">
-                            <p className="text-gray-400 text-sm">Utilisateurs en attente de validation</p>
-                            <p className="text-3xl font-bold text-yellow-500">{users.length}</p>
-                        </div>
+            // ========== INIT ==========
+            function init() {
+                const token = localStorage.getItem('admin_token');
+                const user = JSON.parse(localStorage.getItem('admin_user') || '{}');
+                if (token && user.role === 'ADMIN') {
+                    state.isLoggedIn = true;
+                    currentUser = user;
+                    render();
+                    fetchUsers();
+                } else {
+                    render();
+                }
+            }
 
-                        {isLoadingUsers ? (
-                            <div className="text-center text-gray-400 bg-gray-800 p-12 rounded-2xl">
-                                ⏳ Chargement des utilisateurs...
-                            </div>
-                        ) : users.length === 0 ? (
-                            <div className="text-center text-gray-400 bg-gray-800 p-12 rounded-2xl">
-                                🎉 Aucun utilisateur en attente de validation
-                            </div>
-                        ) : (
-                            <div className="bg-gray-800 rounded-2xl overflow-hidden">
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-sm">
-                                        <thead className="bg-gray-700">
-                                            <tr>
-                                                <th className="px-4 py-3 text-left text-gray-300">Nom</th>
-                                                <th className="px-4 py-3 text-left text-gray-300">Email</th>
-                                                <th className="px-4 py-3 text-left text-gray-300">Téléphone</th>
-                                                <th className="px-4 py-3 text-left text-gray-300">Date</th>
-                                                <th className="px-4 py-3 text-left text-gray-300">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {users.map((user) => (
-                                                <tr key={user.id} className="border-t border-gray-700 hover:bg-gray-700/50">
-                                                    <td className="px-4 py-3 text-white">{user.first_name} {user.last_name}</td>
-                                                    <td className="px-4 py-3 text-gray-300">{user.email}</td>
-                                                    <td className="px-4 py-3 text-gray-300">{user.phone}</td>
-                                                    <td className="px-4 py-3 text-gray-400 text-sm">
-                                                        {new Date(user.created_at).toLocaleDateString('fr-FR')}
-                                                    </td>
-                                                    <td className="px-4 py-3">
-                                                        <button
-                                                            onClick={() => setSelectedUser(user)}
-                                                            className="px-3 py-1 bg-yellow-500/20 text-yellow-500 rounded-lg hover:bg-yellow-500/30 transition text-xs font-semibold"
-                                                        >
-                                                            🔍 Traiter
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div className="p-4 text-xs text-gray-500 border-t border-gray-700">
-                                    Total : {users.length} utilisateur{users.length > 1 ? 's' : ''} en attente
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {selectedUser && (
-                        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-                            <div className="bg-gray-800 rounded-2xl p-8 max-w-md w-full">
-                                <h2 className="text-2xl font-bold text-yellow-500 mb-4">Traiter l'utilisateur</h2>
-
-                                <div className="space-y-2 text-gray-300 mb-6 text-sm">
-                                    <p><strong>Nom :</strong> {selectedUser.first_name} {selectedUser.last_name}</p>
-                                    <p><strong>Email :</strong> {selectedUser.email}</p>
-                                    <p><strong>Téléphone :</strong> {selectedUser.phone}</p>
-                                    <p><strong>Inscription :</strong> {new Date(selectedUser.created_at).toLocaleDateString('fr-FR')}</p>
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-300 mb-2 text-sm">Commentaire (optionnel)</label>
-                                    <textarea
-                                        value={adminComment}
-                                        onChange={(e) => setAdminComment(e.target.value)}
-                                        placeholder="Motif du rejet..."
-                                        className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-none"
-                                        rows="3"
-                                    />
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row gap-3">
-                                    <button
-                                        onClick={() => handleValidate(selectedUser.id, 'ACTIVE')}
-                                        className="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold"
-                                    >
-                                        ✅ Valider
-                                    </button>
-                                    <button
-                                        onClick={() => handleValidate(selectedUser.id, 'BLOCKED')}
-                                        className="flex-1 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold"
-                                    >
-                                        ❌ Rejeter
-                                    </button>
-                                </div>
-
-                                <button
-                                    onClick={() => {
-                                        setSelectedUser(null);
-                                        setAdminComment('');
-                                    }}
-                                    className="w-full mt-4 py-2 text-gray-400 hover:text-white transition text-sm"
-                                >
-                                    Annuler
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('admin-root'));
-        root.render(<AdminApp />);
+            init();
+        })();
     </script>
 </body>
 </html>
