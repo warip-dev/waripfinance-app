@@ -23,7 +23,7 @@ const pool = mysql.createPool({
 });
 
 // ============================================
-// ROUTES API
+// ROUTES
 // ============================================
 
 app.get('/api', (req, res) => {
@@ -31,15 +31,12 @@ app.get('/api', (req, res) => {
 });
 
 // ============================================
-// INSCRIPTION - CONNECTÉE À LA BASE DE DONNÉES
+// INSCRIPTION
 // ============================================
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { first_name, last_name, email, password, country } = req.body;
 
-        console.log('📝 Données reçues:', { first_name, last_name, email, country });
-
-        // Validation
         if (!first_name || !last_name || !email || !password) {
             return res.status(400).json({ error: 'Tous les champs sont obligatoires' });
         }
@@ -48,44 +45,22 @@ app.post('/api/auth/register', async (req, res) => {
             return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères' });
         }
 
-        // Vérifier si l'email existe déjà
-        const [existing] = await pool.execute(
-            'SELECT id FROM users WHERE email = ?',
-            [email]
-        );
-
+        const [existing] = await pool.execute('SELECT id FROM users WHERE email = ?', [email]);
         if (existing.length > 0) {
             return res.status(400).json({ error: 'Cet email est déjà utilisé' });
         }
 
-        // Hacher le mot de passe
         const password_hash = await bcrypt.hash(password, 10);
 
-        // Insérer l'utilisateur
         const [result] = await pool.execute(
-            `INSERT INTO users (
-                email, password_hash, first_name, last_name, phone, country,
-                city, postal_code, street_name, street_number, profession,
-                gender, marital_status, status, role
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [
-                email, password_hash, first_name, last_name, '', country || 'FR',
-                '', '', '', '', '', '', '', 'PENDING', 'USER'
-            ]
+            `INSERT INTO users (email, password_hash, first_name, last_name, phone, country, city, postal_code, street_name, street_number, profession, gender, marital_status, status, role)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [email, password_hash, first_name, last_name, '', country || 'FR', '', '', '', '', '', '', '', 'PENDING', 'USER']
         );
 
-        console.log('✅ Compte créé avec ID:', result.insertId);
-
         res.status(201).json({
-            message: '✅ Compte créé avec succès. En attente de validation.',
-            user: {
-                id: result.insertId,
-                email,
-                first_name,
-                last_name,
-                status: 'PENDING',
-                role: 'USER'
-            }
+            message: '✅ Compte créé avec succès',
+            user: { id: result.insertId, email, first_name, last_name, status: 'PENDING', role: 'USER' }
         });
 
     } catch (error) {
@@ -95,7 +70,7 @@ app.post('/api/auth/register', async (req, res) => {
 });
 
 // ============================================
-// CONNEXION - VRAIE
+// CONNEXION
 // ============================================
 app.post('/api/auth/login', async (req, res) => {
     try {
@@ -105,10 +80,7 @@ app.post('/api/auth/login', async (req, res) => {
             return res.status(400).json({ error: 'Email et mot de passe requis' });
         }
 
-        const [rows] = await pool.execute(
-            'SELECT id, email, password_hash, first_name, last_name, status, role FROM users WHERE email = ?',
-            [email]
-        );
+        const [rows] = await pool.execute('SELECT id, email, password_hash, first_name, last_name, status, role FROM users WHERE email = ?', [email]);
 
         if (rows.length === 0) {
             return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
@@ -123,14 +95,7 @@ app.post('/api/auth/login', async (req, res) => {
 
         res.json({
             token: 'mock-token-' + Date.now(),
-            user: {
-                id: user.id,
-                email: user.email,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                status: user.status,
-                role: user.role
-            }
+            user: { id: user.id, email: user.email, first_name: user.first_name, last_name: user.last_name, status: user.status, role: user.role }
         });
 
     } catch (error) {
@@ -140,13 +105,11 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 // ============================================
-// ADMIN USERS
+// ADMIN - LISTE DES UTILISATEURS
 // ============================================
 app.get('/api/admin/users', async (req, res) => {
     try {
-        const [rows] = await pool.execute(
-            'SELECT id, email, first_name, last_name, status, role, created_at FROM users ORDER BY created_at DESC'
-        );
+        const [rows] = await pool.execute('SELECT id, email, first_name, last_name, status, role, created_at FROM users ORDER BY created_at DESC');
         res.json({ users: rows });
     } catch (error) {
         console.error('❌ Erreur admin users:', error);
@@ -155,18 +118,13 @@ app.get('/api/admin/users', async (req, res) => {
 });
 
 // ============================================
-// VALIDER UN UTILISATEUR
+// ADMIN - VALIDER UN UTILISATEUR
 // ============================================
 app.put('/api/admin/users/:id/validate', async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
-
-        await pool.execute(
-            'UPDATE users SET status = ? WHERE id = ?',
-            [status, id]
-        );
-
+        await pool.execute('UPDATE users SET status = ? WHERE id = ?', [status, id]);
         res.json({ message: '✅ Utilisateur validé' });
     } catch (error) {
         console.error('❌ Erreur validation:', error);
@@ -188,8 +146,12 @@ app.post('/api/auth/reset-password', (req, res) => {
 });
 
 // ============================================
-// TOUTES LES AUTRES ROUTES → index.html
+// ROUTES STATIQUES
 // ============================================
+app.get('/confirmation.html', (req, res) => {
+    res.sendFile(__dirname + '/public/confirmation.html');
+});
+
 app.get('*', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
 });
