@@ -13,7 +13,7 @@ const Admin = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [adminComment, setAdminComment] = useState('');
 
-  // Vérifier si l'admin est déjà connecté
+  // Vérifier si déjà connecté
   useEffect(() => {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -89,30 +89,31 @@ const Admin = () => {
     localStorage.removeItem('user');
     setIsLoggedIn(false);
     setUsers([]);
+    navigate('/admin');
   };
 
-  // ============================================
-  // PAGE DE CONNEXION ADMIN
-  // ============================================
+  // ==========================================
+  // ÉCRAN DE CONNEXION ADMIN
+  // ==========================================
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-        <div className="bg-gray-800 p-8 rounded-2xl max-w-md w-full">
+        <div className="bg-gray-800 p-8 rounded-2xl max-w-md w-full shadow-xl border border-gray-700">
           <div className="text-center mb-8">
             <div className="text-5xl mb-3">👑</div>
-            <h1 className="text-3xl font-bold text-gold">Administration</h1>
-            <p className="text-gray-400 mt-2">Espace réservé aux administrateurs</p>
+            <h1 className="text-3xl font-bold text-gold">Accès Admin</h1>
+            <p className="text-gray-400 mt-2">Espace réservé au propriétaire</p>
           </div>
 
           {error && (
-            <div className="bg-red-900/50 border border-red-500 text-red-300 p-3 rounded-lg mb-4">
+            <div className="bg-red-900/50 border border-red-500 text-red-300 p-3 rounded-lg mb-4 text-sm">
               {error}
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-gray-300 mb-2">Email</label>
+              <label className="block text-gray-300 mb-2 text-sm font-medium">Email admin</label>
               <input
                 type="email"
                 value={email}
@@ -124,7 +125,7 @@ const Admin = () => {
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-2">Mot de passe</label>
+              <label className="block text-gray-300 mb-2 text-sm font-medium">Mot de passe admin</label>
               <input
                 type="password"
                 value={password}
@@ -146,20 +147,21 @@ const Admin = () => {
             </button>
           </form>
 
-          <p className="text-center text-gray-500 text-sm mt-6">
-            <a href="/" className="text-gold hover:underline">← Retour à l'accueil</a>
+          <p className="text-center text-gray-500 text-xs mt-6">
+            Accès réservé au propriétaire
           </p>
         </div>
       </div>
     );
   }
 
-  // ============================================
-  // TABLEAU DE BORD ADMIN (après connexion)
-  // ============================================
+  // ==========================================
+  // TABLEAU DE BORD ADMIN
+  // ==========================================
   return (
     <div className="min-h-screen bg-gray-900 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
+        {/* En-tête */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gold">👑 Administration</h1>
@@ -167,17 +169,19 @@ const Admin = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm"
           >
             Déconnexion
           </button>
         </div>
 
+        {/* Statistiques */}
         <div className="bg-gray-800 p-4 rounded-2xl mb-6">
-          <p className="text-gray-400">Utilisateurs en attente de validation</p>
+          <p className="text-gray-400 text-sm">Utilisateurs en attente de validation</p>
           <p className="text-3xl font-bold text-gold">{users.length}</p>
         </div>
 
+        {/* Liste des utilisateurs */}
         {users.length === 0 ? (
           <div className="text-center text-gray-400 bg-gray-800 p-12 rounded-2xl">
             🎉 Aucun utilisateur en attente de validation
@@ -185,7 +189,7 @@ const Admin = () => {
         ) : (
           <div className="bg-gray-800 rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full text-sm">
                 <thead className="bg-gray-700">
                   <tr>
                     <th className="px-4 py-3 text-left text-gray-300">Nom</th>
@@ -207,7 +211,7 @@ const Admin = () => {
                       <td className="px-4 py-3">
                         <button
                           onClick={() => setSelectedUser(user)}
-                          className="px-4 py-2 bg-gold/20 text-gold rounded-lg hover:bg-gold/30 transition text-sm font-semibold"
+                          className="px-3 py-1 bg-gold/20 text-gold rounded-lg hover:bg-gold/30 transition text-xs font-semibold"
                         >
                           🔍 Traiter
                         </button>
@@ -217,7 +221,7 @@ const Admin = () => {
                 </tbody>
               </table>
             </div>
-            <div className="p-4 text-sm text-gray-500 border-t border-gray-700">
+            <div className="p-4 text-xs text-gray-500 border-t border-gray-700">
               Total : {users.length} utilisateur{users.length > 1 ? 's' : ''} en attente
             </div>
           </div>
@@ -230,7 +234,7 @@ const Admin = () => {
           <div className="bg-gray-800 rounded-2xl p-8 max-w-md w-full">
             <h2 className="text-2xl font-bold text-gold mb-4">Traiter l'utilisateur</h2>
 
-            <div className="space-y-2 text-gray-300 mb-6">
+            <div className="space-y-2 text-gray-300 mb-6 text-sm">
               <p><strong>Nom :</strong> {selectedUser.first_name} {selectedUser.last_name}</p>
               <p><strong>Email :</strong> {selectedUser.email}</p>
               <p><strong>Téléphone :</strong> {selectedUser.phone}</p>
@@ -238,7 +242,7 @@ const Admin = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-300 mb-2">Commentaire (optionnel)</label>
+              <label className="block text-gray-300 mb-2 text-sm">Commentaire (optionnel)</label>
               <textarea
                 value={adminComment}
                 onChange={(e) => setAdminComment(e.target.value)}
@@ -268,7 +272,7 @@ const Admin = () => {
                 setSelectedUser(null);
                 setAdminComment('');
               }}
-              className="w-full mt-4 py-2 text-gray-400 hover:text-white transition"
+              className="w-full mt-4 py-2 text-gray-400 hover:text-white transition text-sm"
             >
               Annuler
             </button>
