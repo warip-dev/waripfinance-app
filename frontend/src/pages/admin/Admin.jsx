@@ -2,27 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const AdminDashboard = () => {
+const Admin = () => {
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState(null);
   const [adminComment, setAdminComment] = useState('');
 
+  // Vérifier si l'admin est déjà connecté
   useEffect(() => {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-    if (!token || user.role !== 'ADMIN') {
-      navigate('/admin');
-      return;
+    if (token && user.role === 'ADMIN') {
+      setIsLoggedIn(true);
+      fetchUsers();
     }
-
-    fetchUsers();
-  }, [navigate]);
+  }, []);
 
   const fetchUsers = async () => {
-    setLoading(true);
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/users/pending`, {
@@ -31,9 +33,35 @@ const AdminDashboard = () => {
       setUsers(response.data.users);
     } catch (error) {
       console.error('Erreur:', error);
-      if (error.response?.status === 403) {
-        navigate('/admin');
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+        email,
+        password
+      });
+
+      const user = response.data.user;
+
+      if (user.role !== 'ADMIN') {
+        setError('Accès refusé. Vous n\'êtes pas administrateur.');
+        setLoading(false);
+        return;
       }
+
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(user));
+      setIsLoggedIn(true);
+      fetchUsers();
+
+    } catch (err) {
+      setError(err.response?.data?.error || 'Email ou mot de passe incorrect');
     } finally {
       setLoading(false);
     }
@@ -59,17 +87,76 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    navigate('/admin');
+    setIsLoggedIn(false);
+    setUsers([]);
   };
 
-  if (loading) {
+  // ============================================
+  // PAGE DE CONNEXION ADMIN
+  // ============================================
+  if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-gold text-xl">Chargement...</div>
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+        <div className="bg-gray-800 p-8 rounded-2xl max-w-md w-full">
+          <div className="text-center mb-8">
+            <div className="text-5xl mb-3">👑</div>
+            <h1 className="text-3xl font-bold text-gold">Administration</h1>
+            <p className="text-gray-400 mt-2">Espace réservé aux administrateurs</p>
+          </div>
+
+          {error && (
+            <div className="bg-red-900/50 border border-red-500 text-red-300 p-3 rounded-lg mb-4">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-gray-300 mb-2">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin@waripfinance.com"
+                className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-300 mb-2">Mot de passe</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full py-3 rounded-lg font-semibold text-lg transition ${
+                loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-gold text-gray-900 hover:bg-yellow-500'
+              }`}
+            >
+              {loading ? '⏳ Connexion...' : '🔑 Se connecter'}
+            </button>
+          </form>
+
+          <p className="text-center text-gray-500 text-sm mt-6">
+            <a href="/" className="text-gold hover:underline">← Retour à l'accueil</a>
+          </p>
+        </div>
       </div>
     );
   }
 
+  // ============================================
+  // TABLEAU DE BORD ADMIN (après connexion)
+  // ============================================
   return (
     <div className="min-h-screen bg-gray-900 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
@@ -78,15 +165,12 @@ const AdminDashboard = () => {
             <h1 className="text-3xl font-bold text-gold">👑 Administration</h1>
             <p className="text-gray-400">Gestion des utilisateurs inscrits</p>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-gray-300 text-sm">Admin</span>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm"
-            >
-              Déconnexion
-            </button>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+          >
+            Déconnexion
+          </button>
         </div>
 
         <div className="bg-gray-800 p-4 rounded-2xl mb-6">
@@ -107,16 +191,14 @@ const AdminDashboard = () => {
                     <th className="px-4 py-3 text-left text-gray-300">Nom</th>
                     <th className="px-4 py-3 text-left text-gray-300">Email</th>
                     <th className="px-4 py-3 text-left text-gray-300">Téléphone</th>
-                    <th className="px-4 py-3 text-left text-gray-300">Date d'inscription</th>
+                    <th className="px-4 py-3 text-left text-gray-300">Date</th>
                     <th className="px-4 py-3 text-left text-gray-300">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {users.map((user) => (
                     <tr key={user.id} className="border-t border-gray-700 hover:bg-gray-700/50">
-                      <td className="px-4 py-3 text-white">
-                        {user.first_name} {user.last_name}
-                      </td>
+                      <td className="px-4 py-3 text-white">{user.first_name} {user.last_name}</td>
                       <td className="px-4 py-3 text-gray-300">{user.email}</td>
                       <td className="px-4 py-3 text-gray-300">{user.phone}</td>
                       <td className="px-4 py-3 text-gray-400 text-sm">
@@ -142,6 +224,7 @@ const AdminDashboard = () => {
         )}
       </div>
 
+      {/* Modal de validation */}
       {selectedUser && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="bg-gray-800 rounded-2xl p-8 max-w-md w-full">
@@ -159,7 +242,7 @@ const AdminDashboard = () => {
               <textarea
                 value={adminComment}
                 onChange={(e) => setAdminComment(e.target.value)}
-                placeholder="Motif du rejet ou information..."
+                placeholder="Motif du rejet..."
                 className="w-full px-4 py-3 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold resize-none"
                 rows="3"
               />
@@ -196,4 +279,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default Admin;
