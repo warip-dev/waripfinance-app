@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administration - Warip Finance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        body { background: #f5f7fa; font-family: 'Inter', sans-serif; }
+        .gold { color: #e9b64a; }
+        .bg-gold { background: #e9b64a; }
+        .hover-bg-gold:hover { background: #d4a03a; }
+        .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+        .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
+        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 12px 28px; border-radius: 8px; transition: all 0.3s; border: none; }
+        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); }
+        .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; transition: all 0.3s; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-success { background: #22c55e; color: white; padding: 8px 16px; border-radius: 8px; border: none; transition: all 0.3s; }
+        .btn-success:hover { background: #16a34a; }
+        .status-pending { background: #fef9c3; color: #854d0e; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-active { background: #dcfce7; color: #166534; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-blocked { background: #fee2e2; color: #991b1b; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================== -->
+    <!-- ADMIN LOGIN -->
+    <!-- ========================================== -->
+    <div id="adminLogin" class="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-8 card-shadow">
+            <div class="text-center mb-8">
+                <div class="text-5xl mb-3">👑</div>
+                <h1 class="text-3xl font-bold text-dark">Administration</h1>
+                <p class="text-gray-500 text-sm mt-2">Espace réservé aux administrateurs</p>
+            </div>
+            <div id="adminError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
+            <form id="adminLoginForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="adminEmail" placeholder="admin@waripfinance.com" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                    <input type="password" id="adminPassword" placeholder="••••••••" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                </div>
+                <button type="submit" class="w-full btn-primary py-3 text-lg">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Se connecter
+                </button>
+            </form>
+            <div class="text-center mt-6">
+                <a href="/" class="text-sm text-gold hover:underline"><i class="fas fa-arrow-left mr-1"></i>Retour à l'accueil</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ADMIN DASHBOARD -->
+    <!-- ========================================== -->
+    <div id="adminDashboard" class="hidden min-h-screen bg-gray-50 p-4 md:p-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-dark">👑 Administration</h1>
+                    <p class="text-gray-500">Gestion des utilisateurs inscrits</p>
+                </div>
+                <button id="adminLogout" class="btn-danger">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                </button>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-2xl card-shadow">
+                    <p class="text-gray-500 text-sm">Total utilisateurs</p>
+                    <p class="text-3xl font-bold text-dark" id="totalUsers">0</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl card-shadow">
+                    <p class="text-gray-500 text-sm">En attente</p>
+                    <p class="text-3xl font-bold text-yellow-600" id="pendingUsers">0</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl card-shadow">
+                    <p class="text-gray-500 text-sm">Actifs</p>
+                    <p class="text-3xl font-bold text-green-600" id="activeUsers">0</p>
+                </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="bg-white rounded-2xl card-shadow overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-dark">Liste des utilisateurs</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-gray-500 font-semibold">Nom</th>
+                                <th class="px-6 py-3 text-left text-gray-500 font-semibold">Email</th>
+                                <th class="px-6 py-3 text-left text-gray-500 font-semibold">Statut</th>
+                                <th class="px-6 py-3 text-left text-gray-500 font-semibold">Date</th>
+                                <th class="px-6 py-3 text-left text-gray-500 font-semibold">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr><td colspan="5" class="text-center py-6 text-gray-400">Chargement...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // ADMIN APP
+        // ============================================
+        const API_URL = '';
+
+        // Check if already logged in
+        const token = localStorage.getItem('admin_token');
+        const user = JSON.parse(localStorage.getItem('admin_user') || '{}');
+        if (token && user.role === 'ADMIN') {
+            document.getElementById('adminLogin').classList.add('hidden');
+            document.getElementById('adminDashboard').classList.remove('hidden');
+            loadUsers();
+        }
+
+        // Login
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const errorEl = document.getElementById('adminError');
+            errorEl.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (!res.ok || data.user?.role !== 'ADMIN') {
+                    errorEl.textContent = data.error || 'Accès refusé';
+                    errorEl.classList.remove('hidden');
+                    return;
+                }
+                localStorage.setItem('admin_token', data.token);
+                localStorage.setItem('admin_user', JSON.stringify(data.user));
+                document.getElementById('adminLogin').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                loadUsers();
+            } catch (err) {
+                errorEl.textContent = 'Erreur de connexion au serveur';
+                errorEl.classList.remove('hidden');
+            }
+        });
+
+        // Logout
+        document.getElementById('adminLogout').addEventListener('click', function() {
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+            document.getElementById('adminLogin').classList.remove('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+        });
+
+        // Load users
+        async function loadUsers() {
+            try {
+                const token = localStorage.getItem('admin_token');
+                const res = await fetch('/api/admin/users', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) throw new Error('Erreur');
+                const data = await res.json();
+                renderUsers(data.users || []);
+            } catch (err) {
+                document.getElementById('usersTableBody').innerHTML =
+                    `<tr><td colspan="5" class="text-center py-6 text-red-500">❌ Erreur de chargement</td></tr>`;
+            }
+        }
+
+        function renderUsers(users) {
+            const tbody = document.getElementById('usersTableBody');
+            if (!users || users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-400">Aucun utilisateur</td></tr>`;
+                return;
+            }
+
+            let total = 0, pending = 0, active = 0;
+            let html = '';
+            users.forEach(u => {
+                total++;
+                if (u.status === 'PENDING') pending++;
+                if (u.status === 'ACTIVE') active++;
+                const statusClass = u.status === 'PENDING' ? 'status-pending' : u.status === 'ACTIVE' ? 'status-active' : 'status-blocked';
+                const statusLabel = u.status === 'PENDING' ? 'En attente' : u.status === 'ACTIVE' ? 'Actif' : 'Bloqué';
+                html += `
+                    <tr class="border-t border-gray-100 hover:bg-gray-50">
+                        <td class="px-6 py-4 text-dark">${u.first_name || ''} ${u.last_name || ''}</td>
+                        <td class="px-6 py-4 text-gray-600">${u.email}</td>
+                        <td class="px-6 py-4"><span class="${statusClass}">${statusLabel}</span></td>
+                        <td class="px-6 py-4 text-gray-500 text-sm">${u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '-'}</td>
+                        <td class="px-6 py-4">
+                            ${u.status === 'PENDING' ? `
+                                <button onclick="validateUser('${u.id}', 'ACTIVE')" class="btn-success text-xs mr-1">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button onclick="validateUser('${u.id}', 'BLOCKED')" class="btn-danger text-xs">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            ` : `<span class="text-gray-400 text-xs">Déjà traité</span>`}
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+            document.getElementById('totalUsers').textContent = total;
+            document.getElementById('pendingUsers').textContent = pending;
+            document.getElementById('activeUsers').textContent = active;
+        }
+
+        // Validate user
+        window.validateUser = async function(userId, status) {
+            if (!confirm(`Voulez-vous vraiment ${status === 'ACTIVE' ? 'valider' : 'rejeter'} cet utilisateur ?`)) return;
+            try {
+                const token = localStorage.getItem('admin_token');
+                await fetch(`/api/admin/users/${userId}/validate`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+                loadUsers();
+            } catch (err) {
+                alert('Erreur lors de la validation');
+            }
+        };
+    </script>
+</body>
+</html>

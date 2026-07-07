@@ -26,9 +26,7 @@
 </head>
 <body>
 
-    <!-- ========================================== -->
-    <!-- HEADER / NAVIGATION -->
-    <!-- ========================================== -->
+    <!-- HEADER -->
     <header class="bg-white border-b border-gray-200 fixed w-full z-50 top-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -38,9 +36,6 @@
                     </span>
                 </div>
                 <div class="hidden md:flex items-center space-x-8">
-                    <!-- ========================================== -->
-                    <!-- SUPPRESSION : Particuliers, Professionnels, Entreprises -->
-                    <!-- ========================================== -->
                     <button id="openLoginModal" class="btn-primary">
                         <i class="fas fa-user mr-2"></i>Se connecter
                     </button>
@@ -54,16 +49,14 @@
         </div>
     </header>
 
-    <!-- ========================================== -->
     <!-- MODAL CONNEXION / INSCRIPTION -->
-    <!-- ========================================== -->
     <div id="authModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-8 relative card-shadow">
             <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
                 <i class="fas fa-times"></i>
             </button>
             <div id="authContent">
-                <!-- Login form -->
+                <!-- Login -->
                 <div id="loginForm">
                     <h2 class="text-2xl font-bold text-dark mb-2">Connexion</h2>
                     <p class="text-gray-500 text-sm mb-6">Accédez à votre espace client</p>
@@ -87,7 +80,7 @@
                         <button id="showRegister" class="text-gold font-semibold hover:underline">Créer un compte</button>
                     </p>
                 </div>
-                <!-- Register form -->
+                <!-- Register -->
                 <div id="registerForm" class="hidden">
                     <h2 class="text-2xl font-bold text-dark mb-2">Créer un compte</h2>
                     <p class="text-gray-500 text-sm mb-6">Rejoignez Warip Finance en quelques clics</p>
@@ -114,9 +107,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- SECTION HERO -->
-    <!-- ========================================== -->
+    <!-- HERO -->
     <section class="pt-32 pb-16 bg-gradient-to-r from-gray-50 to-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-2 gap-12 items-center">
@@ -133,9 +124,6 @@
                             <i class="fas fa-rocket mr-2"></i>Ouvrir un compte
                         </button>
                     </div>
-                    <!-- ========================================== -->
-                    <!-- SUPPRESSION : 100% sécurisé, IBAN français, Support 7/7 -->
-                    <!-- ========================================== -->
                 </div>
                 <div class="hidden md:block">
                     <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=400&fit=crop" alt="Banque" class="rounded-2xl shadow-xl w-full object-cover" />
@@ -144,13 +132,7 @@
         </div>
     </section>
 
-    <!-- ========================================== -->
-    <!-- SECTION AVANTAGES (SUPPRIMÉE) -->
-    <!-- ========================================== -->
-
-    <!-- ========================================== -->
     <!-- FOOTER -->
-    <!-- ========================================== -->
     <footer class="bg-dark text-gray-400 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-4 gap-8">
@@ -189,13 +171,7 @@
         </div>
     </footer>
 
-    <!-- ========================================== -->
-    <!-- SCRIPTS -->
-    <!-- ========================================== -->
     <script>
-        // ============================================
-        // GESTION DU MODAL
-        // ============================================
         const modal = document.getElementById('authModal');
         const loginForm = document.getElementById('loginForm');
         const registerForm = document.getElementById('registerForm');
@@ -216,15 +192,11 @@
         document.getElementById('showRegister').addEventListener('click', showRegister);
         document.getElementById('showLogin').addEventListener('click', showLogin);
 
-        // ============================================
-        // LOGIN
-        // ============================================
         document.getElementById('loginFormSubmit').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             loginError.classList.add('hidden');
-
             try {
                 const res = await fetch('/api/auth/login', {
                     method: 'POST',
@@ -235,16 +207,13 @@
                 if (!res.ok) { loginError.textContent = data.error || 'Erreur'; loginError.classList.remove('hidden'); return; }
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
-                window.location.href = data.user.role === 'ADMIN' ? '/admin/dashboard' : '/dashboard';
+                window.location.href = data.user.role === 'ADMIN' ? '/admin/' : '/dashboard';
             } catch (err) {
                 loginError.textContent = 'Erreur de connexion au serveur';
                 loginError.classList.remove('hidden');
             }
         });
 
-        // ============================================
-        // REGISTER
-        // ============================================
         document.getElementById('registerFormSubmit').addEventListener('submit', async function(e) {
             e.preventDefault();
             const first_name = document.getElementById('regFirstName').value;
@@ -252,13 +221,11 @@
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
             registerError.classList.add('hidden');
-
             if (password.length < 8) {
                 registerError.textContent = 'Le mot de passe doit contenir au moins 8 caractères';
                 registerError.classList.remove('hidden');
                 return;
             }
-
             try {
                 const res = await fetch('/api/auth/register', {
                     method: 'POST',
