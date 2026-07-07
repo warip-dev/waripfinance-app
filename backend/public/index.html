@@ -74,7 +74,7 @@
                     </p>
                 </div>
                 <!-- Register -->
-                <div id="registerForm" class="hidden">
+                <div id="registerForm">
                     <h2 class="text-2xl font-bold text-dark mb-2">Créer un compte</h2>
                     <p class="text-gray-500 text-sm mb-6">Rejoignez Warip Finance en quelques clics</p>
                     <div id="registerError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
@@ -182,8 +182,8 @@
         document.getElementById('closeModal').addEventListener('click', closeModal);
         modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-        function showLogin() { loginForm.classList.remove('hidden'); registerForm.classList.add('hidden'); loginError.classList.add('hidden'); }
-        function showRegister() { loginForm.classList.add('hidden'); registerForm.classList.remove('hidden'); registerError.classList.add('hidden'); }
+        function showLogin() { loginForm.classList.remove('hidden'); registerForm.classList.remove('hidden'); loginError.classList.add('hidden'); registerError.classList.add('hidden'); }
+        function showRegister() { loginForm.classList.remove('hidden'); registerForm.classList.remove('hidden'); loginError.classList.add('hidden'); registerError.classList.add('hidden'); }
 
         document.getElementById('showRegister').addEventListener('click', showRegister);
         document.getElementById('showLogin').addEventListener('click', showLogin);
@@ -227,7 +227,7 @@
         });
 
         // ============================================
-        // INSCRIPTION - AVEC REDIRECTION VERS /pending
+        // INSCRIPTION - AFFICHE LE MESSAGE DIRECTEMENT
         // ============================================
         document.getElementById('registerFormSubmit').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -240,7 +240,6 @@
             registerError.classList.add('hidden');
             registerError.textContent = '';
 
-            // Validation des champs
             if (!first_name || !last_name || !email || !password) {
                 registerError.textContent = 'Tous les champs sont obligatoires';
                 registerError.classList.remove('hidden');
@@ -268,8 +267,24 @@
                     return;
                 }
 
-                // ✅ REDIRECTION VERS LA PAGE D'ATTENTE
-                window.location.href = '/pending';
+                // ✅ AFFICHER LE MESSAGE DE SUCCÈS DANS LA MODALE
+                registerForm.innerHTML = `
+                    <div class="text-center py-6">
+                        <div class="text-5xl mb-4">✅</div>
+                        <h2 class="text-2xl font-bold text-green-600">Compte créé avec succès !</h2>
+                        <p class="text-gray-600 mt-2 text-sm">
+                            Votre compte est en attente de validation par notre équipe.
+                        </p>
+                        <p class="text-gray-500 mt-2 text-xs">
+                            Vous recevrez un email dès qu'il sera validé.
+                        </p>
+                        <div class="mt-6">
+                            <button onclick="closeModal()" class="btn-primary px-6 py-2 text-sm">
+                                Fermer
+                            </button>
+                        </div>
+                    </div>
+                `;
 
             } catch (err) {
                 registerError.textContent = 'Erreur de connexion au serveur. Vérifiez votre connexion internet.';
