@@ -26,9 +26,7 @@
 </head>
 <body>
 
-    <!-- ========================================== -->
     <!-- ADMIN LOGIN -->
-    <!-- ========================================== -->
     <div id="adminLogin" class="min-h-screen flex items-center justify-center p-4 bg-gray-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-8 card-shadow">
             <div class="text-center mb-8">
@@ -56,9 +54,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
     <!-- ADMIN DASHBOARD -->
-    <!-- ========================================== -->
     <div id="adminDashboard" class="hidden min-h-screen bg-gray-50 p-4 md:p-8">
         <div class="max-w-7xl mx-auto">
             <div class="flex justify-between items-center mb-8">
@@ -113,12 +109,6 @@
     </div>
 
     <script>
-        // ============================================
-        // ADMIN APP
-        // ============================================
-        const API_URL = '';
-
-        // Check if already logged in
         const token = localStorage.getItem('admin_token');
         const user = JSON.parse(localStorage.getItem('admin_user') || '{}');
         if (token && user.role === 'ADMIN') {
@@ -127,7 +117,6 @@
             loadUsers();
         }
 
-        // Login
         document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('adminEmail').value;
@@ -136,7 +125,7 @@
             errorEl.classList.add('hidden');
 
             try {
-                const res = await fetch('/api/auth/login', {
+                const res = await fetch('https://waripfinance.com/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
@@ -158,7 +147,6 @@
             }
         });
 
-        // Logout
         document.getElementById('adminLogout').addEventListener('click', function() {
             localStorage.removeItem('admin_token');
             localStorage.removeItem('admin_user');
@@ -166,11 +154,10 @@
             document.getElementById('adminDashboard').classList.add('hidden');
         });
 
-        // Load users
         async function loadUsers() {
             try {
                 const token = localStorage.getItem('admin_token');
-                const res = await fetch('/api/admin/users', {
+                const res = await fetch('https://waripfinance.com/api/admin/users', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!res.ok) throw new Error('Erreur');
@@ -222,12 +209,11 @@
             document.getElementById('activeUsers').textContent = active;
         }
 
-        // Validate user
         window.validateUser = async function(userId, status) {
             if (!confirm(`Voulez-vous vraiment ${status === 'ACTIVE' ? 'valider' : 'rejeter'} cet utilisateur ?`)) return;
             try {
                 const token = localStorage.getItem('admin_token');
-                await fetch(`/api/admin/users/${userId}/validate`, {
+                await fetch(`https://waripfinance.com/api/admin/users/${userId}/validate`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
