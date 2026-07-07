@@ -3,34 +3,37 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Warip Finance</title>
+    <title>Warip Finance - Banque nouvelle génération</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
-        body { background: #f5f7fa; font-family: 'Inter', sans-serif; }
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f0f2f5; }
         .gold { color: #e9b64a; }
         .bg-gold { background: #e9b64a; }
-        .hover-bg-gold:hover { background: #d4a03a; }
         .text-dark { color: #1a1a2e; }
         .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
-        .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
-        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 14px 32px; border-radius: 10px; border: none; cursor: pointer; font-size: 16px; transition: all 0.3s; }
-        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(233, 182, 74, 0.3); }
+        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 14px 32px; border-radius: 50px; border: none; cursor: pointer; font-size: 15px; transition: all 0.3s; }
+        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.3); }
+        .btn-outline { border: 2px solid #e9b64a; color: #e9b64a; background: transparent; font-weight: 600; padding: 12px 30px; border-radius: 50px; transition: all 0.3s; cursor: pointer; font-size: 15px; }
+        .btn-outline:hover { background: #e9b64a; color: #1a1a2e; transform: translateY(-2px); }
+        .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
         .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
-        .hero-gradient { background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%); }
+        .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
+        .feature-card { background: white; border-radius: 16px; padding: 30px; transition: all 0.3s; border: 1px solid #edf2f7; }
+        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
         .footer-link { color: #a0aec0; transition: color 0.3s; }
         .footer-link:hover { color: #e9b64a; }
-        .feature-card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); transition: all 0.3s; border: 1px solid #edf2f7; }
-        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
     <!-- HEADER -->
-    <header class="bg-white border-b border-gray-200 fixed w-full z-50 top-0 shadow-sm">
+    <header class="gradient-header fixed w-full z-50 top-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <a href="/" class="text-2xl font-bold text-dark">
+                <a href="/" class="text-white font-bold text-xl">
                     <span class="gold">Warip</span> Finance
                 </a>
                 <div class="flex items-center gap-4">
@@ -42,7 +45,7 @@
         </div>
     </header>
 
-    <!-- MODAL -->
+    <!-- MODAL CONNEXION / INSCRIPTION -->
     <div id="authModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-8 relative card-shadow">
             <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
@@ -101,7 +104,7 @@
     </div>
 
     <!-- HERO -->
-    <section class="pt-28 pb-16 hero-gradient">
+    <section class="pt-28 pb-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div>
@@ -110,7 +113,6 @@
                     </h1>
                     <p class="text-gray-600 text-lg mt-4 leading-relaxed">
                         Ouvrez un compte en 5 minutes, gérez vos cryptos et vos euros en toute simplicité.
-                        Sécurité, transparence et innovation.
                     </p>
                     <div class="flex flex-wrap gap-4 mt-8">
                         <button id="heroOpenRegister" class="btn-primary">
@@ -188,9 +190,7 @@
     </footer>
 
     <script>
-        // ============================================
-        // GESTION DU MODAL
-        // ============================================
+        // MODAL
         const modal = document.getElementById('authModal');
         const loginForm = document.getElementById('loginForm');
         const registerForm = document.getElementById('registerForm');
@@ -211,9 +211,7 @@
         document.getElementById('showRegister').addEventListener('click', showRegister);
         document.getElementById('showLogin').addEventListener('click', showLogin);
 
-        // ============================================
-        // CONNEXION
-        // ============================================
+        // LOGIN
         document.getElementById('loginFormSubmit').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -232,8 +230,6 @@
                 if (!res.ok) {
                     loginError.textContent = data.error || 'Erreur de connexion';
                     loginError.classList.remove('hidden');
-
-                    // Si le compte est en attente
                     if (data.status === 'PENDING') {
                         loginError.textContent = '⏳ Votre compte est en attente de validation.';
                     }
@@ -243,7 +239,6 @@
                 if (data.success) {
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
-
                     if (data.user.role === 'ADMIN') {
                         window.location.href = '/admin';
                     } else {
@@ -257,9 +252,7 @@
             }
         });
 
-        // ============================================
-        // INSCRIPTION
-        // ============================================
+        // REGISTER
         document.getElementById('registerFormSubmit').addEventListener('submit', async function(e) {
             e.preventDefault();
 
