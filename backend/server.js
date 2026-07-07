@@ -9,8 +9,9 @@ const PORT = process.env.PORT || 8080;
 // Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Dossier public (frontend) - NE PAS SUPPRIMER
+// Dossier public (frontend)
 const publicPath = path.join(__dirname, 'public');
 app.use(express.static(publicPath));
 
@@ -23,11 +24,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/transactions', transactionRoutes);
 
-// Route spéciale pour admin.html
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(publicPath, 'admin.html'));
-});
-
 // Route de test API
 app.get('/api', (req, res) => {
     res.json({
@@ -37,7 +33,7 @@ app.get('/api', (req, res) => {
     });
 });
 
-// Toutes les autres routes → index.html (React)
+// Pour toutes les autres routes → index.html (React)
 app.get('*', (req, res) => {
     res.sendFile(path.join(publicPath, 'index.html'));
 });
