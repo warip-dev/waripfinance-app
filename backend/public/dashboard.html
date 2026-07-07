@@ -22,8 +22,6 @@
         .btn-outline:hover { background: #e9b64a; color: #1a1a2e; transform: translateY(-2px); }
         .btn-success { background: #22c55e; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
         .btn-success:hover { background: #16a34a; transform: translateY(-2px); }
-        .btn-warning { background: #f59e0b; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
-        .btn-warning:hover { background: #d97706; transform: translateY(-2px); }
         .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
         .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
         .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
@@ -67,7 +65,7 @@
                 </div>
                 <div class="flex flex-wrap gap-3">
                     <button id="openDepositModal" class="btn-primary"><i class="fas fa-arrow-down mr-2"></i>Déposer</button>
-                    <button id="openBeneficiaryModal" class="btn-outline"><i class="fas fa-user-plus mr-2"></i>Bénéficiaire</button>
+                    <button id="openAddBeneficiary" class="btn-outline"><i class="fas fa-user-plus mr-2"></i>Bénéficiaire</button>
                 </div>
             </div>
         </div>
@@ -83,12 +81,12 @@
             <div class="bg-white rounded-2xl p-6 card-shadow mb-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-semibold text-dark">📋 Mes bénéficiaires</h3>
-                    <button id="openAddBeneficiary" class="btn-primary px-4 py-2 text-sm">
+                    <button id="openAddBeneficiaryBtn" class="btn-primary px-4 py-2 text-sm">
                         <i class="fas fa-plus mr-1"></i>Ajouter
                     </button>
                 </div>
                 <div id="beneficiariesList" class="space-y-3">
-                    <p class="text-gray-400 text-sm">Aucun bénéficiaire enregistré.</p>
+                    <p class="text-gray-400 text-sm">Chargement...</p>
                 </div>
             </div>
         </div>
@@ -98,7 +96,7 @@
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">📤 Historique des virements</h3>
                 <div id="transfersList">
-                    <p class="text-gray-400 text-sm">Aucun virement effectué.</p>
+                    <p class="text-gray-400 text-sm">Chargement...</p>
                 </div>
             </div>
         </div>
@@ -210,6 +208,7 @@
             document.getElementById('transfersContent').classList.add('hidden');
             this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
             document.getElementById('tabTransfers').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
+            loadBeneficiaries();
         });
         document.getElementById('tabTransfers').addEventListener('click', function() {
             document.getElementById('transfersContent').classList.remove('hidden');
@@ -232,27 +231,43 @@
         function loadBeneficiaries() {
             const token = localStorage.getItem('token');
             fetch('/api/beneficiaries', { headers: { 'Authorization': 'Bearer ' + token } })
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error('Erreur réseau');
+                    return res.json();
+                })
                 .then(data => {
                     const list = document.getElementById('beneficiariesList');
                     if (!data.beneficiaries || data.beneficiaries.length === 0) {
                         list.innerHTML = '<p class="text-gray-400 text-sm">Aucun bénéficiaire enregistré.</p>';
                         return;
                     }
-                    list.innerHTML = data.beneficiaries.map(b => `
-                        <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
-                            <div>
-                                <p class="font-semibold text-dark">${b.name}</p>
-                                <p class="text-xs text-gray-400 font-mono">${b.iban}</p>
-                                <span class="${b.status === 'ACTIVE' ? 'status-active' : b.status === 'REJECTED' ? 'status-rejected' : 'status-pending'}">${b.status === 'ACTIVE' ? '✅ Validé' : b.status === 'REJECTED' ? '❌ Rejeté' : '⏳ En attente'}</span>
-                                ${b.status === 'ACTIVE' ? `<button onclick="openTransferForBeneficiary('${b.id}', '${b.name}', '${b.iban}')" class="btn-primary px-3 py-1 text-xs ml-2"><i class="fas fa-paper-plane mr-1"></i>Virement</button>` : ''}
-                                ${b.rejection_reason ? `<p class="text-xs text-red-500 mt-1">Motif: ${b.rejection_reason}</p>` : ''}
+                    list.innerHTML = data.beneficiaries.map(b => {
+                        const statusClass = b.status === 'ACTIVE' ? 'status-active' : b.status === 'REJECTED' ? 'status-rejected' : 'status-pending';
+                        const statusLabel = b.status === 'ACTIVE' ? '✅ Validé' : b.status === 'REJECTED' ? '❌ Rejeté' : '⏳ En attente';
+                        return `
+                            <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
+                                <div>
+                                    <p class="font-semibold text-dark">${b.name}</p>
+                                    <p class="text-xs text-gray-400 font-mono">${b.iban}</p>
+                                    <span class="${statusClass}">${statusLabel}</span>
+                                    ${b.rejection_reason ? `<p class="text-xs text-red-500 mt-1">Motif: ${b.rejection_reason}</p>` : ''}
+                                </div>
+                                <div>
+                                    ${b.status === 'ACTIVE' ? `
+                                        <button onclick="openTransferForBeneficiary('${b.id}', '${b.name}', '${b.iban}')" class="btn-primary px-3 py-1 text-xs">
+                                            <i class="fas fa-paper-plane mr-1"></i>Virement
+                                        </button>
+                                    ` : ''}
+                                    ${b.status === 'PENDING' ? '<span class="text-xs text-yellow-600">En attente de validation admin</span>' : ''}
+                                    ${b.status === 'REJECTED' ? '<span class="text-xs text-red-500">Rejeté</span>' : ''}
+                                </div>
                             </div>
-                            <div>
-                                ${b.status === 'PENDING' ? '<span class="text-xs text-yellow-600">En attente de validation admin</span>' : ''}
-                            </div>
-                        </div>
-                    `).join('');
+                        `;
+                    }).join('');
+                })
+                .catch(err => {
+                    document.getElementById('beneficiariesList').innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
+                    console.error(err);
                 });
         }
 
@@ -260,6 +275,10 @@
         // AJOUT BÉNÉFICIAIRE
         // ============================================
         document.getElementById('openAddBeneficiary').addEventListener('click', () => {
+            document.getElementById('addBeneficiaryModal').classList.remove('hidden');
+            document.getElementById('beneficiaryMessage').innerHTML = '';
+        });
+        document.getElementById('openAddBeneficiaryBtn').addEventListener('click', () => {
             document.getElementById('addBeneficiaryModal').classList.remove('hidden');
             document.getElementById('beneficiaryMessage').innerHTML = '';
         });
@@ -295,7 +314,7 @@
                     setTimeout(() => document.getElementById('addBeneficiaryModal').classList.add('hidden'), 2000);
                 }
             } catch (err) {
-                msg.innerHTML = '<span class="text-red-500">Erreur de connexion</span>';
+                msg.innerHTML = '<span class="text-red-500">Erreur de connexion au serveur</span>';
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-save mr-2"></i>Enregistrer le bénéficiaire';
@@ -372,7 +391,7 @@
                     setTimeout(() => document.getElementById('transferModal').classList.add('hidden'), 2000);
                 }
             } catch (err) {
-                msg.innerHTML = '<span class="text-red-500">Erreur de connexion</span>';
+                msg.innerHTML = '<span class="text-red-500">Erreur de connexion au serveur</span>';
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Envoyer le virement';
@@ -392,21 +411,23 @@
                         list.innerHTML = '<p class="text-gray-400 text-sm">Aucun virement effectué.</p>';
                         return;
                     }
-                    list.innerHTML = data.transfers.map(t => `
-                        <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl mb-2">
-                            <div>
-                                <p class="font-semibold text-dark">${t.amount} €</p>
-                                <p class="text-xs text-gray-500">Bénéficiaire: ${t.beneficiary_name}</p>
-                                <p class="text-xs text-gray-400">${new Date(t.created_at).toLocaleDateString('fr-FR')}</p>
+                    list.innerHTML = data.transfers.map(t => {
+                        const statusClass = t.status === 'COMPLETED' ? 'status-active' : t.status === 'REJECTED' ? 'status-rejected' : 'status-pending';
+                        const statusLabel = t.status === 'COMPLETED' ? '✅ Validé' : t.status === 'REJECTED' ? '❌ Rejeté' : '⏳ En attente';
+                        return `
+                            <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl mb-2">
+                                <div>
+                                    <p class="font-semibold text-dark">${t.amount} €</p>
+                                    <p class="text-xs text-gray-500">Bénéficiaire: ${t.beneficiary_name}</p>
+                                    <p class="text-xs text-gray-400">${new Date(t.created_at).toLocaleDateString('fr-FR')}</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="${statusClass}">${statusLabel}</span>
+                                    ${t.admin_comment ? `<p class="text-xs text-red-500 mt-1">Motif: ${t.admin_comment}</p>` : ''}
+                                </div>
                             </div>
-                            <div class="text-right">
-                                <span class="${t.status === 'PENDING' ? 'status-pending' : t.status === 'COMPLETED' ? 'status-active' : 'status-rejected'}">
-                                    ${t.status === 'PENDING' ? '⏳ En attente' : t.status === 'COMPLETED' ? '✅ Validé' : '❌ Rejeté'}
-                                </span>
-                                ${t.admin_comment ? `<p class="text-xs text-red-500 mt-1">Motif: ${t.admin_comment}</p>` : ''}
-                            </div>
-                        </div>
-                    `).join('');
+                        `;
+                    }).join('');
                 });
         }
 
@@ -428,6 +449,5 @@
         // ============================================
         loadBeneficiaries();
     </script>
-
 </body>
 </html>
