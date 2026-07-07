@@ -88,9 +88,6 @@ const Home = () => {
       <div className="bg-gray-800 p-8 rounded-2xl max-w-lg w-full">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gold">🏦 Warip Finance</h1>
-          <p className="text-gray-400 mt-2">
-            {isLogin ? 'Connectez-vous à votre compte' : 'Créez votre compte bancaire'}
-          </p>
         </div>
 
         {error && (
@@ -241,15 +238,6 @@ const Home = () => {
                 onChange={handleChange}
                 required
               />
-
-              {/* ========================================== */}
-              {/* MOT DE PASSE OUBLIÉ - ICI, AVANT LE BOUTON */}
-              {/* ========================================== */}
-              <div className="text-center mt-2">
-                <a href="/forgot-password" className="text-sm text-gray-400 hover:text-gold transition inline-block">
-                  🔑 Mot de passe oublié ?
-                </a>
-              </div>
             </>
           )}
 
@@ -280,12 +268,6 @@ const Home = () => {
               {isLogin ? 'Créer un compte' : 'Se connecter'}
             </button>
           </p>
-        </div>
-
-        <div className="text-center mt-4">
-          <a href="/admin" className="text-gray-500 text-sm hover:text-gold transition">
-            🔑 Espace administrateur
-          </a>
         </div>
       </div>
     </div>
