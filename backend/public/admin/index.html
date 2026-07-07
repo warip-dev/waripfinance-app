@@ -25,6 +25,7 @@
 </head>
 <body>
 
+    <!-- ADMIN LOGIN -->
     <div id="adminLogin" class="min-h-screen flex items-center justify-center p-4 bg-gray-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-8 card-shadow">
             <div class="text-center mb-8">
@@ -48,6 +49,7 @@
         </div>
     </div>
 
+    <!-- ADMIN DASHBOARD -->
     <div id="adminDashboard" class="hidden min-h-screen bg-gray-50 p-4 md:p-8">
         <div class="max-w-7xl mx-auto">
             <div class="flex justify-between items-center mb-8">
@@ -57,6 +59,7 @@
                 </div>
                 <button id="adminLogout" class="btn-danger"><i class="fas fa-sign-out-alt mr-2"></i>Déconnexion</button>
             </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-white p-6 rounded-2xl card-shadow">
                     <p class="text-gray-500 text-sm">Total</p>
@@ -71,6 +74,7 @@
                     <p class="text-3xl font-bold text-green-600" id="activeUsers">0</p>
                 </div>
             </div>
+
             <div class="bg-white rounded-2xl card-shadow overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h2 class="text-lg font-semibold text-dark">Liste des utilisateurs</h2>
@@ -111,7 +115,7 @@
             const errorEl = document.getElementById('adminError');
             errorEl.classList.add('hidden');
             try {
-                const res = await fetch('https://waripfinance.com/api/auth/login', {
+                const res = await fetch('/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
@@ -143,7 +147,7 @@
         async function loadUsers() {
             try {
                 const token = localStorage.getItem('admin_token');
-                const res = await fetch('https://waripfinance.com/api/admin/users', {
+                const res = await fetch('/api/admin/users', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!res.ok) throw new Error('Erreur');
@@ -194,7 +198,7 @@
             if (!confirm(`Voulez-vous vraiment ${status === 'ACTIVE' ? 'valider' : 'rejeter'} cet utilisateur ?`)) return;
             try {
                 const token = localStorage.getItem('admin_token');
-                await fetch(`https://waripfinance.com/api/admin/users/${userId}/validate`, {
+                await fetch(`/api/admin/users/${userId}/validate`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ status })

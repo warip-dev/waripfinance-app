@@ -3,38 +3,38 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Warip Finance - Banque nouvelle génération</title>
+    <title>Warip Finance</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         body { background: #f5f7fa; font-family: 'Inter', sans-serif; }
         .gold { color: #e9b64a; }
         .bg-gold { background: #e9b64a; }
         .hover-bg-gold:hover { background: #d4a03a; }
         .text-dark { color: #1a1a2e; }
-        .bg-dark { background: #1a1a2e; }
         .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
         .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
-        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 12px 28px; border-radius: 8px; transition: all 0.3s; border: none; cursor: pointer; }
-        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); }
-        .modal-overlay { background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 14px 32px; border-radius: 10px; border: none; cursor: pointer; font-size: 16px; transition: all 0.3s; }
+        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(233, 182, 74, 0.3); }
+        .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        .hero-gradient { background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%); }
         .footer-link { color: #a0aec0; transition: color 0.3s; }
         .footer-link:hover { color: #e9b64a; }
+        .feature-card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); transition: all 0.3s; border: 1px solid #edf2f7; }
+        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
     <!-- HEADER -->
-    <header class="bg-white border-b border-gray-200 fixed w-full z-50 top-0">
+    <header class="bg-white border-b border-gray-200 fixed w-full z-50 top-0 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <span class="text-2xl font-bold text-dark">
-                        <span class="gold">Warip</span> Finance
-                    </span>
-                </div>
-                <div class="hidden md:flex items-center space-x-8">
-                    <button id="openLoginModal" class="btn-primary">
+                <a href="/" class="text-2xl font-bold text-dark">
+                    <span class="gold">Warip</span> Finance
+                </a>
+                <div class="flex items-center gap-4">
+                    <button id="openLoginModal" class="btn-primary px-6 py-2 text-sm">
                         <i class="fas fa-user mr-2"></i>Se connecter
                     </button>
                 </div>
@@ -42,66 +42,66 @@
         </div>
     </header>
 
-    <!-- MODAL CONNEXION / INSCRIPTION -->
+    <!-- MODAL -->
     <div id="authModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-8 relative card-shadow">
             <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
                 <i class="fas fa-times"></i>
             </button>
-            <div id="authContent">
-                <!-- Login -->
-                <div id="loginForm">
-                    <h2 class="text-2xl font-bold text-dark mb-2">Connexion</h2>
-                    <p class="text-gray-500 text-sm mb-6">Accédez à votre espace client</p>
-                    <div id="loginError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
-                    <form id="loginFormSubmit">
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" id="loginEmail" placeholder="exemple@email.com" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-                            <input type="password" id="loginPassword" placeholder="••••••••" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                        </div>
-                        <div class="flex justify-between items-center mb-6">
-                            <a href="/forgot-password.html" class="text-sm text-gold hover:underline">Mot de passe oublié ?</a>
-                        </div>
-                        <button type="submit" class="w-full btn-primary py-3 text-lg">Se connecter</button>
-                    </form>
-                    <p class="text-center text-gray-500 text-sm mt-4">
-                        Pas encore de compte ?
-                        <button id="showRegister" class="text-gold font-semibold hover:underline">Créer un compte</button>
-                    </p>
-                </div>
-                <!-- Register -->
-                <div id="registerForm">
-                    <h2 class="text-2xl font-bold text-dark mb-2">Créer un compte</h2>
-                    <p class="text-gray-500 text-sm mb-6">Rejoignez Warip Finance en quelques clics</p>
-                    <div id="registerError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
-                    <form id="registerFormSubmit">
-                        <div class="grid grid-cols-2 gap-3 mb-3">
-                            <input type="text" id="regFirstName" placeholder="Prénom" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                            <input type="text" id="regLastName" placeholder="Nom" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                        </div>
-                        <div class="mb-3">
-                            <input type="email" id="regEmail" placeholder="Email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                        </div>
-                        <div class="mb-3">
-                            <input type="password" id="regPassword" placeholder="Mot de passe (min 8 caractères)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required minlength="8">
-                        </div>
-                        <button type="submit" class="w-full btn-primary py-3 text-lg">Créer mon compte</button>
-                    </form>
-                    <p class="text-center text-gray-500 text-sm mt-4">
-                        Déjà un compte ?
-                        <button id="showLogin" class="text-gold font-semibold hover:underline">Se connecter</button>
-                    </p>
-                </div>
+
+            <!-- Login -->
+            <div id="loginForm">
+                <h2 class="text-2xl font-bold text-dark mb-2">Connexion</h2>
+                <p class="text-gray-500 text-sm mb-6">Accédez à votre espace client</p>
+                <div id="loginError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
+                <form id="loginFormSubmit">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="loginEmail" placeholder="exemple@email.com" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                    </div>
+                    <div class="text-right mb-6">
+                        <a href="/forgot-password.html" class="text-sm text-gold hover:underline">Mot de passe oublié ?</a>
+                    </div>
+                    <button type="submit" class="w-full btn-primary py-3 text-lg">Se connecter</button>
+                </form>
+                <p class="text-center text-gray-500 text-sm mt-4">
+                    Pas encore de compte ?
+                    <button id="showRegister" class="text-gold font-semibold hover:underline">Créer un compte</button>
+                </p>
+            </div>
+
+            <!-- Register -->
+            <div id="registerForm" class="hidden">
+                <h2 class="text-2xl font-bold text-dark mb-2">Créer un compte</h2>
+                <p class="text-gray-500 text-sm mb-6">Rejoignez Warip Finance en quelques clics</p>
+                <div id="registerError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
+                <form id="registerFormSubmit">
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <input type="text" id="regFirstName" placeholder="Prénom" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                        <input type="text" id="regLastName" placeholder="Nom" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" id="regEmail" placeholder="Email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" id="regPassword" placeholder="Mot de passe (min 8 caractères)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required minlength="8">
+                    </div>
+                    <button type="submit" class="w-full btn-primary py-3 text-lg">Créer mon compte</button>
+                </form>
+                <p class="text-center text-gray-500 text-sm mt-4">
+                    Déjà un compte ?
+                    <button id="showLogin" class="text-gold font-semibold hover:underline">Se connecter</button>
+                </p>
             </div>
         </div>
     </div>
 
     <!-- HERO -->
-    <section class="pt-32 pb-16 bg-gradient-to-r from-gray-50 to-white">
+    <section class="pt-28 pb-16 hero-gradient">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div>
@@ -113,13 +113,36 @@
                         Sécurité, transparence et innovation.
                     </p>
                     <div class="flex flex-wrap gap-4 mt-8">
-                        <button id="heroOpenRegister" class="btn-primary px-8 py-4 text-lg">
+                        <button id="heroOpenRegister" class="btn-primary">
                             <i class="fas fa-rocket mr-2"></i>Ouvrir un compte
                         </button>
                     </div>
                 </div>
                 <div class="hidden md:block">
                     <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=400&fit=crop" alt="Banque" class="rounded-2xl shadow-xl w-full object-cover" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="feature-card text-center">
+                    <div class="text-4xl gold mb-4"><i class="fas fa-shield-alt"></i></div>
+                    <h3 class="text-xl font-bold text-dark">Sécurité maximale</h3>
+                    <p class="text-gray-500 text-sm mt-2">Vos données et vos fonds sont protégés.</p>
+                </div>
+                <div class="feature-card text-center">
+                    <div class="text-4xl gold mb-4"><i class="fas fa-bolt"></i></div>
+                    <h3 class="text-xl font-bold text-dark">Transactions instantanées</h3>
+                    <p class="text-gray-500 text-sm mt-2">Envoyez et recevez en temps réel.</p>
+                </div>
+                <div class="feature-card text-center">
+                    <div class="text-4xl gold mb-4"><i class="fas fa-globe"></i></div>
+                    <h3 class="text-xl font-bold text-dark">100% mobile</h3>
+                    <p class="text-gray-500 text-sm mt-2">Gérez votre compte où que vous soyez.</p>
                 </div>
             </div>
         </div>
@@ -182,8 +205,8 @@
         document.getElementById('closeModal').addEventListener('click', closeModal);
         modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-        function showLogin() { loginForm.classList.remove('hidden'); registerForm.classList.remove('hidden'); loginError.classList.add('hidden'); registerError.classList.add('hidden'); }
-        function showRegister() { loginForm.classList.remove('hidden'); registerForm.classList.remove('hidden'); loginError.classList.add('hidden'); registerError.classList.add('hidden'); }
+        function showLogin() { loginForm.classList.remove('hidden'); registerForm.classList.add('hidden'); loginError.classList.add('hidden'); registerError.classList.add('hidden'); }
+        function showRegister() { loginForm.classList.add('hidden'); registerForm.classList.remove('hidden'); loginError.classList.add('hidden'); registerError.classList.add('hidden'); }
 
         document.getElementById('showRegister').addEventListener('click', showRegister);
         document.getElementById('showLogin').addEventListener('click', showLogin);
@@ -196,9 +219,10 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             loginError.classList.add('hidden');
+            loginError.textContent = '';
 
             try {
-                const res = await fetch('https://waripfinance.com/api/auth/login', {
+                const res = await fetch('/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
@@ -208,16 +232,23 @@
                 if (!res.ok) {
                     loginError.textContent = data.error || 'Erreur de connexion';
                     loginError.classList.remove('hidden');
+
+                    // Si le compte est en attente
+                    if (data.status === 'PENDING') {
+                        loginError.textContent = '⏳ Votre compte est en attente de validation.';
+                    }
                     return;
                 }
 
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
 
-                if (data.user.role === 'ADMIN') {
-                    window.location.href = '/admin/';
-                } else {
-                    window.location.href = '/dashboard';
+                    if (data.user.role === 'ADMIN') {
+                        window.location.href = '/admin';
+                    } else {
+                        window.location.href = '/dashboard';
+                    }
                 }
 
             } catch (err) {
@@ -227,7 +258,7 @@
         });
 
         // ============================================
-        // INSCRIPTION - REDIRECTION VERS CONFIRMATION
+        // INSCRIPTION
         // ============================================
         document.getElementById('registerFormSubmit').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -253,7 +284,7 @@
             }
 
             try {
-                const res = await fetch('https://waripfinance.com/api/auth/register', {
+                const res = await fetch('/api/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ first_name, last_name, email, password, country: 'FR' })
@@ -267,11 +298,12 @@
                     return;
                 }
 
-                // ✅ REDIRECTION VERS LA PAGE DE CONFIRMATION
-                window.location.href = '/confirmation.html';
+                if (data.success) {
+                    window.location.href = '/confirmation.html';
+                }
 
             } catch (err) {
-                registerError.textContent = 'Erreur de connexion au serveur. Vérifiez votre connexion internet.';
+                registerError.textContent = 'Erreur de connexion au serveur';
                 registerError.classList.remove('hidden');
             }
         });

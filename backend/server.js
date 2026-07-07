@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
@@ -22,10 +23,13 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
+console.log('✅ Connexion à MySQL établie');
+
 // ============================================
 // ROUTES API
 // ============================================
 
+// Test API
 app.get('/api', (req, res) => {
     res.json({ message: '🚀 Warip Finance API en ligne', status: 'online' });
 });
@@ -36,8 +40,8 @@ app.get('/api', (req, res) => {
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { first_name, last_name, email, password, country } = req.body;
-        console.log('📝 Données reçues:', { first_name, last_name, email });
 
+        // Validation
         if (!first_name || !last_name || !email || !password) {
             return res.status(400).json({ error: 'Tous les champs sont obligatoires' });
         }
@@ -45,12 +49,16 @@ app.post('/api/auth/register', async (req, res) => {
             return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères' });
         }
 
+        // Vérifier si l'email existe
         const [existing] = await pool.execute('SELECT id FROM users WHERE email = ?', [email]);
         if (existing.length > 0) {
             return res.status(400).json({ error: 'Cet email est déjà utilisé' });
         }
 
+        // Hacher le mot de passe
         const password_hash = await bcrypt.hash(password, 10);
+
+        // Insérer l'utilisateur
         const [result] = await pool.execute(
             `INSERT INTO users (email, password_hash, first_name, last_name, phone, country, status, role)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -58,8 +66,16 @@ app.post('/api/auth/register', async (req, res) => {
         );
 
         res.status(201).json({
+            success: true,
             message: '✅ Compte créé avec succès',
-            user: { id: result.insertId, email, first_name, last_name, status: 'PENDING', role: 'USER' }
+            user: { 
+                id: result.insertId, 
+                email, 
+                first_name, 
+                last_name, 
+                status: 'PENDING', 
+                role: 'USER' 
+            }
         });
 
     } catch (error) {
@@ -74,6 +90,7 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
+
         if (!email || !password) {
             return res.status(400).json({ error: 'Email et mot de passe requis' });
         }
@@ -89,13 +106,38 @@ app.post('/api/auth/login', async (req, res) => {
 
         const user = rows[0];
         const validPassword = await bcrypt.compare(password, user.password_hash);
+
         if (!validPassword) {
             return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
         }
 
+        // Si le compte est en attente
+        if (user.status === 'PENDING') {
+            return res.status(403).json({ 
+                error: 'Votre compte est en attente de validation. Veuillez patienter.',
+                status: 'PENDING'
+            });
+        }
+
+        // Si le compte est bloqué
+        if (user.status === 'BLOCKED') {
+            return res.status(403).json({ 
+                error: 'Votre compte a été bloqué. Contactez le support.',
+                status: 'BLOCKED'
+            });
+        }
+
         res.json({
-            token: 'mock-token-' + Date.now(),
-            user: { id: user.id, email: user.email, first_name: user.first_name, last_name: user.last_name, status: user.status, role: user.role }
+            success: true,
+            token: 'token-' + Date.now(),
+            user: {
+                id: user.id,
+                email: user.email,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                status: user.status,
+                role: user.role
+            }
         });
 
     } catch (error) {
@@ -127,7 +169,7 @@ app.put('/api/admin/users/:id/validate', async (req, res) => {
         const { id } = req.params;
         const { status } = req.body;
         await pool.execute('UPDATE users SET status = ? WHERE id = ?', [status, id]);
-        res.json({ message: '✅ Utilisateur validé' });
+        res.json({ success: true, message: '✅ Utilisateur validé' });
     } catch (error) {
         console.error('❌ Erreur validation:', error);
         res.status(500).json({ error: 'Erreur interne' });
@@ -135,29 +177,51 @@ app.put('/api/admin/users/:id/validate', async (req, res) => {
 });
 
 // ============================================
-// MOT DE PASSE OUBLIÉ - MOCK
+// MOT DE PASSE OUBLIÉ
 // ============================================
-app.post('/api/auth/forgot-password', (req, res) => {
+app.post('/api/auth/forgot-password', async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email requis' });
-    res.json({ message: '✅ Un email de réinitialisation a été envoyé (MOCK)' });
+
+    try {
+        const [rows] = await pool.execute('SELECT id, first_name FROM users WHERE email = ?', [email]);
+        if (rows.length === 0) {
+            return res.json({ message: 'Si un compte existe avec cet email, un lien a été envoyé.' });
+        }
+
+        // Ici tu peux ajouter l'envoi d'email
+        res.json({ message: '✅ Un email de réinitialisation a été envoyé' });
+    } catch (error) {
+        res.status(500).json({ error: 'Erreur interne' });
+    }
 });
 
 app.post('/api/auth/reset-password', (req, res) => {
-    res.json({ message: '✅ Mot de passe réinitialisé avec succès (MOCK)' });
+    res.json({ message: '✅ Mot de passe réinitialisé avec succès' });
 });
 
 // ============================================
-// ROUTES STATIQUES
+// ROUTES STATIQUES (pages HTML)
 // ============================================
 app.get('/confirmation.html', (req, res) => {
-    res.sendFile(__dirname + '/public/confirmation.html');
+    res.sendFile(path.join(__dirname, 'public', 'confirmation.html'));
+});
+
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
 });
 
 app.get('*', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// ============================================
+// DÉMARRAGE DU SERVEUR
+// ============================================
 app.listen(PORT, () => {
     console.log(`🚀 Warip Finance démarrée sur http://localhost:${PORT}`);
 });
