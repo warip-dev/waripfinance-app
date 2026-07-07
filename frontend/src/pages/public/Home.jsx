@@ -238,6 +238,15 @@ const Home = () => {
                 onChange={handleChange}
                 required
               />
+
+              {/* ========================================== */}
+              {/* MOT DE PASSE OUBLIÉ */}
+              {/* ========================================== */}
+              <div className="text-center mt-2">
+                <a href="/forgot-password" className="text-sm text-gray-400 hover:text-gold transition">
+                  🔑 Mot de passe oublié ?
+                </a>
+              </div>
             </>
           )}
 
