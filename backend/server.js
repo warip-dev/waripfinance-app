@@ -1,9 +1,26 @@
+require('dotenv').config();
 const express = require('express');
+const mysql = require('mysql2/promise');
+const bcrypt = require('bcrypt');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
 app.use(express.static('public'));
+
+// ============================================
+// CONNEXION À LA BASE DE DONNÉES
+// ============================================
+const pool = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT) || 3306,
+    user: process.env.DB_USER || 'u120682741_waripfina_user',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'u120682741_waripfinanc_db',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
 
 // ============================================
 // ROUTES API
@@ -14,7 +31,7 @@ app.get('/api', (req, res) => {
 });
 
 // ============================================
-// INSCRIPTION - VRAIE
+// INSCRIPTION - CONNECTÉE À LA BASE DE DONNÉES
 // ============================================
 app.post('/api/auth/register', async (req, res) => {
     try {
@@ -31,22 +48,44 @@ app.post('/api/auth/register', async (req, res) => {
             return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères' });
         }
 
-        // Simuler la création d'un compte (en attendant la base de données)
-        const newUser = {
-            id: Date.now(),
-            email,
-            first_name,
-            last_name,
-            status: 'PENDING',
-            role: 'USER',
-            created_at: new Date().toISOString()
-        };
+        // Vérifier si l'email existe déjà
+        const [existing] = await pool.execute(
+            'SELECT id FROM users WHERE email = ?',
+            [email]
+        );
 
-        console.log('✅ Compte créé (MOCK):', newUser);
+        if (existing.length > 0) {
+            return res.status(400).json({ error: 'Cet email est déjà utilisé' });
+        }
+
+        // Hacher le mot de passe
+        const password_hash = await bcrypt.hash(password, 10);
+
+        // Insérer l'utilisateur
+        const [result] = await pool.execute(
+            `INSERT INTO users (
+                email, password_hash, first_name, last_name, phone, country,
+                city, postal_code, street_name, street_number, profession,
+                gender, marital_status, status, role
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                email, password_hash, first_name, last_name, '', country || 'FR',
+                '', '', '', '', '', '', '', 'PENDING', 'USER'
+            ]
+        );
+
+        console.log('✅ Compte créé avec ID:', result.insertId);
 
         res.status(201).json({
             message: '✅ Compte créé avec succès. En attente de validation.',
-            user: newUser
+            user: {
+                id: result.insertId,
+                email,
+                first_name,
+                last_name,
+                status: 'PENDING',
+                role: 'USER'
+            }
         });
 
     } catch (error) {
@@ -56,28 +95,83 @@ app.post('/api/auth/register', async (req, res) => {
 });
 
 // ============================================
-// CONNEXION - MOCK
+// CONNEXION - VRAIE
 // ============================================
-app.post('/api/auth/login', (req, res) => {
-    const { email, password } = req.body;
-    if (email === 'admin@waripfinance.com' && password === 'Admin123!') {
-        return res.json({
-            token: 'mock-token-12345',
-            user: { id: 1, email, first_name: 'Admin', last_name: 'Warip', role: 'ADMIN', status: 'ACTIVE' }
+app.post('/api/auth/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email et mot de passe requis' });
+        }
+
+        const [rows] = await pool.execute(
+            'SELECT id, email, password_hash, first_name, last_name, status, role FROM users WHERE email = ?',
+            [email]
+        );
+
+        if (rows.length === 0) {
+            return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+        }
+
+        const user = rows[0];
+        const validPassword = await bcrypt.compare(password, user.password_hash);
+
+        if (!validPassword) {
+            return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+        }
+
+        res.json({
+            token: 'mock-token-' + Date.now(),
+            user: {
+                id: user.id,
+                email: user.email,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                status: user.status,
+                role: user.role
+            }
         });
+
+    } catch (error) {
+        console.error('❌ Erreur connexion:', error);
+        res.status(500).json({ error: 'Erreur interne du serveur' });
     }
-    res.status(401).json({ error: 'Email ou mot de passe incorrect' });
 });
 
 // ============================================
-// ADMIN USERS - MOCK
+// ADMIN USERS
 // ============================================
-app.get('/api/admin/users', (req, res) => {
-    res.json({
-        users: [
-            { id: 1, email: 'admin@waripfinance.com', first_name: 'Admin', last_name: 'Warip', status: 'ACTIVE', role: 'ADMIN', created_at: new Date().toISOString() }
-        ]
-    });
+app.get('/api/admin/users', async (req, res) => {
+    try {
+        const [rows] = await pool.execute(
+            'SELECT id, email, first_name, last_name, status, role, created_at FROM users ORDER BY created_at DESC'
+        );
+        res.json({ users: rows });
+    } catch (error) {
+        console.error('❌ Erreur admin users:', error);
+        res.status(500).json({ error: 'Erreur interne' });
+    }
+});
+
+// ============================================
+// VALIDER UN UTILISATEUR
+// ============================================
+app.put('/api/admin/users/:id/validate', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        await pool.execute(
+            'UPDATE users SET status = ? WHERE id = ?',
+            [status, id]
+        );
+
+        res.json({ message: '✅ Utilisateur validé' });
+    } catch (error) {
+        console.error('❌ Erreur validation:', error);
+        res.status(500).json({ error: 'Erreur interne' });
+    }
 });
 
 // ============================================
