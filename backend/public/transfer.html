@@ -63,7 +63,6 @@
         const token = localStorage.getItem('token');
         if (!token) { window.location.href = '/'; }
 
-        // Charger les bénéficiaires actifs
         function loadBeneficiaries() {
             fetch('/api/beneficiaries', {
                 headers: { 'Authorization': 'Bearer ' + token }
@@ -79,7 +78,6 @@
                         active.map(b => `<option value="${b.id}">${b.name} - ${b.iban}</option>`).join('');
                 }
 
-                // Pré-sélectionner si paramètre dans l'URL
                 const params = new URLSearchParams(window.location.search);
                 const beneficiaryId = params.get('beneficiary');
                 if (beneficiaryId) {

@@ -36,7 +36,6 @@
 </head>
 <body>
 
-    <!-- HEADER -->
     <header class="gradient-header fixed w-full z-50 top-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -53,187 +52,64 @@
         </div>
     </header>
 
-    <!-- SECTION PUBLIQUE -->
     <div id="publicSection" class="pt-20">
-        <!-- MODAL CONNEXION / INSCRIPTION -->
         <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-2xl max-w-2xl w-full p-8 relative card-shadow max-h-[90vh] overflow-y-auto">
-                <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"><i class="fas fa-times"></i></button>
 
-                <!-- LOGIN -->
                 <div id="loginForm">
                     <h2 class="text-2xl font-bold text-dark mb-2">Connexion</h2>
                     <div id="loginError" class="hidden error-message"></div>
                     <form id="loginFormSubmit">
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" id="loginEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-                            <input type="password" id="loginPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                        </div>
-                        <div class="text-right mb-6">
-                            <a href="/forgot-password.html" class="text-sm text-gold hover:underline">Mot de passe oublié ?</a>
-                        </div>
+                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" id="loginEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div>
+                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label><input type="password" id="loginPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div>
+                        <div class="text-right mb-6"><a href="/forgot-password.html" class="text-sm text-gold hover:underline">Mot de passe oublié ?</a></div>
                         <button type="submit" class="w-full btn-primary py-3 text-lg">Se connecter</button>
                     </form>
-                    <p class="text-center text-gray-500 text-sm mt-4">
-                        Pas encore de compte ?
-                        <button id="showRegister" class="text-gold font-semibold hover:underline">Créer un compte</button>
-                    </p>
+                    <p class="text-center text-gray-500 text-sm mt-4">Pas encore de compte ? <button id="showRegister" class="text-gold font-semibold hover:underline">Créer un compte</button></p>
                 </div>
 
-                <!-- REGISTER - 2 ÉTAPES -->
                 <div id="registerForm" class="hidden">
                     <h2 class="text-2xl font-bold text-dark mb-2">Créer un compte</h2>
                     <p class="text-gray-500 text-sm mb-4" id="stepLabel">Étape 1 sur 2 - Informations de connexion</p>
-
                     <div class="step-indicator">
                         <span class="step-dot active" id="step1Dot"></span>
                         <span class="step-dot" id="step2Dot"></span>
                     </div>
-
                     <div id="registerError" class="hidden error-message"></div>
 
-                    <!-- ÉTAPE 1 -->
                     <div id="registerStep1">
                         <form id="registerFormStep1" onsubmit="event.preventDefault(); goToStep2();">
                             <div class="grid grid-cols-2 gap-3 mb-3">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
-                                    <input type="text" id="regFirstName" placeholder="Jean" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
-                                    <input type="text" id="regLastName" placeholder="Dupont" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                                </div>
+                                <div><label class="block text-sm font-medium text-gray-700 mb-1">Prénom</label><input type="text" id="regFirstName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div>
+                                <div><label class="block text-sm font-medium text-gray-700 mb-1">Nom</label><input type="text" id="regLastName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div>
                             </div>
-                            <div class="mb-3">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                <input type="email" id="regEmail" placeholder="exemple@email.com" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-                                <input type="password" id="regPassword" placeholder="Min 8 caractères" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required minlength="8">
-                                <p class="text-xs text-gray-400 mt-1">Au moins 8 caractères</p>
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Confirmer le mot de passe</label>
-                                <input type="password" id="regConfirmPassword" placeholder="Confirmez votre mot de passe" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required minlength="8">
-                            </div>
-                            <button type="submit" class="w-full btn-primary py-3 text-lg">
-                                Suivant <i class="fas fa-arrow-right ml-2"></i>
-                            </button>
+                            <div class="mb-3"><label class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" id="regEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div>
+                            <div class="mb-3"><label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label><input type="password" id="regPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required minlength="8"><p class="text-xs text-gray-400 mt-1">Au moins 8 caractères</p></div>
+                            <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">Confirmer le mot de passe</label><input type="password" id="regConfirmPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required minlength="8"></div>
+                            <button type="submit" class="w-full btn-primary py-3 text-lg">Suivant <i class="fas fa-arrow-right ml-2"></i></button>
                         </form>
                     </div>
 
-                    <!-- ÉTAPE 2 -->
                     <div id="registerStep2" class="hidden">
                         <form id="registerFormStep2" onsubmit="event.preventDefault(); submitRegister();">
-                            <div class="mb-3">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Pays</label>
-                                <select id="regCountry" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus country-select" onchange="updateCountryInfo()">
-                                    <option value="FR">🇫🇷 France (+33)</option>
-                                    <option value="BE">🇧🇪 Belgique (+32)</option>
-                                    <option value="CH">🇨🇭 Suisse (+41)</option>
-                                    <option value="CA">🇨🇦 Canada (+1)</option>
-                                    <option value="US">🇺🇸 États-Unis (+1)</option>
-                                    <option value="GB">🇬🇧 Royaume-Uni (+44)</option>
-                                    <option value="DE">🇩🇪 Allemagne (+49)</option>
-                                    <option value="IT">🇮🇹 Italie (+39)</option>
-                                    <option value="ES">🇪🇸 Espagne (+34)</option>
-                                    <option value="PT">🇵🇹 Portugal (+351)</option>
-                                    <option value="NL">🇳🇱 Pays-Bas (+31)</option>
-                                    <option value="LU">🇱🇺 Luxembourg (+352)</option>
-                                    <option value="MA">🇲🇦 Maroc (+212)</option>
-                                    <option value="TN">🇹🇳 Tunisie (+216)</option>
-                                    <option value="DZ">🇩🇿 Algérie (+213)</option>
-                                    <option value="SN">🇸🇳 Sénégal (+221)</option>
-                                    <option value="CI">🇨🇮 Côte d'Ivoire (+225)</option>
-                                    <option value="CM">🇨🇲 Cameroun (+237)</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Numéro de téléphone</label>
-                                <div class="phone-wrapper">
-                                    <span id="countryCodeDisplay" class="phone-prefix">+33</span>
-                                    <input type="tel" id="regPhone" placeholder="6 12 34 56 78" class="phone-input px-4 py-3 border border-gray-300 focus:outline-none input-focus" required>
-                                </div>
-                                <p id="phoneHint" class="text-xs text-gray-400 mt-1">Ex: 612345678 (10 chiffres)</p>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3 mb-3">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Ville</label>
-                                    <input type="text" id="regCity" placeholder="Paris" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Code postal</label>
-                                    <input type="text" id="regPostalCode" placeholder="75001" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required maxlength="5">
-                                    <p class="text-xs text-gray-400 mt-1">Uniquement des chiffres</p>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3 mb-3">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Numéro de rue</label>
-                                    <input type="text" id="regStreetNumber" placeholder="12" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nom de rue</label>
-                                    <input type="text" id="regStreetName" placeholder="Rue de Rivoli" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Profession</label>
-                                <input type="text" id="regProfession" placeholder="Ingénieur" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3 mb-3">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Sexe</label>
-                                    <select id="regGender" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                                        <option value="">Sélectionner</option>
-                                        <option value="M">Masculin</option>
-                                        <option value="F">Féminin</option>
-                                        <option value="OTHER">Autre</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Situation matrimoniale</label>
-                                    <select id="regMaritalStatus" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                                        <option value="">Sélectionner</option>
-                                        <option value="SINGLE">Célibataire</option>
-                                        <option value="MARRIED">Marié(e)</option>
-                                        <option value="DIVORCED">Divorcé(e)</option>
-                                        <option value="WIDOWED">Veuf(ve)</option>
-                                        <option value="PACSED">Pacsé(e)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="flex gap-3">
-                                <button type="button" id="backToStep1" class="flex-1 btn-secondary py-3 text-lg">
-                                    <i class="fas fa-arrow-left mr-2"></i>Retour
-                                </button>
-                                <button type="submit" class="flex-1 btn-primary py-3 text-lg">
-                                    Créer mon compte
-                                </button>
-                            </div>
+                            <div class="mb-3"><label class="block text-sm font-medium text-gray-700 mb-1">Pays</label><select id="regCountry" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus country-select" onchange="updateCountryInfo()"><option value="FR">🇫🇷 France (+33)</option><option value="BE">🇧🇪 Belgique (+32)</option><option value="CH">🇨🇭 Suisse (+41)</option><option value="CA">🇨🇦 Canada (+1)</option><option value="US">🇺🇸 États-Unis (+1)</option><option value="GB">🇬🇧 Royaume-Uni (+44)</option><option value="DE">🇩🇪 Allemagne (+49)</option><option value="IT">🇮🇹 Italie (+39)</option><option value="ES">🇪🇸 Espagne (+34)</option><option value="PT">🇵🇹 Portugal (+351)</option><option value="NL">🇳🇱 Pays-Bas (+31)</option><option value="LU">🇱🇺 Luxembourg (+352)</option><option value="MA">🇲🇦 Maroc (+212)</option><option value="TN">🇹🇳 Tunisie (+216)</option><option value="DZ">🇩🇿 Algérie (+213)</option><option value="SN">🇸🇳 Sénégal (+221)</option><option value="CI">🇨🇮 Côte d'Ivoire (+225)</option><option value="CM">🇨🇲 Cameroun (+237)</option></select></div>
+                            <div class="mb-3"><label class="block text-sm font-medium text-gray-700 mb-1">Numéro de téléphone</label><div class="phone-wrapper"><span id="countryCodeDisplay" class="phone-prefix">+33</span><input type="tel" id="regPhone" class="phone-input px-4 py-3 border border-gray-300 focus:outline-none input-focus" required></div><p id="phoneHint" class="text-xs text-gray-400 mt-1">Ex: 612345678 (10 chiffres)</p></div>
+                            <div class="grid grid-cols-2 gap-3 mb-3"><div><label class="block text-sm font-medium text-gray-700 mb-1">Ville</label><input type="text" id="regCity" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div><div><label class="block text-sm font-medium text-gray-700 mb-1">Code postal</label><input type="text" id="regPostalCode" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required maxlength="5"><p class="text-xs text-gray-400 mt-1">Uniquement des chiffres</p></div></div>
+                            <div class="grid grid-cols-2 gap-3 mb-3"><div><label class="block text-sm font-medium text-gray-700 mb-1">Numéro de rue</label><input type="text" id="regStreetNumber" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div><div><label class="block text-sm font-medium text-gray-700 mb-1">Nom de rue</label><input type="text" id="regStreetName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div></div>
+                            <div class="mb-3"><label class="block text-sm font-medium text-gray-700 mb-1">Profession</label><input type="text" id="regProfession" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div>
+                            <div class="grid grid-cols-2 gap-3 mb-3"><div><label class="block text-sm font-medium text-gray-700 mb-1">Sexe</label><select id="regGender" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required><option value="">Sélectionner</option><option value="M">Masculin</option><option value="F">Féminin</option><option value="OTHER">Autre</option></select></div><div><label class="block text-sm font-medium text-gray-700 mb-1">Situation matrimoniale</label><select id="regMaritalStatus" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required><option value="">Sélectionner</option><option value="SINGLE">Célibataire</option><option value="MARRIED">Marié(e)</option><option value="DIVORCED">Divorcé(e)</option><option value="WIDOWED">Veuf(ve)</option><option value="PACSED">Pacsé(e)</option></select></div></div>
+                            <div class="flex gap-3"><button type="button" id="backToStep1" class="flex-1 btn-secondary py-3 text-lg"><i class="fas fa-arrow-left mr-2"></i>Retour</button><button type="submit" class="flex-1 btn-primary py-3 text-lg">Créer mon compte</button></div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- HERO -->
         <section class="pt-28 pb-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid md:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h1 class="text-4xl md:text-5xl font-bold text-dark leading-tight">La banque qui <span class="gold">réinvente</span> votre argent</h1>
-                        <p class="text-gray-600 text-lg mt-4 leading-relaxed">Ouvrez un compte en 5 minutes, gérez vos cryptos et vos euros en toute simplicité.</p>
-                        <button id="heroOpenRegister" class="btn-primary mt-8"><i class="fas fa-rocket mr-2"></i>Ouvrir un compte</button>
-                    </div>
+                    <div><h1 class="text-4xl md:text-5xl font-bold text-dark leading-tight">La banque qui <span class="gold">réinvente</span> votre argent</h1><p class="text-gray-600 text-lg mt-4 leading-relaxed">Ouvrez un compte en 5 minutes, gérez vos cryptos et vos euros en toute simplicité.</p><button id="heroOpenRegister" class="btn-primary mt-8"><i class="fas fa-rocket mr-2"></i>Ouvrir un compte</button></div>
                     <div class="hidden md:block"><img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=400&fit=crop" alt="Banque" class="rounded-2xl shadow-xl w-full object-cover" /></div>
                 </div>
             </div>
@@ -241,60 +117,23 @@
         <footer class="bg-dark text-gray-400 py-12">...</footer>
     </div>
 
-    <!-- ========================================== -->
-    <!-- SECTION DASHBOARD (connecté) -->
-    <!-- ========================================== -->
     <div id="dashboardSection" class="hidden pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
-
-        <div class="flex justify-between items-center mb-6">
-            <div><h1 class="text-2xl font-bold text-dark">Bonjour <span id="userFirstName" class="gold">Client</span></h1><p class="text-gray-500 text-sm">Bienvenue sur votre espace client</p></div>
-        </div>
-
+        <div class="flex justify-between items-center mb-6"><div><h1 class="text-2xl font-bold text-dark">Bonjour <span id="userFirstName" class="gold">Client</span></h1><p class="text-gray-500 text-sm">Bienvenue sur votre espace client</p></div></div>
         <div class="balance-card rounded-3xl p-6 md:p-8 text-white mb-8 card-shadow">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <p class="text-gray-400 text-sm">Solde total</p>
-                    <p class="text-3xl md:text-4xl font-bold" id="userBalance">0,00 €</p>
-                    <div class="flex gap-6 mt-3 text-sm">
-                        <span class="text-gray-400">BTC: <span class="text-white font-mono" id="btcBalance">0,0000</span></span>
-                        <span class="text-gray-400">ETH: <span class="text-white font-mono" id="ethBalance">0,0000</span></span>
-                    </div>
-                </div>
+                <div><p class="text-gray-400 text-sm">Solde total</p><p class="text-3xl md:text-4xl font-bold" id="userBalance">0,00 €</p><div class="flex gap-6 mt-3 text-sm"><span class="text-gray-400">BTC: <span class="text-white font-mono" id="btcBalance">0,0000</span></span><span class="text-gray-400">ETH: <span class="text-white font-mono" id="ethBalance">0,0000</span></span></div></div>
             </div>
         </div>
-
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <a href="/deposit.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition">
-                <div class="text-3xl gold mb-2"><i class="fas fa-arrow-down"></i></div>
-                <p class="font-semibold text-dark">Déposer</p>
-            </a>
-            <a href="/beneficiary.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition">
-                <div class="text-3xl gold mb-2"><i class="fas fa-users"></i></div>
-                <p class="font-semibold text-dark">Bénéficiaires</p>
-            </a>
-            <a href="/transfer.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition">
-                <div class="text-3xl gold mb-2"><i class="fas fa-paper-plane"></i></div>
-                <p class="font-semibold text-dark">Virement</p>
-            </a>
-            <a href="/profile.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition">
-                <div class="text-3xl gold mb-2"><i class="fas fa-user-circle"></i></div>
-                <p class="font-semibold text-dark">Mon profil</p>
-            </a>
+            <a href="/deposit.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition"><div class="text-3xl gold mb-2"><i class="fas fa-arrow-down"></i></div><p class="font-semibold text-dark">Déposer</p></a>
+            <a href="/beneficiary.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition"><div class="text-3xl gold mb-2"><i class="fas fa-users"></i></div><p class="font-semibold text-dark">Bénéficiaires</p></a>
+            <a href="/transfer.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition"><div class="text-3xl gold mb-2"><i class="fas fa-paper-plane"></i></div><p class="font-semibold text-dark">Virement</p></a>
+            <a href="/profile.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition"><div class="text-3xl gold mb-2"><i class="fas fa-user-circle"></i></div><p class="font-semibold text-dark">Mon profil</p></a>
         </div>
-
-        <div class="bg-white rounded-2xl p-6 card-shadow">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-semibold text-dark">Mes bénéficiaires</h3>
-                <a href="/beneficiary.html" class="text-gold text-sm hover:underline">Voir tout</a>
-            </div>
-            <div id="beneficiariesList"><p class="text-gray-400 text-sm">Chargement...</p></div>
-        </div>
+        <div class="bg-white rounded-2xl p-6 card-shadow"><div class="flex justify-between items-center mb-4"><h3 class="font-semibold text-dark">Mes bénéficiaires</h3><a href="/beneficiary.html" class="text-gold text-sm hover:underline">Voir tout</a></div><div id="beneficiariesList"><p class="text-gray-400 text-sm">Chargement...</p></div></div>
     </div>
 
     <script>
-        // ============================================
-        // LISTE DES PAYS AVEC INDICATIFS
-        // ============================================
         const countries = {
             'FR': { code: '+33', format: 'XX XX XX XX XX', example: '6 12 34 56 78', length: 10 },
             'BE': { code: '+32', format: 'XXX XX XX XX', example: '4 12 34 56 78', length: 10 },
@@ -326,9 +165,6 @@
             }
         }
 
-        // ============================================
-        // AUTHENTIFICATION
-        // ============================================
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -351,22 +187,9 @@
 
         if (token && user.email) { showDashboard(); } else { showPublic(); }
 
-        // ============================================
-        // MODAL LOGIN/REGISTER
-        // ============================================
         const modal = document.getElementById('authModal');
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const step1 = document.getElementById('registerStep1');
-        const step2 = document.getElementById('registerStep2');
-        const step1Dot = document.getElementById('step1Dot');
-        const step2Dot = document.getElementById('step2Dot');
-
         document.getElementById('openLoginModal').addEventListener('click', () => modal.classList.remove('hidden'));
-        document.getElementById('heroOpenRegister').addEventListener('click', () => {
-            modal.classList.remove('hidden');
-            showRegister();
-        });
+        document.getElementById('heroOpenRegister').addEventListener('click', () => { modal.classList.remove('hidden'); showRegister(); });
         document.getElementById('closeModal').addEventListener('click', () => modal.classList.add('hidden'));
 
         function showLogin() {
@@ -394,16 +217,12 @@
         document.getElementById('showRegister').addEventListener('click', showRegister);
         document.getElementById('showLogin').addEventListener('click', showLogin);
 
-        // ============================================
-        // PASSER À L'ÉTAPE 2
-        // ============================================
         function goToStep2() {
             const firstName = document.getElementById('regFirstName').value.trim();
             const lastName = document.getElementById('regLastName').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value;
             const confirmPassword = document.getElementById('regConfirmPassword').value;
-
             const errorEl = document.getElementById('registerError');
             errorEl.classList.add('hidden');
             errorEl.textContent = '';
@@ -413,13 +232,11 @@
                 errorEl.classList.remove('hidden');
                 return;
             }
-
             if (password.length < 8) {
                 errorEl.textContent = 'Le mot de passe doit contenir au moins 8 caractères';
                 errorEl.classList.remove('hidden');
                 return;
             }
-
             if (password !== confirmPassword) {
                 errorEl.textContent = 'Les mots de passe ne correspondent pas';
                 errorEl.classList.remove('hidden');
@@ -434,9 +251,6 @@
             document.getElementById('stepLabel').textContent = 'Étape 2 sur 2 - Informations personnelles';
         }
 
-        // ============================================
-        // RETOUR À L'ÉTAPE 1
-        // ============================================
         document.getElementById('backToStep1').addEventListener('click', function() {
             step1.classList.remove('hidden');
             step2.classList.add('hidden');
@@ -446,9 +260,6 @@
             document.getElementById('stepLabel').textContent = 'Étape 1 sur 2 - Informations de connexion';
         });
 
-        // ============================================
-        // SOUMETTRE L'INSCRIPTION (ÉTAPE 2)
-        // ============================================
         function submitRegister() {
             const firstName = document.getElementById('regFirstName').value.trim();
             const lastName = document.getElementById('regLastName').value.trim();
@@ -473,13 +284,11 @@
                 errorEl.classList.remove('hidden');
                 return;
             }
-
             if (!/^\d+$/.test(postalCode)) {
                 errorEl.textContent = 'Le code postal doit contenir uniquement des chiffres';
                 errorEl.classList.remove('hidden');
                 return;
             }
-
             const countryInfo = countries[country];
             if (countryInfo) {
                 const digits = phone.replace(/\D/g, '');
@@ -498,19 +307,10 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    first_name: firstName,
-                    last_name: lastName,
-                    email: email,
-                    password: password,
-                    country: country,
-                    phone: phone,
-                    city: city,
-                    postal_code: postalCode,
-                    street_name: streetName,
-                    street_number: streetNumber,
-                    profession: profession,
-                    gender: gender,
-                    marital_status: maritalStatus
+                    first_name: firstName, last_name: lastName, email: email, password: password,
+                    country: country, phone: phone, city: city, postal_code: postalCode,
+                    street_name: streetName, street_number: streetNumber, profession: profession,
+                    gender: gender, marital_status: maritalStatus
                 })
             })
             .then(res => res.json())
@@ -533,9 +333,6 @@
             });
         }
 
-        // ============================================
-        // CONNEXION - CORRECTION DE LA REDIRECTION
-        // ============================================
         document.getElementById('loginFormSubmit').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -563,7 +360,6 @@
                 if (!data.success || !data.user) {
                     errorEl.textContent = data.error || 'Email ou mot de passe incorrect';
                     errorEl.classList.remove('hidden');
-
                     if (data.status === 'PENDING') {
                         errorEl.textContent = '⏳ Votre compte est en attente de validation.';
                     }
@@ -573,18 +369,13 @@
                     return;
                 }
 
-                // ✅ STOCKER LES INFORMATIONS DE L'UTILISATEUR
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
 
-                // ✅ REDIRECTION SELON LE RÔLE ET LE STATUT
                 if (data.user.role === 'ADMIN') {
                     window.location.href = '/admin.html';
                 } else if (data.user.status === 'PENDING') {
                     window.location.href = '/pending.html';
-                } else if (data.user.status === 'ACTIVE') {
-                    // ✅ L'UTILISATEUR EST ACTIF → REDIRECTION VERS LE DASHBOARD
-                    window.location.href = '/';
                 } else {
                     window.location.href = '/';
                 }
@@ -598,9 +389,6 @@
             });
         });
 
-        // ============================================
-        // API CALL
-        // ============================================
         function apiCall(url, options = {}) {
             const token = localStorage.getItem('token');
             return fetch(url, {
@@ -613,9 +401,6 @@
             }).then(res => res.json());
         }
 
-        // ============================================
-        // BÉNÉFICIAIRES (aperçu)
-        // ============================================
         function loadBeneficiaries() {
             const list = document.getElementById('beneficiariesList');
             apiCall('/api/beneficiaries')
@@ -639,18 +424,12 @@
                 .catch(() => { list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>'; });
         }
 
-        // ============================================
-        // ESC
-        // ============================================
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 document.querySelectorAll('.modal-overlay').forEach(el => el.classList.add('hidden'));
             }
         });
 
-        // ============================================
-        // INIT
-        // ============================================
         updateCountryInfo();
         if (token && user.email) {
             loadBeneficiaries();

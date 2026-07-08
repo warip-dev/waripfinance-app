@@ -30,7 +30,6 @@
 </head>
 <body>
 
-    <!-- HEADER ADMIN -->
     <header class="gradient-header fixed w-full z-50 top-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -42,11 +41,9 @@
         </div>
     </header>
 
-    <!-- MAIN -->
     <div id="adminContent" class="pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
         <h1 class="text-3xl font-bold text-dark mb-6">👑 Administration</h1>
 
-        <!-- Tabs -->
         <div class="flex gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow flex-wrap">
             <button id="tabUsers" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark">Utilisateurs</button>
             <button id="tabBeneficiaries" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Bénéficiaires</button>
@@ -54,31 +51,24 @@
             <button id="tabAddresses" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Adresses</button>
         </div>
 
-        <!-- UTILISATEURS -->
         <div id="usersContent">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">👥 Utilisateurs inscrits</h3>
                 <div id="usersList"><div class="loading-spinner"></div></div>
             </div>
         </div>
-
-        <!-- BÉNÉFICIAIRES -->
         <div id="beneficiariesContent" class="hidden">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">📋 Bénéficiaires</h3>
                 <div id="adminBeneficiariesList"><div class="loading-spinner"></div></div>
             </div>
         </div>
-
-        <!-- VIREMENTS -->
         <div id="transfersContent" class="hidden">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">💸 Virements en attente</h3>
                 <div id="adminTransfersList"><div class="loading-spinner"></div></div>
             </div>
         </div>
-
-        <!-- ADRESSES -->
         <div id="addressesContent" class="hidden">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">🔑 Adresses de dépôt</h3>
@@ -88,9 +78,6 @@
     </div>
 
     <script>
-        // ============================================
-        // VÉRIFICATION ADMIN
-        // ============================================
         const token = localStorage.getItem('admin_token');
         const user = JSON.parse(localStorage.getItem('admin_user') || '{}');
 
@@ -98,9 +85,6 @@
             window.location.href = '/';
         }
 
-        // ============================================
-        // TABS
-        // ============================================
         function setupTabs() {
             const tabs = document.querySelectorAll('.tab-btn');
             const contents = {
@@ -135,18 +119,12 @@
         }
         setupTabs();
 
-        // ============================================
-        // LOGOUT
-        // ============================================
         document.getElementById('adminLogout').addEventListener('click', function() {
             localStorage.removeItem('admin_token');
             localStorage.removeItem('admin_user');
             window.location.href = '/';
         });
 
-        // ============================================
-        // FONCTION APPEL API
-        // ============================================
         function apiCall(url, options = {}) {
             const token = localStorage.getItem('admin_token');
             const defaultOptions = {
@@ -167,9 +145,6 @@
                 });
         }
 
-        // ============================================
-        // UTILISATEURS - CHARGEMENT
-        // ============================================
         function loadUsers() {
             const list = document.getElementById('usersList');
             list.innerHTML = '<div class="loading-spinner"></div>';
@@ -209,15 +184,10 @@
                 });
         }
 
-        // ============================================
-        // VALIDER / REJETER UN UTILISATEUR (CORRIGÉ)
-        // ============================================
         window.validateUser = function(id, status) {
             if (!confirm(`Voulez-vous vraiment ${status === 'ACTIVE' ? 'valider' : 'rejeter'} cet utilisateur ?`)) return;
 
             const statusLabel = status === 'ACTIVE' ? 'validé' : 'rejeté';
-
-            // Désactiver les boutons
             const btns = document.querySelectorAll(`button[onclick*="validateUser('${id}', '${status}')"]`);
             btns.forEach(btn => {
                 btn.disabled = true;
@@ -234,7 +204,6 @@
                     loadUsers();
                 } else {
                     alert(`❌ Erreur: ${data.error || 'Problème lors de la validation'}`);
-                    // Réactiver les boutons
                     btns.forEach(btn => {
                         btn.disabled = false;
                         btn.innerHTML = status === 'ACTIVE' ? '<i class="fas fa-check"></i> Valider' : '<i class="fas fa-times"></i> Rejeter';
@@ -243,7 +212,6 @@
             })
             .catch(err => {
                 alert(`❌ Erreur de connexion au serveur: ${err.message}`);
-                // Réactiver les boutons
                 btns.forEach(btn => {
                     btn.disabled = false;
                     btn.innerHTML = status === 'ACTIVE' ? '<i class="fas fa-check"></i> Valider' : '<i class="fas fa-times"></i> Rejeter';
@@ -252,9 +220,6 @@
             });
         };
 
-        // ============================================
-        // BÉNÉFICIAIRES (Admin)
-        // ============================================
         function loadAdminBeneficiaries() {
             const list = document.getElementById('adminBeneficiariesList');
             list.innerHTML = '<div class="loading-spinner"></div>';
@@ -309,9 +274,6 @@
             .catch(err => alert(`Erreur: ${err.message}`));
         };
 
-        // ============================================
-        // VIREMENTS (Admin)
-        // ============================================
         function loadAdminTransfers() {
             const list = document.getElementById('adminTransfersList');
             list.innerHTML = '<div class="loading-spinner"></div>';
@@ -361,9 +323,6 @@
             .catch(err => alert(`Erreur: ${err.message}`));
         };
 
-        // ============================================
-        // ADRESSES (Admin)
-        // ============================================
         function loadAddresses() {
             const list = document.getElementById('addressesList');
             list.innerHTML = '<div class="loading-spinner"></div>';
@@ -414,9 +373,6 @@
             .catch(err => alert(`Erreur: ${err.message}`));
         };
 
-        // ============================================
-        // INIT
-        // ============================================
         loadUsers();
     </script>
 </body>

@@ -94,7 +94,6 @@
 
         if (!token || !user.email) { window.location.href = '/'; }
 
-        // Remplir les informations
         document.getElementById('profileAvatar').textContent = (user.first_name ? user.first_name.charAt(0) : 'U');
         document.getElementById('profileFullName').textContent = (user.first_name || '') + ' ' + (user.last_name || '');
         document.getElementById('profileEmail').textContent = user.email || '-';
@@ -113,7 +112,6 @@
         document.getElementById('pStatus').textContent = user.status || '-';
         document.getElementById('profileStatus').textContent = user.status === 'ACTIVE' ? '✅ Actif' : user.status === 'PENDING' ? '⏳ En attente' : '❌ Bloqué';
 
-        // Navigation
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', function() {
                 document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
