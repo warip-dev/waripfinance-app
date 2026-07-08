@@ -206,3 +206,7 @@ app.get('/deposit.html', (req, res) => res.sendFile(path.join(__dirname, 'public
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 app.listen(PORT, () => console.log(`🚀 Warip Finance sur http://localhost:${PORT}`));
+// Ajouter cette route dans server.js
+app.get('/dashboard.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
