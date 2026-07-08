@@ -30,7 +30,6 @@ async function authenticate(req, res, next) {
     const authHeader = req.headers.authorization;
     if (!authHeader) return res.status(401).json({ error: 'Non autorisé' });
     const token = authHeader.split(' ')[1];
-    // Récupérer l'utilisateur depuis le token (simplifié)
     const [rows] = await pool.execute('SELECT id, role FROM users WHERE id = ?', [1]);
     if (rows.length === 0) return res.status(401).json({ error: 'Utilisateur non trouvé' });
     req.userId = rows[0].id;
@@ -43,7 +42,6 @@ async function authenticate(req, res, next) {
 // ============================================
 (async () => {
     try {
-        // Table users
         await pool.execute(`
             CREATE TABLE IF NOT EXISTS users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -59,7 +57,6 @@ async function authenticate(req, res, next) {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
-        // Table beneficiaries
         await pool.execute(`
             CREATE TABLE IF NOT EXISTS beneficiaries (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -73,7 +70,6 @@ async function authenticate(req, res, next) {
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             )
         `);
-        // Table transfers
         await pool.execute(`
             CREATE TABLE IF NOT EXISTS transfers (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -87,7 +83,6 @@ async function authenticate(req, res, next) {
                 FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id) ON DELETE CASCADE
             )
         `);
-        // Table deposit_addresses (une seule adresse par crypto)
         await pool.execute(`
             CREATE TABLE IF NOT EXISTS deposit_addresses (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -97,7 +92,6 @@ async function authenticate(req, res, next) {
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )
         `);
-        // Insert default addresses (si elles n'existent pas)
         await pool.execute(`
             INSERT IGNORE INTO deposit_addresses (currency, address, network) VALUES 
             ('BTC', 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq', 'Bitcoin'),
@@ -225,7 +219,7 @@ app.put('/api/admin/users/:id/balance', async (req, res) => {
 });
 
 // ============================================
-// ADMIN - ADRESSES DE DÉPÔT (UNIQUES)
+// ADMIN - ADRESSES DE DÉPÔT
 // ============================================
 app.get('/api/admin/deposit-addresses', async (req, res) => {
     try {
@@ -328,7 +322,6 @@ app.post('/api/transfers', authenticate, async (req, res) => {
         if (benef.length === 0) {
             return res.status(400).json({ error: 'Bénéficiaire non trouvé ou non validé' });
         }
-        // Vérifier le solde
         const [user] = await pool.execute('SELECT balance FROM users WHERE id = ?', [req.userId]);
         if (user[0].balance < amount) {
             return res.status(400).json({ error: 'Solde insuffisant' });
@@ -385,10 +378,8 @@ app.put('/api/admin/transfers/:id/validate', async (req, res) => {
     try {
         const { id } = req.params;
         const { status, admin_comment } = req.body;
-        // Récupérer le virement
         const [transfer] = await pool.execute('SELECT user_id, amount FROM transfers WHERE id = ?', [id]);
         if (transfer.length === 0) return res.status(404).json({ error: 'Virement non trouvé' });
-        // Si validé, débiter le solde
         if (status === 'COMPLETED') {
             await pool.execute('UPDATE users SET balance = balance - ? WHERE id = ?', [transfer[0].amount, transfer[0].user_id]);
         }
@@ -409,12 +400,22 @@ app.put('/api/admin/transfers/:id/validate', async (req, res) => {
 app.get('/confirmation.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'confirmation.html'));
 });
+
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
+
+// Route pour admin.html (à la racine)
+app.get('/admin.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
+
+// Route pour l'ancien /admin/ (redirection vers admin.html)
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+// Route par défaut
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
