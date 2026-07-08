@@ -51,7 +51,7 @@
 <body>
 
     <!-- ========================================== -->
-    <!-- HEADER -->
+    <!-- HEADER (sans déconnexion) -->
     <!-- ========================================== -->
     <header class="gradient-header fixed w-full z-50 top-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -64,9 +64,9 @@
                         <i class="fas fa-user mr-2"></i>Se connecter
                     </button>
                     <div id="userInfo" class="hidden flex items-center gap-3">
-                        <span class="text-gray-300 text-sm" id="userName">Client</span>
-                        <button id="logoutBtn" class="btn-danger px-4 py-1.5 text-sm">
-                            <i class="fas fa-sign-out-alt mr-1"></i>Déconnexion
+                        <!-- Nom de l'utilisateur supprimé, seulement le bouton profil -->
+                        <button id="openProfileModal" class="btn-outline text-sm flex items-center gap-2" style="border-color: rgba(255,255,255,0.3); color: white;">
+                            <i class="fas fa-user-circle"></i> Mon profil
                         </button>
                     </div>
                 </div>
@@ -210,11 +210,6 @@
             <div>
                 <h1 class="text-2xl font-bold text-dark">Bonjour <span id="userFirstName" class="gold">Client</span> 👋</h1>
                 <p class="text-gray-500 text-sm">Bienvenue sur votre espace client</p>
-            </div>
-            <div class="flex items-center gap-3 mt-3 md:mt-0">
-                <button id="openProfileModal" class="btn-outline text-sm flex items-center gap-2">
-                    <i class="fas fa-user-circle"></i> Mon profil
-                </button>
             </div>
         </div>
 
@@ -522,7 +517,6 @@
             document.getElementById('dashboardSection').classList.remove('hidden');
             document.getElementById('openLoginModal').classList.add('hidden');
             document.getElementById('userInfo').classList.remove('hidden');
-            document.getElementById('userName').textContent = (user.first_name || 'Client') + ' ' + (user.last_name || '');
             document.getElementById('userFirstName').textContent = user.first_name || 'Client';
             document.getElementById('userBalance').textContent = (user.balance || 0).toFixed(2) + ' €';
             loadBeneficiaries();
@@ -683,12 +677,6 @@
         // ============================================
         // LOGOUT
         // ============================================
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.reload();
-        });
-
         function handleLogout() {
             if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
                 localStorage.removeItem('token');
