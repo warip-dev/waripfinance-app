@@ -91,7 +91,6 @@
                     <h2 class="text-2xl font-bold text-dark mb-2">Créer un compte</h2>
                     <p class="text-gray-500 text-sm mb-4" id="stepLabel">Étape 1 sur 2 - Informations de connexion</p>
 
-                    <!-- Indicateur d'étape -->
                     <div class="step-indicator">
                         <span class="step-dot active" id="step1Dot"></span>
                         <span class="step-dot" id="step2Dot"></span>
@@ -535,7 +534,7 @@
         }
 
         // ============================================
-        // CONNEXION
+        // CONNEXION - CORRECTION DE LA REDIRECTION
         // ============================================
         document.getElementById('loginFormSubmit').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -574,15 +573,20 @@
                     return;
                 }
 
+                // ✅ STOCKER LES INFORMATIONS DE L'UTILISATEUR
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
 
+                // ✅ REDIRECTION SELON LE RÔLE ET LE STATUT
                 if (data.user.role === 'ADMIN') {
                     window.location.href = '/admin.html';
                 } else if (data.user.status === 'PENDING') {
                     window.location.href = '/pending.html';
+                } else if (data.user.status === 'ACTIVE') {
+                    // ✅ L'UTILISATEUR EST ACTIF → REDIRECTION VERS LE DASHBOARD
+                    window.location.href = '/';
                 } else {
-                    window.location.reload();
+                    window.location.href = '/';
                 }
             })
             .catch(err => {
