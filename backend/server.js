@@ -89,17 +89,17 @@ async function authenticate(req, res, next) {
                 FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id) ON DELETE CASCADE
             )
         `);
-        // Table deposit addresses (pour l'admin)
+        // Table deposit_addresses (une seule adresse par crypto)
         await pool.execute(`
             CREATE TABLE IF NOT EXISTS deposit_addresses (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                currency VARCHAR(10) NOT NULL,
+                currency VARCHAR(10) NOT NULL UNIQUE,
                 address VARCHAR(255) NOT NULL,
                 network VARCHAR(50),
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )
         `);
-        // Insert default addresses
+        // Insert default addresses (si elles n'existent pas)
         await pool.execute(`
             INSERT IGNORE INTO deposit_addresses (currency, address, network) VALUES 
             ('BTC', 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq', 'Bitcoin'),
@@ -227,7 +227,7 @@ app.put('/api/admin/users/:id/balance', async (req, res) => {
 });
 
 // ============================================
-// ADMIN - ADRESSES DE DÉPÔT
+// ADMIN - ADRESSES DE DÉPÔT (UNIQUES)
 // ============================================
 app.get('/api/admin/deposit-addresses', async (req, res) => {
     try {
@@ -252,7 +252,7 @@ app.put('/api/admin/deposit-addresses/:id', async (req, res) => {
 });
 
 // ============================================
-// BÉNÉFICIAIRES
+// BÉNÉFICIAIRES (Utilisateur)
 // ============================================
 app.get('/api/beneficiaries', authenticate, async (req, res) => {
     try {
@@ -315,7 +315,7 @@ app.put('/api/admin/beneficiaries/:id/validate', async (req, res) => {
 });
 
 // ============================================
-// VIREMENTS
+// VIREMENTS (Utilisateur)
 // ============================================
 app.post('/api/transfers', authenticate, async (req, res) => {
     try {
@@ -421,6 +421,9 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// ============================================
+// DÉMARRAGE
+// ============================================
 app.listen(PORT, () => {
     console.log(`🚀 Warip Finance démarrée sur http://localhost:${PORT}`);
 });
