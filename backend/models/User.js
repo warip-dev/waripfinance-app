@@ -1,69 +1,110 @@
-const mongoose = require('mongoose');
+const { promisePool } = require('../config/database');
 const bcrypt = require('bcryptjs');
 
-const UserSchema = new mongoose.Schema({
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    email: { type: String, required: true, unique: true, lowercase: true },
-    password: { type: String, required: true, minlength: 6 },
-    phone: { type: String, required: true },
-    phoneCountry: { type: String, required: true },
-    streetNumber: { type: String, required: true },
-    streetName: { type: String, required: true },
-    city: { type: String, required: true },
-    postalCode: { type: String, required: true },
-    gender: { type: String, enum: ['Homme', 'Femme', 'Autre'], required: true },
-    maritalStatus: { type: String, enum: ['Célibataire', 'Marié(e)', 'Divorcé(e)', 'Veuf/Veuve'], required: true },
-    profession: { type: String, required: true },
-    country: { type: String, required: true },
-    role: { type: String, enum: ['user', 'admin'], default: 'user' },
-    status: { 
-        type: String, 
-        enum: ['pending', 'active', 'rejected'], 
-        default: 'pending' 
-    },
-    rejectionReason: { type: String, default: '' },
-    accounts: {
-        current: {
-            balance: { type: Number, default: 0 },
-            iban: { type: String, unique: true }
-        },
-        savings: {
-            balance: { type: Number, default: 0 },
-            iban: { type: String, unique: true }
-        }
-    },
-    transactions: [{
-        type: { type: String, enum: ['deposit', 'withdrawal', 'transfer', 'payment', 'interest'] },
-        amount: Number,
-        description: String,
-        date: { type: Date, default: Date.now },
-        from: String,
-        to: String,
-        status: { type: String, enum: ['pending', 'confirmed', 'rejected'], default: 'pending' },
-        rejectionReason: String
-    }],
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
-});
-
-UserSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) return next();
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
-});
-
-UserSchema.pre('save', function(next) {
-    if (!this.accounts.current.iban) {
-        const random = Math.floor(Math.random() * 1000000000000).toString().padStart(12, '0');
-        this.accounts.current.iban = `FR76CUR${random}`;
-        this.accounts.savings.iban = `FR76SAV${random}`;
+class User {
+    static async findByEmail(email) {
+        const [rows] = await promisePool.execute(
+            'SELECT * FROM users WHERE email = ?',
+            [email]
+        );
+        return rows[0] || null;
     }
-    next();
-});
 
-UserSchema.methods.comparePassword = async function(password) {
-    return await bcrypt.compare(password, this.password);
-};
+    static async findById(id) {
+        const [rows] = await promisePool.execute(
+            'SELECT * FROM users WHERE id = ?',
+            [id]
+        );
+        return rows[0] || null;
+    }
 
-module.exports = mongoose.model('User', UserSchema);
+    static async findAll() {
+        const [rows] = await promisePool.execute(
+            'SELECT * FROM users ORDER BY createdAt DESC'
+        );
+        return rows;
+    }
+
+    static async findPending() {
+        const [rows] = await promisePool.execute(
+            'SELECT * FROM users WHERE status = "pending" ORDER BY createdAt DESC'
+        );
+        return rows;
+    }
+
+    static async create(data) {
+        const {
+            firstName, lastName, email, password,
+            phone, phoneCountry, streetNumber, streetName,
+            city, postalCode, gender, maritalStatus,
+            profession, country
+        } = data;
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const random = Math.floor(Math.random() * 1000000000000).toString().padStart(12, '0');
+        const currentIban = `FR76CUR${random}`;
+        const savingsIban = `FR76SAV${random}`;
+
+        const [result] = await promisePool.execute(`
+            INSERT INTO users (
+                firstName, lastName, email, password,
+                phone, phoneCountry, streetNumber, streetName,
+                city, postalCode, gender, maritalStatus,
+                profession, country, currentIban, savingsIban
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+            firstName, lastName, email, hashedPassword,
+            phone, phoneCountry, streetNumber, streetName,
+            city, postalCode, gender, maritalStatus,
+            profession, country, currentIban, savingsIban
+        ]);
+
+        return result.insertId;
+    }
+
+    static async update(id, data) {
+        const keys = Object.keys(data);
+        const values = Object.values(data);
+        const setClause = keys.map(key => `${key} = ?`).join(', ');
+        values.push(id);
+
+        await promisePool.execute(
+            `UPDATE users SET ${setClause}, updatedAt = CURRENT_TIMESTAMP WHERE id = ?`,
+            values
+        );
+    }
+
+    static async comparePassword(user, password) {
+        return await bcrypt.compare(password, user.password);
+    }
+
+    static async getTransactions(userId) {
+        const [rows] = await promisePool.execute(
+            'SELECT * FROM transactions WHERE userId = ? ORDER BY date DESC LIMIT 10',
+            [userId]
+        );
+        return rows;
+    }
+
+    static async addTransaction(userId, type, amount, description, from_account, to_account, status = 'pending') {
+        const [result] = await promisePool.execute(`
+            INSERT INTO transactions (userId, type, amount, description, from_account, to_account, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `, [userId, type, amount, description, from_account, to_account, status]);
+        return result.insertId;
+    }
+
+    static async updateBalance(userId, amount, accountType = 'current') {
+        const field = accountType === 'current' ? 'currentBalance' : 'savingsBalance';
+        await promisePool.execute(
+            `UPDATE users SET ${field} = ${field} + ? WHERE id = ?`,
+            [amount, userId]
+        );
+    }
+
+    static isAdmin(user) {
+        return user && user.role === 'admin';
+    }
+}
+
+module.exports = User;

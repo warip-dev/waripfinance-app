@@ -34,18 +34,18 @@ const verifyAdmin = async (req, res, next) => {
 // ==========================================
 router.get('/stats', verifyAdmin, async (req, res) => {
     try {
-        const totalUsers = await User.countDocuments();
-        const pendingUsers = await User.countDocuments({ status: 'pending' });
-        const pendingTransfers = await Transfer.countDocuments({ status: 'pending' });
-        const totalTransfers = await Transfer.countDocuments();
+        const allUsers = await User.findAll();
+        const pendingUsers = await User.findPending();
+        const pendingTransfers = await Transfer.countPending();
+        const totalTransfers = await Transfer.countAll();
 
         res.json({
             success: true,
             stats: {
-                totalUsers,
-                pendingUsers,
-                pendingTransfers,
-                totalTransfers
+                totalUsers: allUsers.length,
+                pendingUsers: pendingUsers.length,
+                pendingTransfers: pendingTransfers,
+                totalTransfers: totalTransfers
             }
         });
     } catch (error) {
@@ -58,7 +58,7 @@ router.get('/stats', verifyAdmin, async (req, res) => {
 // ==========================================
 router.get('/pending-users', verifyAdmin, async (req, res) => {
     try {
-        const users = await User.find({ status: 'pending' }).select('-password');
+        const users = await User.findPending();
         res.json({ success: true, users });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -75,8 +75,7 @@ router.put('/validate-user/:id', verifyAdmin, async (req, res) => {
             return res.status(404).json({ success: false, message: 'Utilisateur non trouvé' });
         }
 
-        user.status = 'active';
-        await user.save();
+        await User.update(req.params.id, { status: 'active' });
 
         res.json({ success: true, message: 'Compte validé avec succès' });
     } catch (error) {
@@ -95,9 +94,7 @@ router.put('/reject-user/:id', verifyAdmin, async (req, res) => {
             return res.status(404).json({ success: false, message: 'Utilisateur non trouvé' });
         }
 
-        user.status = 'rejected';
-        user.rejectionReason = reason;
-        await user.save();
+        await User.update(req.params.id, { status: 'rejected', rejectionReason: reason });
 
         res.json({ success: true, message: 'Compte rejeté' });
     } catch (error) {
@@ -110,7 +107,7 @@ router.put('/reject-user/:id', verifyAdmin, async (req, res) => {
 // ==========================================
 router.get('/pending-transfers', verifyAdmin, async (req, res) => {
     try {
-        const transfers = await Transfer.find({ status: 'pending' }).populate('user', 'firstName lastName email');
+        const transfers = await Transfer.findPending();
         res.json({ success: true, transfers });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -127,22 +124,17 @@ router.put('/validate-transfer/:id', verifyAdmin, async (req, res) => {
             return res.status(404).json({ success: false, message: 'Virement non trouvé' });
         }
 
-        transfer.status = 'confirmed';
-        await transfer.save();
-
-        const user = await User.findById(transfer.user);
-        if (user) {
-            user.transactions.push({
-                type: 'transfer',
-                amount: transfer.amount,
-                description: `Virement vers ${transfer.beneficiaryName} ${transfer.beneficiaryLastName}`,
-                from: user.accounts.current.iban,
-                to: transfer.iban,
-                status: 'confirmed'
-            });
-            user.accounts.current.balance -= transfer.amount;
-            await user.save();
-        }
+        await Transfer.updateStatus(req.params.id, 'confirmed');
+        await User.updateBalance(transfer.userId, -transfer.amount, 'current');
+        await User.addTransaction(
+            transfer.userId,
+            'transfer',
+            transfer.amount,
+            `Virement vers ${transfer.beneficiaryName} ${transfer.beneficiaryLastName}`,
+            null,
+            transfer.iban,
+            'confirmed'
+        );
 
         res.json({ success: true, message: 'Virement validé' });
     } catch (error) {
@@ -161,9 +153,7 @@ router.put('/reject-transfer/:id', verifyAdmin, async (req, res) => {
             return res.status(404).json({ success: false, message: 'Virement non trouvé' });
         }
 
-        transfer.status = 'rejected';
-        transfer.rejectionReason = reason;
-        await transfer.save();
+        await Transfer.updateStatus(req.params.id, 'rejected', reason);
 
         res.json({ success: true, message: 'Virement rejeté' });
     } catch (error) {
@@ -177,18 +167,9 @@ router.put('/reject-transfer/:id', verifyAdmin, async (req, res) => {
 router.put('/crypto-addresses', verifyAdmin, async (req, res) => {
     try {
         const { btcAddress, ethAddress } = req.body;
-        
-        let settings = await Settings.findOne();
-        if (!settings) {
-            settings = new Settings();
-        }
-        
-        settings.btcAddress = btcAddress;
-        settings.ethAddress = ethAddress;
-        settings.updatedAt = new Date();
-        await settings.save();
+        await Settings.update({ btcAddress, ethAddress });
 
-        res.json({ success: true, message: 'Adresses mises à jour', settings });
+        res.json({ success: true, message: 'Adresses mises à jour' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -199,11 +180,7 @@ router.put('/crypto-addresses', verifyAdmin, async (req, res) => {
 // ==========================================
 router.get('/crypto-addresses', verifyAdmin, async (req, res) => {
     try {
-        let settings = await Settings.findOne();
-        if (!settings) {
-            settings = new Settings();
-            await settings.save();
-        }
+        const settings = await Settings.get();
         res.json({ success: true, settings });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

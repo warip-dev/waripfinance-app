@@ -38,39 +38,37 @@ router.post('/create', verifyAuth, async (req, res) => {
     try {
         const { beneficiaryName, beneficiaryLastName, iban, bic, reference, amount } = req.body;
 
-        if (req.user.accounts.current.balance < amount) {
+        if (req.user.currentBalance < amount) {
             return res.status(400).json({
                 success: false,
                 message: 'Solde insuffisant'
             });
         }
 
-        const transfer = new Transfer({
-            user: req.user._id,
+        const transferId = await Transfer.create({
+            userId: req.user.id,
             beneficiaryName,
             beneficiaryLastName,
             iban,
             bic,
             reference,
+            amount
+        });
+
+        await User.addTransaction(
+            req.user.id,
+            'transfer',
             amount,
-            status: 'pending'
-        });
-
-        await transfer.save();
-
-        req.user.transactions.push({
-            type: 'transfer',
-            amount: amount,
-            description: `Virement vers ${beneficiaryName} ${beneficiaryLastName}`,
-            to: iban,
-            status: 'pending'
-        });
-        await req.user.save();
+            `Virement vers ${beneficiaryName} ${beneficiaryLastName}`,
+            null,
+            iban,
+            'pending'
+        );
 
         res.json({
             success: true,
             message: 'Virement créé avec succès, en attente de validation',
-            transfer
+            transferId
         });
 
     } catch (error) {
@@ -87,7 +85,7 @@ router.post('/create', verifyAuth, async (req, res) => {
 // ==========================================
 router.get('/my-transfers', verifyAuth, async (req, res) => {
     try {
-        const transfers = await Transfer.find({ user: req.user._id }).sort({ date: -1 });
+        const transfers = await Transfer.findByUser(req.user.id);
         res.json({ success: true, transfers });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

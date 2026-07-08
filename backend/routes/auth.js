@@ -15,7 +15,7 @@ router.post('/register', async (req, res) => {
             profession, country
         } = req.body;
 
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findByEmail(email);
         if (existingUser) {
             return res.status(400).json({ 
                 success: false, 
@@ -23,38 +23,17 @@ router.post('/register', async (req, res) => {
             });
         }
 
-        const existingPhone = await User.findOne({ phone });
-        if (existingPhone) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Ce numéro de téléphone est déjà utilisé' 
-            });
-        }
-
-        const user = new User({
-            firstName,
-            lastName,
-            email,
-            password,
-            phone: phoneCountry + phone,
-            phoneCountry,
-            streetNumber,
-            streetName,
-            city,
-            postalCode,
-            gender,
-            maritalStatus,
-            profession,
-            country,
-            status: 'pending'
+        const userId = await User.create({
+            firstName, lastName, email, password,
+            phone, phoneCountry, streetNumber, streetName,
+            city, postalCode, gender, maritalStatus,
+            profession, country
         });
-
-        await user.save();
 
         res.status(201).json({
             success: true,
             message: 'Compte créé avec succès, en attente de validation',
-            userId: user._id
+            userId
         });
 
     } catch (error) {
@@ -73,7 +52,7 @@ router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const user = await User.findOne({ email });
+        const user = await User.findByEmail(email);
         if (!user) {
             return res.status(401).json({
                 success: false,
@@ -95,7 +74,7 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        const isMatch = await user.comparePassword(password);
+        const isMatch = await User.comparePassword(user, password);
         if (!isMatch) {
             return res.status(401).json({
                 success: false,
@@ -104,24 +83,39 @@ router.post('/login', async (req, res) => {
         }
 
         const token = jwt.sign(
-            { id: user._id, email: user.email, role: user.role || 'user' },
+            { id: user.id, email: user.email, role: user.role || 'user' },
             process.env.JWT_SECRET,
             { expiresIn: '7d' }
         );
+
+        const transactions = await User.getTransactions(user.id);
 
         res.json({
             success: true,
             message: 'Connexion réussie !',
             token,
             user: {
-                id: user._id,
+                id: user.id,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
-                accounts: user.accounts,
-                transactions: user.transactions.slice(-5),
+                accounts: {
+                    current: { balance: parseFloat(user.currentBalance || 0), iban: user.currentIban },
+                    savings: { balance: parseFloat(user.savingsBalance || 0), iban: user.savingsIban }
+                },
+                transactions: transactions,
                 status: user.status,
-                role: user.role
+                role: user.role,
+                phone: user.phone,
+                phoneCountry: user.phoneCountry,
+                streetNumber: user.streetNumber,
+                streetName: user.streetName,
+                city: user.city,
+                postalCode: user.postalCode,
+                gender: user.gender,
+                maritalStatus: user.maritalStatus,
+                profession: user.profession,
+                country: user.country
             }
         });
 
@@ -148,7 +142,7 @@ router.get('/me', async (req, res) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findById(decoded.id).select('-password');
+        const user = await User.findById(decoded.id);
         
         if (!user) {
             return res.status(404).json({ 
@@ -157,10 +151,12 @@ router.get('/me', async (req, res) => {
             });
         }
 
+        const transactions = await User.getTransactions(user.id);
+
         res.json({
             success: true,
             user: {
-                id: user._id,
+                id: user.id,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
@@ -174,8 +170,11 @@ router.get('/me', async (req, res) => {
                 maritalStatus: user.maritalStatus,
                 profession: user.profession,
                 country: user.country,
-                accounts: user.accounts,
-                transactions: user.transactions.slice(-10),
+                accounts: {
+                    current: { balance: parseFloat(user.currentBalance || 0), iban: user.currentIban },
+                    savings: { balance: parseFloat(user.savingsBalance || 0), iban: user.savingsIban }
+                },
+                transactions: transactions,
                 status: user.status,
                 role: user.role
             }
@@ -197,7 +196,7 @@ router.post('/forgot-password', async (req, res) => {
     try {
         const { email, newPassword } = req.body;
 
-        const user = await User.findOne({ email });
+        const user = await User.findByEmail(email);
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -205,8 +204,9 @@ router.post('/forgot-password', async (req, res) => {
             });
         }
 
-        user.password = newPassword;
-        await user.save();
+        const bcrypt = require('bcryptjs');
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await User.update(user.id, { password: hashedPassword });
 
         res.json({
             success: true,

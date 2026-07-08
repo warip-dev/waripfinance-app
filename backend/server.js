@@ -1,12 +1,12 @@
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const { initDatabase } = require('./config/database');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // ==========================================
 // MIDDLEWARES
@@ -73,22 +73,15 @@ app.get('/admin', (req, res) => {
 });
 
 // ==========================================
-// CONNEXION MONGODB
+// INITIALISATION DE LA BASE DE DONNÉES
 // ==========================================
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/waripfinance';
-
-mongoose.connect(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log('✅ Connecté à MongoDB'))
-.catch(err => console.error('❌ Erreur MongoDB:', err));
+initDatabase();
 
 // ==========================================
 // DÉMARRAGE
 // ==========================================
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Serveur Warip Finance démarré sur le port ${PORT}`);
+    console.log(`🚀 Serveur Warip Finance démarré sur http://localhost:${PORT}`);
     console.log(`🌐 http://localhost:${PORT}`);
     console.log(`🌐 Admin : http://localhost:${PORT}/admin`);
 });

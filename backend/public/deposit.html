@@ -109,7 +109,6 @@
             window.location.href = 'login.html';
         }
 
-        // Charger les adresses depuis le serveur
         async function loadCryptoAddresses() {
             try {
                 const response = await fetch('/api/admin/crypto-addresses', {
@@ -130,7 +129,6 @@
             navigator.clipboard.writeText(address).then(() => {
                 alert('✅ Adresse copiée dans le presse-papier !');
             }).catch(() => {
-                // Fallback
                 const range = document.createRange();
                 range.selectNode(document.getElementById(elementId));
                 window.getSelection().removeAllRanges();
