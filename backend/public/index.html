@@ -14,17 +14,23 @@
         .bg-gold { background: #e9b64a; }
         .text-dark { color: #1a1a2e; }
         .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
-        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 14px 32px; border-radius: 50px; border: none; cursor: pointer; font-size: 15px; transition: all 0.3s; }
+        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 14px 32px; border-radius: 50px; border: none; cursor: pointer; font-size: 16px; transition: all 0.3s; }
         .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.3); }
-        .btn-outline { border: 2px solid #e9b64a; color: #e9b64a; background: transparent; font-weight: 600; padding: 12px 30px; border-radius: 50px; transition: all 0.3s; cursor: pointer; font-size: 15px; }
-        .btn-outline:hover { background: #e9b64a; color: #1a1a2e; transform: translateY(-2px); }
-        .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+        .btn-secondary { background: transparent; color: #e9b64a; border: 2px solid #e9b64a; font-weight: 600; padding: 14px 32px; border-radius: 50px; cursor: pointer; font-size: 16px; transition: all 0.3s; }
+        .btn-secondary:hover { background: #e9b64a; color: #1a1a2e; transform: translateY(-2px); }
         .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
         .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
+        .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
         .feature-card { background: white; border-radius: 16px; padding: 30px; transition: all 0.3s; border: 1px solid #edf2f7; }
         .feature-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
         .footer-link { color: #a0aec0; transition: color 0.3s; }
         .footer-link:hover { color: #e9b64a; }
+        .step-indicator { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .step-dot { width: 10px; height: 10px; border-radius: 50%; background: #d1d5db; transition: all 0.3s; }
+        .step-dot.active { background: #e9b64a; width: 30px; border-radius: 20px; }
+        .step-dot.completed { background: #22c55e; }
+        .country-flag { font-size: 24px; margin-right: 8px; }
+        .country-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; background-size: 12px; }
     </style>
 </head>
 <body>
@@ -47,12 +53,14 @@
 
     <!-- MODAL CONNEXION / INSCRIPTION -->
     <div id="authModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-8 relative card-shadow">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-8 relative card-shadow max-h-[90vh] overflow-y-auto">
             <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
                 <i class="fas fa-times"></i>
             </button>
 
-            <!-- Login -->
+            <!-- ========================================== -->
+            <!-- LOGIN -->
+            <!-- ========================================== -->
             <div id="loginForm">
                 <h2 class="text-2xl font-bold text-dark mb-2">Connexion</h2>
                 <p class="text-gray-500 text-sm mb-6">Accédez à votre espace client</p>
@@ -77,28 +85,143 @@
                 </p>
             </div>
 
-            <!-- Register -->
+            <!-- ========================================== -->
+            <!-- REGISTER - ÉTAPE 1 -->
+            <!-- ========================================== -->
             <div id="registerForm" class="hidden">
                 <h2 class="text-2xl font-bold text-dark mb-2">Créer un compte</h2>
-                <p class="text-gray-500 text-sm mb-6">Rejoignez Warip Finance en quelques clics</p>
+                <p class="text-gray-500 text-sm mb-4">Étape 1 sur 2 - Informations de connexion</p>
+
+                <!-- Indicateur d'étape -->
+                <div class="step-indicator">
+                    <span class="step-dot active" id="step1Dot"></span>
+                    <span class="step-dot" id="step2Dot"></span>
+                </div>
+
                 <div id="registerError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
-                <form id="registerFormSubmit">
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <input type="text" id="regFirstName" placeholder="Prénom" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                        <input type="text" id="regLastName" placeholder="Nom" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="email" id="regEmail" placeholder="Email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="password" id="regPassword" placeholder="Mot de passe (min 8 caractères)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required minlength="8">
-                    </div>
-                    <button type="submit" class="w-full btn-primary py-3 text-lg">Créer mon compte</button>
-                </form>
-                <p class="text-center text-gray-500 text-sm mt-4">
-                    Déjà un compte ?
-                    <button id="showLogin" class="text-gold font-semibold hover:underline">Se connecter</button>
-                </p>
+
+                <!-- ÉTAPE 1 -->
+                <div id="registerStep1">
+                    <form id="registerFormStep1">
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
+                                <input type="text" id="regFirstName" placeholder="Jean" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+                                <input type="text" id="regLastName" placeholder="Dupont" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="regEmail" placeholder="exemple@email.com" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                            <input type="password" id="regPassword" placeholder="Min 8 caractères" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required minlength="8">
+                            <p class="text-xs text-gray-400 mt-1">Au moins 8 caractères</p>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Confirmer le mot de passe</label>
+                            <input type="password" id="regConfirmPassword" placeholder="Confirmez votre mot de passe" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required minlength="8">
+                        </div>
+                        <button type="submit" class="w-full btn-primary py-3 text-lg">
+                            Suivant <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- ÉTAPE 2 -->
+                <div id="registerStep2" class="hidden">
+                    <form id="registerFormStep2">
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                            <select id="regCountry" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus country-select">
+                                <option value="FR">🇫🇷 France (+33)</option>
+                                <option value="BE">🇧🇪 Belgique (+32)</option>
+                                <option value="CH">🇨🇭 Suisse (+41)</option>
+                                <option value="CA">🇨🇦 Canada (+1)</option>
+                                <option value="US">🇺🇸 États-Unis (+1)</option>
+                                <option value="GB">🇬🇧 Royaume-Uni (+44)</option>
+                                <option value="DE">🇩🇪 Allemagne (+49)</option>
+                                <option value="IT">🇮🇹 Italie (+39)</option>
+                                <option value="ES">🇪🇸 Espagne (+34)</option>
+                                <option value="PT">🇵🇹 Portugal (+351)</option>
+                                <option value="NL">🇳🇱 Pays-Bas (+31)</option>
+                                <option value="LU">🇱🇺 Luxembourg (+352)</option>
+                                <option value="MA">🇲🇦 Maroc (+212)</option>
+                                <option value="TN">🇹🇳 Tunisie (+216)</option>
+                                <option value="DZ">🇩🇿 Algérie (+213)</option>
+                                <option value="SN">🇸🇳 Sénégal (+221)</option>
+                                <option value="CI">🇨🇮 Côte d'Ivoire (+225)</option>
+                                <option value="CM">🇨🇲 Cameroun (+237)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Numéro de téléphone</label>
+                            <div class="flex">
+                                <span id="countryCodeDisplay" class="inline-flex items-center px-4 bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg text-gray-600 text-sm">+33</span>
+                                <input type="tel" id="regPhone" placeholder="6 12 34 56 78" class="flex-1 px-4 py-3 border border-gray-300 rounded-r-lg focus:outline-none input-focus" required>
+                            </div>
+                            <p id="phoneHint" class="text-xs text-gray-400 mt-1">Ex: 612345678 (10 chiffres)</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Ville</label>
+                                <input type="text" id="regCity" placeholder="Paris" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Code postal</label>
+                                <input type="text" id="regPostalCode" placeholder="75001" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required maxlength="5">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Numéro de rue</label>
+                                <input type="text" id="regStreetNumber" placeholder="12" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nom de rue</label>
+                                <input type="text" id="regStreetName" placeholder="Rue de Rivoli" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Profession</label>
+                            <input type="text" id="regProfession" placeholder="Ingénieur" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Sexe</label>
+                                <select id="regGender" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                                    <option value="">Sélectionner</option>
+                                    <option value="M">Masculin</option>
+                                    <option value="F">Féminin</option>
+                                    <option value="OTHER">Autre</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Situation matrimoniale</label>
+                                <select id="regMaritalStatus" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                                    <option value="">Sélectionner</option>
+                                    <option value="SINGLE">Célibataire</option>
+                                    <option value="MARRIED">Marié(e)</option>
+                                    <option value="DIVORCED">Divorcé(e)</option>
+                                    <option value="WIDOWED">Veuf(ve)</option>
+                                    <option value="PACSED">Pacsé(e)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <button type="button" id="backToStep1" class="flex-1 btn-secondary py-3 text-lg">
+                                <i class="fas fa-arrow-left mr-2"></i>Retour
+                            </button>
+                            <button type="submit" class="flex-1 btn-primary py-3 text-lg">
+                                Créer mon compte
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -190,12 +313,52 @@
     </footer>
 
     <script>
-        // MODAL
+        // ============================================
+        // LISTE DES PAYS AVEC INDICATIFS
+        // ============================================
+        const countries = {
+            'FR': { code: '+33', format: 'XX XX XX XX XX', example: '6 12 34 56 78', length: 10 },
+            'BE': { code: '+32', format: 'XXX XX XX XX', example: '4 12 34 56 78', length: 10 },
+            'CH': { code: '+41', format: 'XX XXX XX XX', example: '7 12 34 56 78', length: 10 },
+            'CA': { code: '+1', format: 'XXX XXX XXXX', example: '514 123 4567', length: 10 },
+            'US': { code: '+1', format: 'XXX XXX XXXX', example: '212 123 4567', length: 10 },
+            'GB': { code: '+44', format: 'XXXX XXX XXX', example: '7700 123 456', length: 10 },
+            'DE': { code: '+49', format: 'XXX XXXX XXXX', example: '151 1234 5678', length: 11 },
+            'IT': { code: '+39', format: 'XXX XXX XXXX', example: '320 123 4567', length: 10 },
+            'ES': { code: '+34', format: 'XXX XX XX XX', example: '612 34 56 78', length: 9 },
+            'PT': { code: '+351', format: 'XXX XXX XXX', example: '912 123 456', length: 9 },
+            'NL': { code: '+31', format: 'XX XXX XX XX', example: '6 12 34 56 78', length: 10 },
+            'LU': { code: '+352', format: 'XXX XXX XXX', example: '621 123 456', length: 9 },
+            'MA': { code: '+212', format: 'XX XX XX XX XX', example: '6 12 34 56 78', length: 10 },
+            'TN': { code: '+216', format: 'XX XXX XXX', example: '12 345 678', length: 9 },
+            'DZ': { code: '+213', format: 'XX XXX XX XX', example: '55 12 34 56', length: 9 },
+            'SN': { code: '+221', format: 'XX XXX XX XX', example: '77 123 45 67', length: 9 },
+            'CI': { code: '+225', format: 'XX XX XX XX', example: '01 23 45 67', length: 8 },
+            'CM': { code: '+237', format: 'XX XX XX XX', example: '6 12 34 56 78', length: 9 }
+        };
+
+        // Mettre à jour l'indicatif et le format du téléphone
+        function updateCountryInfo() {
+            const country = document.getElementById('regCountry').value;
+            const info = countries[country];
+            if (info) {
+                document.getElementById('countryCodeDisplay').textContent = info.code;
+                document.getElementById('phoneHint').textContent = `Ex: ${info.example} (${info.length} chiffres)`;
+            }
+        }
+
+        // ============================================
+        // GESTION DU MODAL
+        // ============================================
         const modal = document.getElementById('authModal');
         const loginForm = document.getElementById('loginForm');
         const registerForm = document.getElementById('registerForm');
         const loginError = document.getElementById('loginError');
         const registerError = document.getElementById('registerError');
+        const step1 = document.getElementById('registerStep1');
+        const step2 = document.getElementById('registerStep2');
+        const step1Dot = document.getElementById('step1Dot');
+        const step2Dot = document.getElementById('step2Dot');
 
         function openModal() { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
         function closeModal() { modal.classList.add('hidden'); document.body.style.overflow = ''; }
@@ -205,13 +368,184 @@
         document.getElementById('closeModal').addEventListener('click', closeModal);
         modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-        function showLogin() { loginForm.classList.remove('hidden'); registerForm.classList.add('hidden'); loginError.classList.add('hidden'); registerError.classList.add('hidden'); }
-        function showRegister() { loginForm.classList.add('hidden'); registerForm.classList.remove('hidden'); loginError.classList.add('hidden'); registerError.classList.add('hidden'); }
+        function showLogin() {
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+            loginError.classList.add('hidden');
+            registerError.classList.add('hidden');
+        }
+
+        function showRegister() {
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+            loginError.classList.add('hidden');
+            registerError.classList.add('hidden');
+            // Réinitialiser à l'étape 1
+            step1.classList.remove('hidden');
+            step2.classList.add('hidden');
+            step1Dot.className = 'step-dot active';
+            step2Dot.className = 'step-dot';
+        }
 
         document.getElementById('showRegister').addEventListener('click', showRegister);
         document.getElementById('showLogin').addEventListener('click', showLogin);
 
-        // LOGIN
+        // ============================================
+        // CHANGEMENT DE PAYS
+        // ============================================
+        document.getElementById('regCountry').addEventListener('change', updateCountryInfo);
+        // Initialisation
+        updateCountryInfo();
+
+        // ============================================
+        // ÉTAPE 1 → ÉTAPE 2
+        // ============================================
+        document.getElementById('registerFormStep1').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const firstName = document.getElementById('regFirstName').value.trim();
+            const lastName = document.getElementById('regLastName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+            registerError.classList.add('hidden');
+            registerError.textContent = '';
+
+            if (!firstName || !lastName || !email || !password || !confirmPassword) {
+                registerError.textContent = 'Tous les champs sont obligatoires';
+                registerError.classList.remove('hidden');
+                return;
+            }
+
+            if (password.length < 8) {
+                registerError.textContent = 'Le mot de passe doit contenir au moins 8 caractères';
+                registerError.classList.remove('hidden');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                registerError.textContent = 'Les mots de passe ne correspondent pas';
+                registerError.classList.remove('hidden');
+                return;
+            }
+
+            // Passer à l'étape 2
+            step1.classList.add('hidden');
+            step2.classList.remove('hidden');
+            step1Dot.className = 'step-dot completed';
+            step2Dot.className = 'step-dot active';
+        });
+
+        // ============================================
+        // RETOUR À L'ÉTAPE 1
+        // ============================================
+        document.getElementById('backToStep1').addEventListener('click', function() {
+            step1.classList.remove('hidden');
+            step2.classList.add('hidden');
+            step1Dot.className = 'step-dot active';
+            step2Dot.className = 'step-dot';
+        });
+
+        // ============================================
+        // INSCRIPTION - ÉTAPE 2 (Création du compte)
+        // ============================================
+        document.getElementById('registerFormStep2').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const firstName = document.getElementById('regFirstName').value.trim();
+            const lastName = document.getElementById('regLastName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const country = document.getElementById('regCountry').value;
+            const phone = document.getElementById('regPhone').value.trim();
+            const city = document.getElementById('regCity').value.trim();
+            const postalCode = document.getElementById('regPostalCode').value.trim();
+            const streetNumber = document.getElementById('regStreetNumber').value.trim();
+            const streetName = document.getElementById('regStreetName').value.trim();
+            const profession = document.getElementById('regProfession').value.trim();
+            const gender = document.getElementById('regGender').value;
+            const maritalStatus = document.getElementById('regMaritalStatus').value;
+
+            registerError.classList.add('hidden');
+            registerError.textContent = '';
+
+            // Validations
+            if (!phone || !city || !postalCode || !streetNumber || !streetName || !profession || !gender || !maritalStatus) {
+                registerError.textContent = 'Tous les champs sont obligatoires';
+                registerError.classList.remove('hidden');
+                return;
+            }
+
+            // Validation du code postal (chiffres uniquement)
+            if (!/^\d+$/.test(postalCode)) {
+                registerError.textContent = 'Le code postal doit contenir uniquement des chiffres';
+                registerError.classList.remove('hidden');
+                return;
+            }
+
+            // Validation du téléphone selon le pays
+            const countryInfo = countries[country];
+            if (countryInfo) {
+                const digits = phone.replace(/\D/g, '');
+                if (digits.length !== countryInfo.length) {
+                    registerError.textContent = `Le numéro de téléphone doit contenir ${countryInfo.length} chiffres pour ${country}`;
+                    registerError.classList.remove('hidden');
+                    return;
+                }
+            }
+
+            // Envoi des données
+            const submitBtn = document.querySelector('#registerFormStep2 button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi...';
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        first_name: firstName,
+                        last_name: lastName,
+                        email: email,
+                        password: password,
+                        country: country,
+                        phone: phone,
+                        city: city,
+                        postal_code: postalCode,
+                        street_name: streetName,
+                        street_number: streetNumber,
+                        profession: profession,
+                        gender: gender,
+                        marital_status: maritalStatus
+                    })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    registerError.textContent = data.error || 'Erreur lors de l\'inscription';
+                    registerError.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Créer mon compte';
+                    return;
+                }
+
+                if (data.success) {
+                    window.location.href = '/confirmation.html';
+                }
+
+            } catch (err) {
+                registerError.textContent = 'Erreur de connexion au serveur';
+                registerError.classList.remove('hidden');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Créer mon compte';
+            }
+        });
+
+        // ============================================
+        // CONNEXION
+        // ============================================
         document.getElementById('loginFormSubmit').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -228,7 +562,7 @@
                 const data = await res.json();
 
                 if (!res.ok) {
-                    loginError.textContent = data.error || 'Erreur de connexion';
+                    loginError.textContent = data.error || 'Email ou mot de passe incorrect';
                     loginError.classList.remove('hidden');
                     if (data.status === 'PENDING') {
                         loginError.textContent = '⏳ Votre compte est en attente de validation.';
@@ -240,7 +574,7 @@
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     if (data.user.role === 'ADMIN') {
-                        window.location.href = '/admin';
+                        window.location.href = '/admin.html';
                     } else {
                         window.location.href = '/dashboard';
                     }
@@ -252,52 +586,12 @@
             }
         });
 
-        // REGISTER
-        document.getElementById('registerFormSubmit').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const first_name = document.getElementById('regFirstName').value.trim();
-            const last_name = document.getElementById('regLastName').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const password = document.getElementById('regPassword').value;
-
-            registerError.classList.add('hidden');
-            registerError.textContent = '';
-
-            if (!first_name || !last_name || !email || !password) {
-                registerError.textContent = 'Tous les champs sont obligatoires';
-                registerError.classList.remove('hidden');
-                return;
-            }
-
-            if (password.length < 8) {
-                registerError.textContent = 'Le mot de passe doit contenir au moins 8 caractères';
-                registerError.classList.remove('hidden');
-                return;
-            }
-
-            try {
-                const res = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ first_name, last_name, email, password, country: 'FR' })
-                });
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    registerError.textContent = data.error || 'Erreur lors de l\'inscription';
-                    registerError.classList.remove('hidden');
-                    return;
-                }
-
-                if (data.success) {
-                    window.location.href = '/confirmation.html';
-                }
-
-            } catch (err) {
-                registerError.textContent = 'Erreur de connexion au serveur';
-                registerError.classList.remove('hidden');
+        // ============================================
+        // FERMETURE DU MODAL AVEC ESC
+        // ============================================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
             }
         });
     </script>
