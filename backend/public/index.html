@@ -34,6 +34,7 @@
         .phone-prefix { display: inline-flex; align-items: center; padding: 0 12px; background: #f3f4f6; border: 1px solid #d1d5db; border-right: none; border-radius: 8px 0 0 8px; color: #374151; font-size: 14px; font-weight: 500; min-width: 50px; justify-content: center; }
         .phone-input { border-radius: 0 8px 8px 0; flex: 1; }
         .phone-wrapper { display: flex; align-items: stretch; }
+        .error-message { background: #fee2e2; color: #dc2626; padding: 12px; border-radius: 8px; border: 1px solid #fecaca; margin-bottom: 16px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -65,7 +66,7 @@
             <div id="loginForm">
                 <h2 class="text-2xl font-bold text-dark mb-2">Connexion</h2>
                 <p class="text-gray-500 text-sm mb-6">Accédez à votre espace client</p>
-                <div id="loginError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
+                <div id="loginError" class="hidden error-message"></div>
                 <form id="loginFormSubmit">
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -96,7 +97,7 @@
                     <span class="step-dot" id="step2Dot"></span>
                 </div>
 
-                <div id="registerError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
+                <div id="registerError" class="hidden error-message"></div>
 
                 <!-- ÉTAPE 1 -->
                 <div id="registerStep1">
@@ -162,7 +163,6 @@
                                 <span id="countryCodeDisplay" class="phone-prefix">+33</span>
                                 <input type="tel" id="regPhone" placeholder="6 12 34 56 78" class="phone-input px-4 py-3 border border-gray-300 focus:outline-none input-focus" required>
                             </div>
-                            <p id="phoneHint" class="text-xs text-gray-400 mt-1">Ex: 612345678 (10 chiffres)</p>
                         </div>
                         <div class="grid grid-cols-2 gap-3 mb-3">
                             <div>
@@ -320,8 +320,6 @@
             const info = countries[country];
             if (info) {
                 document.getElementById('countryCodeDisplay').textContent = info.code;
-                document.getElementById('phoneHint').textContent = `Ex: ${info.example} (${info.length} chiffres)`;
-                // Mettre à jour le placeholder du téléphone
                 document.getElementById('regPhone').placeholder = info.example;
             }
         }
@@ -425,7 +423,7 @@
         });
 
         // ============================================
-        // SOUMETTRE L'INSCRIPTION
+        // SOUMETTRE L'INSCRIPTION - VERSION CORRIGÉE
         // ============================================
         function submitRegister() {
             const firstName = document.getElementById('regFirstName').value.trim();
@@ -446,6 +444,7 @@
             errorEl.classList.add('hidden');
             errorEl.textContent = '';
 
+            // Validations
             if (!phone || !city || !postalCode || !streetNumber || !streetName || !profession || !gender || !maritalStatus) {
                 errorEl.textContent = 'Tous les champs sont obligatoires';
                 errorEl.classList.remove('hidden');
@@ -458,6 +457,7 @@
                 return;
             }
 
+            // Validation du téléphone selon le pays
             const countryInfo = countries[country];
             if (countryInfo) {
                 const digits = phone.replace(/\D/g, '');
@@ -472,27 +472,35 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi...';
 
+            const data = {
+                first_name: firstName,
+                last_name: lastName,
+                email: email,
+                password: password,
+                country: country,
+                phone: phone,
+                city: city,
+                postal_code: postalCode,
+                street_name: streetName,
+                street_number: streetNumber,
+                profession: profession,
+                gender: gender,
+                marital_status: maritalStatus
+            };
+
+            console.log('📝 Données envoyées:', data);
+
             fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    first_name: firstName,
-                    last_name: lastName,
-                    email: email,
-                    password: password,
-                    country: country,
-                    phone: phone,
-                    city: city,
-                    postal_code: postalCode,
-                    street_name: streetName,
-                    street_number: streetNumber,
-                    profession: profession,
-                    gender: gender,
-                    marital_status: maritalStatus
-                })
+                body: JSON.stringify(data)
             })
-            .then(res => res.json())
+            .then(response => {
+                console.log('📥 Réponse status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('📦 Réponse data:', data);
                 if (data.success) {
                     window.location.href = '/confirmation.html';
                 } else {
@@ -503,7 +511,8 @@
                 }
             })
             .catch(err => {
-                errorEl.textContent = 'Erreur de connexion au serveur';
+                console.error('❌ Erreur fetch:', err);
+                errorEl.textContent = 'Erreur de connexion au serveur. Vérifiez votre connexion internet.';
                 errorEl.classList.remove('hidden');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'Créer mon compte';
