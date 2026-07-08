@@ -46,12 +46,15 @@
         .nav-item:hover { background: #f3f4f6; color: #1a1a2e; }
         .nav-item.active { background: #e9b64a20; color: #e9b64a; font-weight: 600; }
         .nav-item i { width: 20px; text-align: center; }
+        .sticker { display: none !important; }
+        .btn-secondary { background: #6b7280; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .btn-secondary:hover { background: #4b5563; transform: translateY(-2px); }
     </style>
 </head>
 <body>
 
     <!-- ========================================== -->
-    <!-- HEADER (sans déconnexion) -->
+    <!-- HEADER (sans sticker) -->
     <!-- ========================================== -->
     <header class="gradient-header fixed w-full z-50 top-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -64,7 +67,6 @@
                         <i class="fas fa-user mr-2"></i>Se connecter
                     </button>
                     <div id="userInfo" class="hidden flex items-center gap-3">
-                        <!-- Nom de l'utilisateur supprimé, seulement le bouton profil -->
                         <button id="openProfileModal" class="btn-outline text-sm flex items-center gap-2" style="border-color: rgba(255,255,255,0.3); color: white;">
                             <i class="fas fa-user-circle"></i> Mon profil
                         </button>
@@ -394,7 +396,7 @@
                 <i class="fas fa-times"></i>
             </button>
             <h2 class="text-2xl font-bold text-dark mb-2">➕ Ajouter un bénéficiaire</h2>
-            <p class="text-gray-500 text-sm mb-6">Le bénéficiaire sera soumis à validation par notre équipe.</p>
+            <p class="text-gray-500 text-sm mb-6">Le bénéficiaire sera soumis à validation par notre équipe (délai moyen 24h).</p>
             <div id="beneficiaryMessage" class="text-sm mb-4"></div>
             <form id="addBeneficiaryForm">
                 <div class="mb-4">
@@ -450,7 +452,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- MODAL DÉPÔT -->
+    <!-- MODAL DÉPÔT (avec adresses BTC/ETH) -->
     <!-- ========================================== -->
     <div id="depositModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full p-8 relative card-shadow">
@@ -752,7 +754,7 @@
         }
 
         // ============================================
-        // BÉNÉFICIAIRES
+        // BÉNÉFICIAIRES - CHARGEMENT
         // ============================================
         function loadBeneficiaries() {
             const list = document.getElementById('beneficiariesList');
@@ -771,7 +773,7 @@
                     }
                     list.innerHTML = data.beneficiaries.map(b => {
                         const statusClass = b.status === 'ACTIVE' ? 'status-active' : b.status === 'REJECTED' ? 'status-rejected' : 'status-pending';
-                        const statusLabel = b.status === 'ACTIVE' ? '✅ Validé' : b.status === 'REJECTED' ? '❌ Rejeté' : '⏳ En attente';
+                        const statusLabel = b.status === 'ACTIVE' ? '✅ Validé' : b.status === 'REJECTED' ? '❌ Rejeté' : '⏳ En attente (24h)';
                         return `
                             <div class="beneficiary-card flex justify-between items-center p-4 border border-gray-100 rounded-xl mb-2">
                                 <div>
@@ -779,6 +781,7 @@
                                     <p class="text-xs text-gray-400 font-mono">${b.iban}</p>
                                     <span class="${statusClass}">${statusLabel}</span>
                                     ${b.rejection_reason ? `<p class="text-xs text-red-500 mt-1">Motif: ${b.rejection_reason}</p>` : ''}
+                                    ${b.status === 'PENDING' ? '<p class="text-xs text-yellow-600 mt-1">⏳ Validation admin sous 24h</p>' : ''}
                                 </div>
                                 <div>
                                     ${b.status === 'ACTIVE' ? `
@@ -786,7 +789,7 @@
                                             <i class="fas fa-paper-plane mr-1"></i>Virement
                                         </button>
                                     ` : ''}
-                                    ${b.status === 'PENDING' ? '<span class="text-xs text-yellow-600">En attente de validation admin</span>' : ''}
+                                    ${b.status === 'PENDING' ? '<span class="text-xs text-yellow-600">En attente</span>' : ''}
                                     ${b.status === 'REJECTED' ? '<span class="text-xs text-red-500">Rejeté</span>' : ''}
                                 </div>
                             </div>
@@ -833,10 +836,10 @@
                     body: JSON.stringify({ name, iban, bic })
                 });
                 if (data.success) {
-                    msg.innerHTML = '<span class="text-green-500">✅ Bénéficiaire ajouté, en attente de validation.</span>';
+                    msg.innerHTML = '<span class="text-green-500">✅ Bénéficiaire ajouté. En attente de validation admin (délai 24h).</span>';
                     document.getElementById('addBeneficiaryForm').reset();
                     loadBeneficiaries();
-                    setTimeout(() => document.getElementById('addBeneficiaryModal').classList.add('hidden'), 2000);
+                    setTimeout(() => document.getElementById('addBeneficiaryModal').classList.add('hidden'), 3000);
                 } else {
                     msg.innerHTML = '<span class="text-red-500">' + (data.error || 'Erreur') + '</span>';
                 }
@@ -904,7 +907,7 @@
                     body: JSON.stringify({ beneficiary_id: beneficiaryId, amount, reference })
                 });
                 if (data.success) {
-                    msg.innerHTML = '<span class="text-green-500">✅ Virement soumis avec succès ! En attente de validation.</span>';
+                    msg.innerHTML = '<span class="text-green-500">✅ Virement soumis avec succès ! En attente de validation admin.</span>';
                     document.getElementById('transferForm').reset();
                     loadTransfers();
                     setTimeout(() => document.getElementById('transferModal').classList.add('hidden'), 3000);
