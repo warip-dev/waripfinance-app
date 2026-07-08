@@ -7,23 +7,38 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        body { background: #f5f7fa; font-family: 'Inter', sans-serif; }
+        body { background: #f0f2f5; font-family: 'Inter', sans-serif; }
         .gold { color: #e9b64a; }
         .bg-gold { background: #e9b64a; }
+        .text-dark { color: #1a1a2e; }
         .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+        .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 12px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.3); }
     </style>
 </head>
 <body>
-    <div class="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+    <header class="gradient-header fixed w-full z-50 top-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <span class="text-white font-bold text-xl"><span class="gold">Warip</span> Finance</span>
+                <a href="/" class="text-gray-400 hover:text-white text-sm">
+                    <i class="fas fa-arrow-left mr-2"></i>Accueil
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="min-h-screen flex items-center justify-center p-4 pt-20">
         <div class="bg-white rounded-2xl max-w-md w-full p-8 card-shadow text-center">
             <div class="text-6xl mb-4">⏳</div>
             <h1 class="text-2xl font-bold text-dark">Compte en attente de validation</h1>
-            <p class="text-gray-600 mt-2 text-sm">
-                Votre compte a bien été créé. Il est actuellement en attente de validation par notre équipe administrative.
+            <p class="text-gray-500 mt-4 text-sm">
+                Votre compte a été créé avec succès. Il est actuellement en attente de validation par notre équipe administrative.
             </p>
             <div class="mt-4 p-4 bg-yellow-50 rounded-lg text-yellow-700 text-sm">
                 <i class="fas fa-clock mr-2"></i>
-                Vous recevrez un email dès que votre compte sera validé.
+                Vous recevrez une notification dès que votre compte sera validé.
             </div>
             <div class="mt-6">
                 <a href="/" class="text-gold hover:underline text-sm">

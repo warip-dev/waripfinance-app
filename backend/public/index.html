@@ -507,66 +507,66 @@
         }
 
         // ============================================
-        // CONNEXION - CORRIGÉE AVEC REDIRECTION
-        // ============================================
-        document.getElementById('loginFormSubmit').addEventListener('submit', function(e) {
-            e.preventDefault();
+// CONNEXION - CORRIGÉE AVEC REDIRECTION
+// ============================================
+document.getElementById('loginFormSubmit').addEventListener('submit', function(e) {
+    e.preventDefault();
 
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const errorEl = document.getElementById('loginError');
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    const errorEl = document.getElementById('loginError');
 
-            errorEl.classList.add('hidden');
-            errorEl.textContent = '';
+    errorEl.classList.add('hidden');
+    errorEl.textContent = '';
 
-            const btn = document.querySelector('#loginFormSubmit button[type="submit"]');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Connexion...';
+    const btn = document.querySelector('#loginFormSubmit button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Connexion...';
 
-            fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            })
-            .then(res => res.json())
-            .then(data => {
-                btn.disabled = false;
-                btn.innerHTML = 'Se connecter';
+    fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+    })
+    .then(res => res.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = 'Se connecter';
 
-                if (!data.success || !data.user) {
-                    errorEl.textContent = data.error || 'Email ou mot de passe incorrect';
-                    errorEl.classList.remove('hidden');
+        if (!data.success || !data.user) {
+            errorEl.textContent = data.error || 'Email ou mot de passe incorrect';
+            errorEl.classList.remove('hidden');
 
-                    if (data.status === 'PENDING') {
-                        errorEl.textContent = '⏳ Votre compte est en attente de validation par notre équipe.';
-                    }
-                    if (data.status === 'BLOCKED') {
-                        errorEl.textContent = '❌ Votre compte a été bloqué. Contactez le support.';
-                    }
-                    return;
-                }
+            if (data.status === 'PENDING') {
+                errorEl.textContent = '⏳ Votre compte est en attente de validation par notre équipe.';
+            }
+            if (data.status === 'BLOCKED') {
+                errorEl.textContent = '❌ Votre compte a été bloqué. Contactez le support.';
+            }
+            return;
+        }
 
-                // ✅ STOCKER LES INFORMATIONS DE L'UTILISATEUR
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
+        // ✅ STOCKER LES INFORMATIONS DE L'UTILISATEUR
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
 
-                // ✅ REDIRECTION SELON LE RÔLE
-                if (data.user.role === 'ADMIN') {
-                    window.location.href = '/admin.html';
-                } else if (data.user.status === 'PENDING') {
-                    window.location.href = '/pending';
-                } else {
-                    window.location.href = '/dashboard';
-                }
-            })
-            .catch(err => {
-                btn.disabled = false;
-                btn.innerHTML = 'Se connecter';
-                errorEl.textContent = '❌ Erreur de connexion au serveur. Vérifiez votre connexion.';
-                errorEl.classList.remove('hidden');
-                console.error('Erreur:', err);
-            });
-        });
+        // ✅ REDIRECTION SELON LE RÔLE ET LE STATUT
+        if (data.user.role === 'ADMIN') {
+            window.location.href = '/admin.html';
+        } else if (data.user.status === 'PENDING') {
+            window.location.href = '/pending';
+        } else {
+            window.location.href = '/dashboard';
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = 'Se connecter';
+        errorEl.textContent = '❌ Erreur de connexion au serveur. Vérifiez votre connexion.';
+        errorEl.classList.remove('hidden');
+        console.error('Erreur:', err);
+    });
+});
 
         // ============================================
         // FERMETURE DU MODAL AVEC ESC

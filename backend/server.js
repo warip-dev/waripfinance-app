@@ -466,7 +466,7 @@ app.put('/api/admin/transfers/:id/validate', async (req, res) => {
 });
 
 // ============================================
-// ROUTES STATIQUES - ADMIN CORRIGÉES
+// ROUTES STATIQUES
 // ============================================
 app.get('/confirmation.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'confirmation.html'));
@@ -476,17 +476,26 @@ app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-// Route pour admin.html (fichier séparé)
+app.get('/pending', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'pending.html'));
+});
+
 app.get('/admin.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// Redirection de /admin vers admin.html
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// Route par défaut - DOIT ÊTRE LA DERNIÈRE
+app.get('/forgot-password.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'forgot-password.html'));
+});
+
+app.get('/reset-password.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'reset-password.html'));
+});
+
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
