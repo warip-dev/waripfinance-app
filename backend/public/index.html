@@ -323,6 +323,7 @@
                 document.getElementById('regPhone').placeholder = info.example;
             }
         }
+        updateCountryInfo();
 
         // ============================================
         // GESTION DU MODAL
@@ -368,9 +369,6 @@
 
         document.getElementById('showRegister').addEventListener('click', showRegister);
         document.getElementById('showLogin').addEventListener('click', showLogin);
-
-        // Initialisation du pays
-        updateCountryInfo();
 
         // ============================================
         // FONCTION PASSER À L'ÉTAPE 2
@@ -423,7 +421,7 @@
         });
 
         // ============================================
-        // SOUMETTRE L'INSCRIPTION - VERSION CORRIGÉE
+        // SOUMETTRE L'INSCRIPTION
         // ============================================
         function submitRegister() {
             const firstName = document.getElementById('regFirstName').value.trim();
@@ -444,7 +442,6 @@
             errorEl.classList.add('hidden');
             errorEl.textContent = '';
 
-            // Validations
             if (!phone || !city || !postalCode || !streetNumber || !streetName || !profession || !gender || !maritalStatus) {
                 errorEl.textContent = 'Tous les champs sont obligatoires';
                 errorEl.classList.remove('hidden');
@@ -457,7 +454,6 @@
                 return;
             }
 
-            // Validation du téléphone selon le pays
             const countryInfo = countries[country];
             if (countryInfo) {
                 const digits = phone.replace(/\D/g, '');
@@ -472,35 +468,27 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi...';
 
-            const data = {
-                first_name: firstName,
-                last_name: lastName,
-                email: email,
-                password: password,
-                country: country,
-                phone: phone,
-                city: city,
-                postal_code: postalCode,
-                street_name: streetName,
-                street_number: streetNumber,
-                profession: profession,
-                gender: gender,
-                marital_status: maritalStatus
-            };
-
-            console.log('📝 Données envoyées:', data);
-
             fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify({
+                    first_name: firstName,
+                    last_name: lastName,
+                    email: email,
+                    password: password,
+                    country: country,
+                    phone: phone,
+                    city: city,
+                    postal_code: postalCode,
+                    street_name: streetName,
+                    street_number: streetNumber,
+                    profession: profession,
+                    gender: gender,
+                    marital_status: maritalStatus
+                })
             })
-            .then(response => {
-                console.log('📥 Réponse status:', response.status);
-                return response.json();
-            })
+            .then(res => res.json())
             .then(data => {
-                console.log('📦 Réponse data:', data);
                 if (data.success) {
                     window.location.href = '/confirmation.html';
                 } else {
@@ -511,8 +499,7 @@
                 }
             })
             .catch(err => {
-                console.error('❌ Erreur fetch:', err);
-                errorEl.textContent = 'Erreur de connexion au serveur. Vérifiez votre connexion internet.';
+                errorEl.textContent = 'Erreur de connexion au serveur';
                 errorEl.classList.remove('hidden');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'Créer mon compte';
@@ -520,15 +507,21 @@
         }
 
         // ============================================
-        // CONNEXION
+        // CONNEXION - CORRIGÉE AVEC REDIRECTION
         // ============================================
         document.getElementById('loginFormSubmit').addEventListener('submit', function(e) {
             e.preventDefault();
+
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const errorEl = document.getElementById('loginError');
+
             errorEl.classList.add('hidden');
             errorEl.textContent = '';
+
+            const btn = document.querySelector('#loginFormSubmit button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Connexion...';
 
             fetch('/api/auth/login', {
                 method: 'POST',
@@ -537,28 +530,41 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (!res.ok) {
+                btn.disabled = false;
+                btn.innerHTML = 'Se connecter';
+
+                if (!data.success || !data.user) {
                     errorEl.textContent = data.error || 'Email ou mot de passe incorrect';
                     errorEl.classList.remove('hidden');
+
                     if (data.status === 'PENDING') {
-                        errorEl.textContent = '⏳ Votre compte est en attente de validation.';
+                        errorEl.textContent = '⏳ Votre compte est en attente de validation par notre équipe.';
+                    }
+                    if (data.status === 'BLOCKED') {
+                        errorEl.textContent = '❌ Votre compte a été bloqué. Contactez le support.';
                     }
                     return;
                 }
 
-                if (data.success) {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    if (data.user.role === 'ADMIN') {
-                        window.location.href = '/admin.html';
-                    } else {
-                        window.location.href = '/dashboard';
-                    }
+                // ✅ STOCKER LES INFORMATIONS DE L'UTILISATEUR
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                // ✅ REDIRECTION SELON LE RÔLE
+                if (data.user.role === 'ADMIN') {
+                    window.location.href = '/admin.html';
+                } else if (data.user.status === 'PENDING') {
+                    window.location.href = '/pending';
+                } else {
+                    window.location.href = '/dashboard';
                 }
             })
-            .catch(() => {
-                errorEl.textContent = 'Erreur de connexion au serveur';
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = 'Se connecter';
+                errorEl.textContent = '❌ Erreur de connexion au serveur. Vérifiez votre connexion.';
                 errorEl.classList.remove('hidden');
+                console.error('Erreur:', err);
             });
         });
 
@@ -571,7 +577,7 @@
             }
         });
 
-        // Mettre à jour le pays au chargement
+        // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             updateCountryInfo();
         });
