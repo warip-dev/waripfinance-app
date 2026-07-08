@@ -12,20 +12,19 @@
         .bg-gold { background: #e9b64a; }
         .text-dark { color: #1a1a2e; }
         .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
-        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 12px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 10px 20px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
         .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.3); }
-        .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .btn-danger { background: #ef4444; color: white; padding: 6px 14px; border-radius: 50px; border: none; cursor: pointer; font-size: 12px; transition: all 0.3s; }
         .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
-        .btn-success { background: #22c55e; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .btn-success { background: #22c55e; color: white; padding: 6px 14px; border-radius: 50px; border: none; cursor: pointer; font-size: 12px; transition: all 0.3s; }
         .btn-success:hover { background: #16a34a; transform: translateY(-2px); }
-        .btn-warning { background: #f59e0b; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .btn-warning { background: #f59e0b; color: white; padding: 6px 14px; border-radius: 50px; border: none; cursor: pointer; font-size: 12px; transition: all 0.3s; }
         .btn-warning:hover { background: #d97706; transform: translateY(-2px); }
         .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
-        .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
         .status-pending { background: #fef9c3; color: #854d0e; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .status-active { background: #dcfce7; color: #166534; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .status-rejected { background: #fee2e2; color: #991b1b; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
         .loading-spinner { border: 3px solid #f3f3f3; border-top: 3px solid #e9b64a; border-radius: 50%; width: 30px; height: 30px; animation: spin 0.8s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -49,6 +48,7 @@
     <div class="pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
         <h1 class="text-3xl font-bold text-dark mb-6">👑 Administration</h1>
 
+        <!-- Navigation simple -->
         <div class="flex gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow flex-wrap">
             <button id="tabUsers" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark">Utilisateurs</button>
             <button id="tabBeneficiaries" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Bénéficiaires</button>
@@ -60,7 +60,7 @@
         <div id="usersContent">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">👥 Utilisateurs inscrits</h3>
-                <div id="usersList" class="space-y-3">
+                <div id="usersList">
                     <div class="loading-spinner"></div>
                 </div>
             </div>
@@ -70,7 +70,7 @@
         <div id="beneficiariesContent" class="hidden">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">📋 Bénéficiaires</h3>
-                <div id="adminBeneficiariesList" class="space-y-3">
+                <div id="adminBeneficiariesList">
                     <div class="loading-spinner"></div>
                 </div>
             </div>
@@ -80,7 +80,7 @@
         <div id="transfersContent" class="hidden">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">💸 Virements en attente</h3>
-                <div id="adminTransfersList" class="space-y-3">
+                <div id="adminTransfersList">
                     <div class="loading-spinner"></div>
                 </div>
             </div>
@@ -90,8 +90,7 @@
         <div id="addressesContent" class="hidden">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">🔑 Adresses de dépôt</h3>
-                <p class="text-gray-500 text-sm mb-4">Modifiez les adresses BTC et ETH ci-dessous.</p>
-                <div id="addressesList" class="space-y-3">
+                <div id="addressesList">
                     <div class="loading-spinner"></div>
                 </div>
             </div>
@@ -102,31 +101,50 @@
         // ============================================
         // VÉRIFICATION ADMIN
         // ============================================
-        const token = localStorage.getItem('admin_token');
-        const user = JSON.parse(localStorage.getItem('admin_user') || '{}');
-        if (!token || user.role !== 'ADMIN') {
+        const adminToken = localStorage.getItem('admin_token');
+        const adminUser = JSON.parse(localStorage.getItem('admin_user') || '{}');
+        if (!adminToken || adminUser.role !== 'ADMIN') {
             window.location.href = '/admin';
         }
 
         // ============================================
         // TABS
         // ============================================
-        const tabs = ['Users', 'Beneficiaries', 'Transfers', 'Addresses'];
-        tabs.forEach(tab => {
-            document.getElementById('tab' + tab).addEventListener('click', function() {
-                document.querySelectorAll('[id$="Content"]').forEach(el => el.classList.add('hidden'));
-                document.getElementById(tab.toLowerCase() + 'Content').classList.remove('hidden');
-                document.querySelectorAll('.tab-btn').forEach(b => {
-                    b.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
-                });
-                this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const contents = {
+                'tabUsers': 'usersContent',
+                'tabBeneficiaries': 'beneficiariesContent',
+                'tabTransfers': 'transfersContent',
+                'tabAddresses': 'addressesContent'
+            };
 
-                if (tab === 'Users') loadUsers();
-                else if (tab === 'Beneficiaries') loadAdminBeneficiaries();
-                else if (tab === 'Transfers') loadAdminTransfers();
-                else if (tab === 'Addresses') loadAddresses();
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Cacher tous les contenus
+                    Object.values(contents).forEach(id => {
+                        document.getElementById(id).classList.add('hidden');
+                    });
+                    // Afficher le contenu correspondant
+                    const contentId = contents[this.id];
+                    if (contentId) {
+                        document.getElementById(contentId).classList.remove('hidden');
+                    }
+                    // Style des onglets
+                    tabs.forEach(b => {
+                        b.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
+                    });
+                    this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
+
+                    // Charger les données
+                    if (this.id === 'tabUsers') loadUsers();
+                    else if (this.id === 'tabBeneficiaries') loadAdminBeneficiaries();
+                    else if (this.id === 'tabTransfers') loadAdminTransfers();
+                    else if (this.id === 'tabAddresses') loadAddresses();
+                });
             });
-        });
+        }
+        setupTabs();
 
         // ============================================
         // LOGOUT
@@ -138,81 +156,68 @@
         });
 
         // ============================================
+        // FONCTION APPEL API
+        // ============================================
+        async function apiCall(url, options = {}) {
+            const defaultOptions = {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
+                }
+            };
+            const mergedOptions = { ...defaultOptions, ...options };
+            const response = await fetch(url, mergedOptions);
+            return response.json();
+        }
+
+        // ============================================
         // UTILISATEURS
         // ============================================
         function loadUsers() {
             const list = document.getElementById('usersList');
             list.innerHTML = '<div class="loading-spinner"></div>';
 
-            fetch('/api/admin/users', {
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('admin_token') }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.users || data.users.length === 0) {
-                    list.innerHTML = '<p class="text-gray-400 text-sm">Aucun utilisateur inscrit.</p>';
-                    return;
-                }
-                list.innerHTML = data.users.map(u => `
-                    <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
-                        <div>
-                            <p class="font-semibold text-dark">${u.first_name} ${u.last_name}</p>
-                            <p class="text-sm text-gray-500">${u.email}</p>
-                            <p class="text-xs text-gray-400">Solde: ${u.balance || 0} €</p>
-                            <span class="${u.status === 'PENDING' ? 'status-pending' : u.status === 'ACTIVE' ? 'status-active' : 'status-rejected'}">
-                                ${u.status === 'PENDING' ? '⏳ En attente' : u.status === 'ACTIVE' ? '✅ Actif' : '❌ Bloqué'}
-                            </span>
-                        </div>
-                        <div class="text-right">
-                            ${u.status === 'PENDING' ? `
-                                <button onclick="validateUser(${u.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1">
-                                    <i class="fas fa-check"></i> Valider
-                                </button>
-                                <button onclick="validateUser(${u.id}, 'BLOCKED')" class="btn-danger px-3 py-1 text-xs">
-                                    <i class="fas fa-times"></i> Rejeter
-                                </button>
-                            ` : '<span class="text-xs text-gray-400">Déjà traité</span>'}
-                            <div class="mt-1">
-                                <input type="number" id="balance_${u.id}" placeholder="+ montant" class="w-24 px-2 py-1 border rounded text-xs">
-                                <button onclick="updateBalance(${u.id})" class="btn-primary px-2 py-1 text-xs">
-                                    <i class="fas fa-plus"></i> Ajouter
-                                </button>
+            apiCall('/api/admin/users')
+                .then(data => {
+                    if (!data.users || data.users.length === 0) {
+                        list.innerHTML = '<p class="text-gray-400 text-sm">Aucun utilisateur inscrit.</p>';
+                        return;
+                    }
+                    list.innerHTML = data.users.map(u => `
+                        <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
+                            <div>
+                                <p class="font-semibold text-dark">${u.first_name} ${u.last_name}</p>
+                                <p class="text-sm text-gray-500">${u.email}</p>
+                                <p class="text-xs text-gray-400">Solde: ${u.balance || 0} €</p>
+                                <span class="${u.status === 'PENDING' ? 'status-pending' : u.status === 'ACTIVE' ? 'status-active' : 'status-rejected'}">
+                                    ${u.status === 'PENDING' ? '⏳ En attente' : u.status === 'ACTIVE' ? '✅ Actif' : '❌ Bloqué'}
+                                </span>
+                            </div>
+                            <div class="text-right">
+                                ${u.status === 'PENDING' ? `
+                                    <button onclick="validateUser(${u.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1">
+                                        <i class="fas fa-check"></i> Valider
+                                    </button>
+                                    <button onclick="validateUser(${u.id}, 'BLOCKED')" class="btn-danger px-3 py-1 text-xs">
+                                        <i class="fas fa-times"></i> Rejeter
+                                    </button>
+                                ` : '<span class="text-xs text-gray-400">Déjà traité</span>'}
                             </div>
                         </div>
-                    </div>
-                `).join('');
-            })
-            .catch(err => {
-                list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement des utilisateurs</p>';
-                console.error(err);
-            });
+                    `).join('');
+                })
+                .catch(err => {
+                    list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement des utilisateurs</p>';
+                    console.error(err);
+                });
         }
 
         window.validateUser = function(id, status) {
             if (!confirm(`Valider ou rejeter l'utilisateur ?`)) return;
-            fetch(`/api/admin/users/${id}/validate`, {
+            apiCall(`/api/admin/users/${id}/validate`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status })
-            })
-            .then(() => loadUsers());
-        };
-
-        window.updateBalance = function(id) {
-            const amount = parseFloat(document.getElementById('balance_' + id).value);
-            if (!amount || amount <= 0) return alert('Montant invalide');
-            fetch(`/api/admin/users/${id}/balance`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
-                },
-                body: JSON.stringify({ amount })
-            })
-            .then(() => loadUsers());
+            }).then(() => loadUsers());
         };
 
         // ============================================
@@ -222,57 +227,50 @@
             const list = document.getElementById('adminBeneficiariesList');
             list.innerHTML = '<div class="loading-spinner"></div>';
 
-            fetch('/api/admin/beneficiaries', {
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('admin_token') }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.beneficiaries || data.beneficiaries.length === 0) {
-                    list.innerHTML = '<p class="text-gray-400 text-sm">Aucun bénéficiaire.</p>';
-                    return;
-                }
-                list.innerHTML = data.beneficiaries.map(b => `
-                    <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
-                        <div>
-                            <p class="font-semibold text-dark">${b.name}</p>
-                            <p class="text-sm text-gray-500 font-mono">${b.iban}</p>
-                            <p class="text-xs text-gray-400">Utilisateur: ${b.first_name} ${b.last_name}</p>
-                            <span class="${b.status === 'PENDING' ? 'status-pending' : b.status === 'ACTIVE' ? 'status-active' : 'status-rejected'}">
-                                ${b.status === 'PENDING' ? '⏳ En attente' : b.status === 'ACTIVE' ? '✅ Validé' : '❌ Rejeté'}
-                            </span>
-                            ${b.rejection_reason ? `<p class="text-xs text-red-500 mt-1">Motif: ${b.rejection_reason}</p>` : ''}
+            apiCall('/api/admin/beneficiaries')
+                .then(data => {
+                    if (!data.beneficiaries || data.beneficiaries.length === 0) {
+                        list.innerHTML = '<p class="text-gray-400 text-sm">Aucun bénéficiaire.</p>';
+                        return;
+                    }
+                    list.innerHTML = data.beneficiaries.map(b => `
+                        <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
+                            <div>
+                                <p class="font-semibold text-dark">${b.name}</p>
+                                <p class="text-sm text-gray-500 font-mono">${b.iban}</p>
+                                <p class="text-xs text-gray-400">Utilisateur: ${b.first_name} ${b.last_name}</p>
+                                <span class="${b.status === 'PENDING' ? 'status-pending' : b.status === 'ACTIVE' ? 'status-active' : 'status-rejected'}">
+                                    ${b.status === 'PENDING' ? '⏳ En attente' : b.status === 'ACTIVE' ? '✅ Validé' : '❌ Rejeté'}
+                                </span>
+                                ${b.rejection_reason ? `<p class="text-xs text-red-500 mt-1">Motif: ${b.rejection_reason}</p>` : ''}
+                            </div>
+                            <div>
+                                ${b.status === 'PENDING' ? `
+                                    <button onclick="validateBeneficiary(${b.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1">
+                                        <i class="fas fa-check"></i> Valider
+                                    </button>
+                                    <button onclick="validateBeneficiary(${b.id}, 'REJECTED')" class="btn-danger px-3 py-1 text-xs">
+                                        <i class="fas fa-times"></i> Rejeter
+                                    </button>
+                                ` : ''}
+                            </div>
                         </div>
-                        <div>
-                            ${b.status === 'PENDING' ? `
-                                <button onclick="validateBeneficiary(${b.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1">
-                                    <i class="fas fa-check"></i> Valider
-                                </button>
-                                <button onclick="validateBeneficiary(${b.id}, 'REJECTED')" class="btn-danger px-3 py-1 text-xs">
-                                    <i class="fas fa-times"></i> Rejeter
-                                </button>
-                            ` : ''}
-                        </div>
-                    </div>
-                `).join('');
-            })
-            .catch(err => {
-                list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
-                console.error(err);
-            });
+                    `).join('');
+                })
+                .catch(err => {
+                    list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
+                    console.error(err);
+                });
         }
 
         window.validateBeneficiary = function(id, status) {
             const reason = status === 'REJECTED' ? prompt('Motif du rejet:') : null;
             if (status === 'REJECTED' && !reason) return;
-            fetch(`/api/admin/beneficiaries/${id}/validate`, {
+            apiCall(`/api/admin/beneficiaries/${id}/validate`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status, rejection_reason: reason })
-            })
-            .then(() => loadAdminBeneficiaries());
+            }).then(() => loadAdminBeneficiaries());
         };
 
         // ============================================
@@ -282,104 +280,89 @@
             const list = document.getElementById('adminTransfersList');
             list.innerHTML = '<div class="loading-spinner"></div>';
 
-            fetch('/api/admin/transfers', {
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('admin_token') }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.transfers || data.transfers.length === 0) {
-                    list.innerHTML = '<p class="text-gray-400 text-sm">Aucun virement en attente.</p>';
-                    return;
-                }
-                list.innerHTML = data.transfers.map(t => `
-                    <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
-                        <div>
-                            <p class="font-semibold text-dark">${t.amount} €</p>
-                            <p class="text-sm text-gray-500">Bénéficiaire: ${t.beneficiary_name}</p>
-                            <p class="text-xs text-gray-400">Utilisateur: ${t.first_name} ${t.last_name}</p>
-                            <p class="text-xs text-gray-400">Solde: ${t.balance || 0} €</p>
-                            <p class="text-xs text-gray-400">${new Date(t.created_at).toLocaleDateString('fr-FR')}</p>
+            apiCall('/api/admin/transfers')
+                .then(data => {
+                    if (!data.transfers || data.transfers.length === 0) {
+                        list.innerHTML = '<p class="text-gray-400 text-sm">Aucun virement en attente.</p>';
+                        return;
+                    }
+                    list.innerHTML = data.transfers.map(t => `
+                        <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
+                            <div>
+                                <p class="font-semibold text-dark">${t.amount} €</p>
+                                <p class="text-sm text-gray-500">Bénéficiaire: ${t.beneficiary_name}</p>
+                                <p class="text-xs text-gray-400">Utilisateur: ${t.first_name} ${t.last_name}</p>
+                                <p class="text-xs text-gray-400">${new Date(t.created_at).toLocaleDateString('fr-FR')}</p>
+                            </div>
+                            <div>
+                                <button onclick="validateTransfer(${t.id}, 'COMPLETED')" class="btn-success px-3 py-1 text-xs mr-1">
+                                    <i class="fas fa-check"></i> Valider
+                                </button>
+                                <button onclick="validateTransfer(${t.id}, 'REJECTED')" class="btn-danger px-3 py-1 text-xs">
+                                    <i class="fas fa-times"></i> Rejeter
+                                </button>
+                            </div>
                         </div>
-                        <div>
-                            <button onclick="validateTransfer(${t.id}, 'COMPLETED')" class="btn-success px-3 py-1 text-xs mr-1">
-                                <i class="fas fa-check"></i> Valider
-                            </button>
-                            <button onclick="validateTransfer(${t.id}, 'REJECTED')" class="btn-danger px-3 py-1 text-xs">
-                                <i class="fas fa-times"></i> Rejeter
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            })
-            .catch(err => {
-                list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
-                console.error(err);
-            });
+                    `).join('');
+                })
+                .catch(err => {
+                    list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
+                    console.error(err);
+                });
         }
 
         window.validateTransfer = function(id, status) {
             const reason = status === 'REJECTED' ? prompt('Motif du rejet:') : null;
             if (status === 'REJECTED' && !reason) return;
-            fetch(`/api/admin/transfers/${id}/validate`, {
+            apiCall(`/api/admin/transfers/${id}/validate`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status, admin_comment: reason })
-            })
-            .then(() => loadAdminTransfers());
+            }).then(() => loadAdminTransfers());
         };
 
         // ============================================
-        // ADRESSES (Admin) - MODIFICATION UNIQUE
+        // ADRESSES (Admin)
         // ============================================
         function loadAddresses() {
             const list = document.getElementById('addressesList');
             list.innerHTML = '<div class="loading-spinner"></div>';
 
-            fetch('/api/admin/deposit-addresses', {
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('admin_token') }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.addresses || data.addresses.length === 0) {
-                    list.innerHTML = '<p class="text-gray-400 text-sm">Aucune adresse configurée.</p>';
-                    return;
-                }
-                list.innerHTML = data.addresses.map(a => `
-                    <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
-                        <div>
-                            <p class="font-semibold text-dark">${a.currency}</p>
-                            <p class="text-sm text-gray-500 font-mono">${a.address}</p>
-                            <p class="text-xs text-gray-400">Réseau: ${a.network}</p>
+            apiCall('/api/admin/deposit-addresses')
+                .then(data => {
+                    if (!data.addresses || data.addresses.length === 0) {
+                        list.innerHTML = '<p class="text-gray-400 text-sm">Aucune adresse configurée.</p>';
+                        return;
+                    }
+                    list.innerHTML = data.addresses.map(a => `
+                        <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
+                            <div>
+                                <p class="font-semibold text-dark">${a.currency}</p>
+                                <p class="text-sm text-gray-500 font-mono">${a.address}</p>
+                                <p class="text-xs text-gray-400">Réseau: ${a.network}</p>
+                            </div>
+                            <div>
+                                <button onclick="editAddress(${a.id})" class="btn-warning px-3 py-1 text-xs">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </button>
+                            </div>
                         </div>
-                        <div>
-                            <button onclick="editAddress(${a.id})" class="btn-warning px-3 py-1 text-xs">
-                                <i class="fas fa-edit"></i> Modifier
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            })
-            .catch(err => {
-                list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement des adresses</p>';
-                console.error(err);
-            });
+                    `).join('');
+                })
+                .catch(err => {
+                    list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement des adresses</p>';
+                    console.error(err);
+                });
         }
 
         window.editAddress = function(id) {
             const newAddress = prompt('Entrez la nouvelle adresse:');
             if (!newAddress) return;
-            fetch(`/api/admin/deposit-addresses/${id}`, {
+            apiCall(`/api/admin/deposit-addresses/${id}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ address: newAddress })
-            })
-            .then(() => loadAddresses());
+            }).then(() => loadAddresses());
         };
 
         // ============================================
