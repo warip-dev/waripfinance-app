@@ -30,7 +30,7 @@ async function authenticate(req, res, next) {
     const authHeader = req.headers.authorization;
     if (!authHeader) return res.status(401).json({ error: 'Non autorisé' });
     const token = authHeader.split(' ')[1];
-    // Récupérer l'utilisateur depuis le token (simplifié)
+    // Simuler l'utilisateur (à remplacer par JWT)
     const [rows] = await pool.execute('SELECT id, role FROM users WHERE id = ?', [1]);
     if (rows.length === 0) return res.status(401).json({ error: 'Utilisateur non trouvé' });
     req.userId = rows[0].id;
@@ -89,7 +89,7 @@ async function authenticate(req, res, next) {
                 FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id) ON DELETE CASCADE
             )
         `);
-        // Table deposit_addresses (une seule adresse par crypto)
+        // Table deposit_addresses (UNE SEULE adresse par crypto)
         await pool.execute(`
             CREATE TABLE IF NOT EXISTS deposit_addresses (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -99,7 +99,7 @@ async function authenticate(req, res, next) {
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )
         `);
-        // Insert default addresses (si elles n'existent pas)
+        // Insérer les adresses par défaut
         await pool.execute(`
             INSERT IGNORE INTO deposit_addresses (currency, address, network) VALUES 
             ('BTC', 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq', 'Bitcoin'),
@@ -128,10 +128,16 @@ app.post('/api/auth/register', async (req, res) => {
             return res.status(400).json({ error: 'Cet email est déjà utilisé' });
         }
         const password_hash = await bcrypt.hash(password, 10);
+        
+        // Récupérer les adresses par défaut
+        const [addrRows] = await pool.execute('SELECT currency, address FROM deposit_addresses');
+        const btcAddr = addrRows.find(a => a.currency === 'BTC')?.address || '';
+        const ethAddr = addrRows.find(a => a.currency === 'ETH')?.address || '';
+
         const [result] = await pool.execute(
-            `INSERT INTO users (email, password_hash, first_name, last_name, phone, country, status, role)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [email, password_hash, first_name, last_name, '', country || 'FR', 'PENDING', 'USER']
+            `INSERT INTO users (email, password_hash, first_name, last_name, phone, country, status, role, btc_address, eth_address)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [email, password_hash, first_name, last_name, '', country || 'FR', 'PENDING', 'USER', btcAddr, ethAddr]
         );
         res.status(201).json({
             success: true,
@@ -151,7 +157,7 @@ app.post('/api/auth/login', async (req, res) => {
             return res.status(400).json({ error: 'Email et mot de passe requis' });
         }
         const [rows] = await pool.execute(
-            'SELECT id, email, password_hash, first_name, last_name, status, role, balance FROM users WHERE email = ?',
+            'SELECT id, email, password_hash, first_name, last_name, status, role, balance, btc_address, eth_address FROM users WHERE email = ?',
             [email]
         );
         if (rows.length === 0) {
@@ -178,7 +184,9 @@ app.post('/api/auth/login', async (req, res) => {
                 last_name: user.last_name,
                 status: user.status,
                 role: user.role,
-                balance: user.balance
+                balance: user.balance,
+                btc_address: user.btc_address,
+                eth_address: user.eth_address
             }
         });
     } catch (error) {
@@ -193,7 +201,7 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/admin/users', async (req, res) => {
     try {
         const [rows] = await pool.execute(
-            'SELECT id, email, first_name, last_name, status, role, balance, created_at FROM users ORDER BY created_at DESC'
+            'SELECT id, email, first_name, last_name, status, role, balance, btc_address, eth_address, created_at FROM users ORDER BY created_at DESC'
         );
         res.json({ users: rows });
     } catch (error) {
@@ -243,8 +251,18 @@ app.put('/api/admin/deposit-addresses/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { address } = req.body;
+        const [rows] = await pool.execute('SELECT currency FROM deposit_addresses WHERE id = ?', [id]);
+        if (rows.length === 0) return res.status(404).json({ error: 'Adresse non trouvée' });
+        const currency = rows[0].currency;
+        
+        // Mettre à jour l'adresse dans deposit_addresses
         await pool.execute('UPDATE deposit_addresses SET address = ? WHERE id = ?', [address, id]);
-        res.json({ success: true });
+        
+        // Mettre à jour l'adresse pour TOUS les utilisateurs
+        const field = currency === 'BTC' ? 'btc_address' : 'eth_address';
+        await pool.execute(`UPDATE users SET ${field} = ?`, [address]);
+        
+        res.json({ success: true, message: `✅ Adresse ${currency} mise à jour pour tous les utilisateurs` });
     } catch (error) {
         console.error('❌ Erreur update deposit address:', error);
         res.status(500).json({ error: 'Erreur interne' });
@@ -330,7 +348,6 @@ app.post('/api/transfers', authenticate, async (req, res) => {
         if (benef.length === 0) {
             return res.status(400).json({ error: 'Bénéficiaire non trouvé ou non validé' });
         }
-        // Vérifier le solde
         const [user] = await pool.execute('SELECT balance FROM users WHERE id = ?', [req.userId]);
         if (user[0].balance < amount) {
             return res.status(400).json({ error: 'Solde insuffisant' });
@@ -387,10 +404,8 @@ app.put('/api/admin/transfers/:id/validate', async (req, res) => {
     try {
         const { id } = req.params;
         const { status, admin_comment } = req.body;
-        // Récupérer le virement
         const [transfer] = await pool.execute('SELECT user_id, amount FROM transfers WHERE id = ?', [id]);
         if (transfer.length === 0) return res.status(404).json({ error: 'Virement non trouvé' });
-        // Si validé, débiter le solde
         if (status === 'COMPLETED') {
             await pool.execute('UPDATE users SET balance = balance - ? WHERE id = ?', [transfer[0].amount, transfer[0].user_id]);
         }
@@ -421,9 +436,6 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// ============================================
-// DÉMARRAGE
-// ============================================
 app.listen(PORT, () => {
     console.log(`🚀 Warip Finance démarrée sur http://localhost:${PORT}`);
 });

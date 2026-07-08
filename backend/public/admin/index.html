@@ -48,7 +48,6 @@
     <div class="pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
         <h1 class="text-3xl font-bold text-dark mb-6">👑 Administration</h1>
 
-        <!-- Navigation simple -->
         <div class="flex gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow flex-wrap">
             <button id="tabUsers" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark">Utilisateurs</button>
             <button id="tabBeneficiaries" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Bénéficiaires</button>
@@ -121,22 +120,18 @@
 
             tabs.forEach(tab => {
                 tab.addEventListener('click', function() {
-                    // Cacher tous les contenus
                     Object.values(contents).forEach(id => {
                         document.getElementById(id).classList.add('hidden');
                     });
-                    // Afficher le contenu correspondant
                     const contentId = contents[this.id];
                     if (contentId) {
                         document.getElementById(contentId).classList.remove('hidden');
                     }
-                    // Style des onglets
                     tabs.forEach(b => {
                         b.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
                     });
                     this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
 
-                    // Charger les données
                     if (this.id === 'tabUsers') loadUsers();
                     else if (this.id === 'tabBeneficiaries') loadAdminBeneficiaries();
                     else if (this.id === 'tabTransfers') loadAdminTransfers();
@@ -156,7 +151,7 @@
         });
 
         // ============================================
-        // FONCTION APPEL API
+        // APPEL API
         // ============================================
         async function apiCall(url, options = {}) {
             const defaultOptions = {
@@ -188,16 +183,18 @@
                                 <p class="font-semibold text-dark">${u.first_name} ${u.last_name}</p>
                                 <p class="text-sm text-gray-500">${u.email}</p>
                                 <p class="text-xs text-gray-400">Solde: ${u.balance || 0} €</p>
+                                <p class="text-xs text-gray-400 font-mono">BTC: ${u.btc_address || 'Non défini'}</p>
+                                <p class="text-xs text-gray-400 font-mono">ETH: ${u.eth_address || 'Non défini'}</p>
                                 <span class="${u.status === 'PENDING' ? 'status-pending' : u.status === 'ACTIVE' ? 'status-active' : 'status-rejected'}">
                                     ${u.status === 'PENDING' ? '⏳ En attente' : u.status === 'ACTIVE' ? '✅ Actif' : '❌ Bloqué'}
                                 </span>
                             </div>
                             <div class="text-right">
                                 ${u.status === 'PENDING' ? `
-                                    <button onclick="validateUser(${u.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1">
+                                    <button onclick="window.validateUser(${u.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1">
                                         <i class="fas fa-check"></i> Valider
                                     </button>
-                                    <button onclick="validateUser(${u.id}, 'BLOCKED')" class="btn-danger px-3 py-1 text-xs">
+                                    <button onclick="window.validateUser(${u.id}, 'BLOCKED')" class="btn-danger px-3 py-1 text-xs">
                                         <i class="fas fa-times"></i> Rejeter
                                     </button>
                                 ` : '<span class="text-xs text-gray-400">Déjà traité</span>'}
@@ -211,6 +208,7 @@
                 });
         }
 
+        // ⚠️ ATTENTION : Ces fonctions doivent être globales
         window.validateUser = function(id, status) {
             if (!confirm(`Valider ou rejeter l'utilisateur ?`)) return;
             apiCall(`/api/admin/users/${id}/validate`, {
@@ -246,10 +244,10 @@
                             </div>
                             <div>
                                 ${b.status === 'PENDING' ? `
-                                    <button onclick="validateBeneficiary(${b.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1">
+                                    <button onclick="window.validateBeneficiary(${b.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1">
                                         <i class="fas fa-check"></i> Valider
                                     </button>
-                                    <button onclick="validateBeneficiary(${b.id}, 'REJECTED')" class="btn-danger px-3 py-1 text-xs">
+                                    <button onclick="window.validateBeneficiary(${b.id}, 'REJECTED')" class="btn-danger px-3 py-1 text-xs">
                                         <i class="fas fa-times"></i> Rejeter
                                     </button>
                                 ` : ''}
@@ -295,10 +293,10 @@
                                 <p class="text-xs text-gray-400">${new Date(t.created_at).toLocaleDateString('fr-FR')}</p>
                             </div>
                             <div>
-                                <button onclick="validateTransfer(${t.id}, 'COMPLETED')" class="btn-success px-3 py-1 text-xs mr-1">
+                                <button onclick="window.validateTransfer(${t.id}, 'COMPLETED')" class="btn-success px-3 py-1 text-xs mr-1">
                                     <i class="fas fa-check"></i> Valider
                                 </button>
-                                <button onclick="validateTransfer(${t.id}, 'REJECTED')" class="btn-danger px-3 py-1 text-xs">
+                                <button onclick="window.validateTransfer(${t.id}, 'REJECTED')" class="btn-danger px-3 py-1 text-xs">
                                     <i class="fas fa-times"></i> Rejeter
                                 </button>
                             </div>
@@ -342,7 +340,7 @@
                                 <p class="text-xs text-gray-400">Réseau: ${a.network}</p>
                             </div>
                             <div>
-                                <button onclick="editAddress(${a.id})" class="btn-warning px-3 py-1 text-xs">
+                                <button onclick="window.editAddress(${a.id})" class="btn-warning px-3 py-1 text-xs">
                                     <i class="fas fa-edit"></i> Modifier
                                 </button>
                             </div>
@@ -366,7 +364,7 @@
         };
 
         // ============================================
-        // INIT - Charger les utilisateurs par défaut
+        // INIT
         // ============================================
         loadUsers();
     </script>
