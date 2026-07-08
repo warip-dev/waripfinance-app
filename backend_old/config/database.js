@@ -7,17 +7,39 @@ const pool = mysql.createPool({
     password: process.env.DB_PASSWORD || 'Gta@290499',
     database: process.env.DB_NAME || 'u120682741_waripfinanc_db',
     waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+    connectionLimit: 5,
+    queueLimit: 0,
+    connectTimeout: 10000
 });
 
 const promisePool = pool.promise();
+
+// ==========================================
+// TEST DE CONNEXION
+// ==========================================
+async function testConnection() {
+    try {
+        const connection = await promisePool.getConnection();
+        console.log('✅ Connexion MySQL établie avec succès');
+        connection.release();
+        return true;
+    } catch (error) {
+        console.error('❌ Erreur de connexion MySQL:', error.message);
+        return false;
+    }
+}
 
 // ==========================================
 // INITIALISATION DES TABLES
 // ==========================================
 async function initDatabase() {
     try {
+        const connected = await testConnection();
+        if (!connected) {
+            console.log('⚠️ Impossible de se connecter à MySQL');
+            return;
+        }
+
         // Table users
         await promisePool.execute(`
             CREATE TABLE IF NOT EXISTS users (
@@ -98,7 +120,7 @@ async function initDatabase() {
         `);
         console.log('✅ Table transactions créée/vérifiée');
 
-        // Créer un admin par défaut si aucun n'existe
+        // Créer un admin par défaut
         const [admins] = await promisePool.execute(
             'SELECT * FROM users WHERE role = "admin" LIMIT 1'
         );
@@ -124,7 +146,7 @@ async function initDatabase() {
         console.log('✅ Base de données MySQL initialisée avec succès');
 
     } catch (error) {
-        console.error('❌ Erreur d\'initialisation:', error);
+        console.error('❌ Erreur initialisation:', error.message);
     }
 }
 
