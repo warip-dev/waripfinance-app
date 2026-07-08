@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warip Finance - Créer un compte (Étape 2)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .register-container {
+            background: white;
+            max-width: 480px;
+            width: 100%;
+            padding: 40px 32px;
+            border-radius: 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+            border: 1px solid #eef1f5;
+        }
+        .logo { font-size: 28px; font-weight: 800; color: #1e2a3a; text-align: center; margin-bottom: 4px; }
+        .logo span { background: #ffd600; padding: 2px 12px; border-radius: 30px; }
+        .subtitle { text-align: center; color: #7a869a; font-size: 14px; margin-bottom: 20px; }
+        .step { text-align: center; color: #00b8a9; font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-weight: 600; font-size: 13px; color: #1e2a3a; margin-bottom: 4px; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #eef1f5;
+            border-radius: 60px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            background: #fafbfc;
+            transition: border 0.2s;
+            outline: none;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: #ffd600; background: white; }
+        .form-group select { appearance: none; cursor: pointer; }
+        .form-row { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; }
+        .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .phone-group { display: flex; gap: 8px; }
+        .phone-group select { width: 120px; flex-shrink: 0; }
+        .phone-group input { flex: 1; }
+        .btn-create {
+            width: 100%;
+            padding: 16px;
+            background: #ffd600;
+            border: none;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 16px;
+            color: #1e2a3a;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s;
+            margin-top: 12px;
+        }
+        .btn-create:hover { background: #f5c800; }
+        .btn-create:disabled { opacity: 0.6; cursor: not-allowed; }
+        .error-message {
+            background: #fff5f5; color: #e74c3c; padding: 12px 16px;
+            border-radius: 12px; font-size: 14px; margin-bottom: 16px; display: none;
+        }
+        .back-link { display: block; text-align: center; margin-top: 16px; font-size: 14px; color: #7a869a; text-decoration: none; }
+        .back-link:hover { color: #1e2a3a; }
+        .profession-other { display: none; margin-top: 8px; }
+        .profession-other.show { display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="register-container">
+        <div class="logo"><span>W</span>arip Finance</div>
+        <div class="subtitle">Complétez votre profil</div>
+        <div class="step">Étape 2 sur 2</div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <form id="registerForm" onsubmit="handleStep2(event)">
+            <div class="form-group">
+                <label>Numéro de téléphone</label>
+                <div class="phone-group">
+                    <select id="phoneCountry" onchange="updatePhoneCode()">
+                        <option value="+33">🇫🇷 +33 (France)</option>
+                        <option value="+32">🇧🇪 +32 (Belgique)</option>
+                        <option value="+41">🇨🇭 +41 (Suisse)</option>
+                        <option value="+44">🇬🇧 +44 (Royaume-Uni)</option>
+                        <option value="+1">🇺🇸 +1 (États-Unis)</option>
+                        <option value="+49">🇩🇪 +49 (Allemagne)</option>
+                        <option value="+34">🇪🇸 +34 (Espagne)</option>
+                        <option value="+39">🇮🇹 +39 (Italie)</option>
+                        <option value="+352">🇱🇺 +352 (Luxembourg)</option>
+                    </select>
+                    <input type="tel" id="phone" placeholder="6 12 34 56 78" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Numéro de rue</label>
+                    <input type="text" id="streetNumber" placeholder="12" required>
+                </div>
+                <div class="form-group">
+                    <label>Nom de rue</label>
+                    <input type="text" id="streetName" placeholder="Rue de Paris" required>
+                </div>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label>Ville</label>
+                    <input type="text" id="city" placeholder="Paris" required>
+                </div>
+                <div class="form-group">
+                    <label>Code postal</label>
+                    <input type="text" id="postalCode" placeholder="75001" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Pays</label>
+                <select id="country" onchange="updateCountryCode()">
+                    <option value="France">France</option>
+                    <option value="Belgique">Belgique</option>
+                    <option value="Suisse">Suisse</option>
+                    <option value="Royaume-Uni">Royaume-Uni</option>
+                    <option value="États-Unis">États-Unis</option>
+                    <option value="Allemagne">Allemagne</option>
+                    <option value="Espagne">Espagne</option>
+                    <option value="Italie">Italie</option>
+                    <option value="Luxembourg">Luxembourg</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label>Sexe</label>
+                    <select id="gender" required>
+                        <option value="">Sélectionner</option>
+                        <option value="Homme">Homme</option>
+                        <option value="Femme">Femme</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Situation matrimoniale</label>
+                    <select id="maritalStatus" required>
+                        <option value="">Sélectionner</option>
+                        <option value="Célibataire">Célibataire</option>
+                        <option value="Marié(e)">Marié(e)</option>
+                        <option value="Divorcé(e)">Divorcé(e)</option>
+                        <option value="Veuf/Veuve">Veuf/Veuve</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Profession</label>
+                <select id="profession" onchange="toggleProfessionOther()" required>
+                    <option value="">Sélectionner</option>
+                    <option value="Ingénieur">Ingénieur</option>
+                    <option value="Médecin">Médecin</option>
+                    <option value="Enseignant">Enseignant</option>
+                    <option value="Avocat">Avocat</option>
+                    <option value="Commerçant">Commerçant</option>
+                    <option value="Étudiant">Étudiant</option>
+                    <option value="Retraité">Retraité</option>
+                    <option value="Sans emploi">Sans emploi</option>
+                    <option value="Autre">Autre</option>
+                </select>
+                <div class="profession-other" id="professionOther">
+                    <input type="text" id="professionCustom" placeholder="Précisez votre profession">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-create" id="createBtn">CRÉER MON COMPTE</button>
+        </form>
+
+        <a href="register.html" class="back-link">← Retour à l'étape 1</a>
+    </div>
+
+    <script>
+        const step1Data = JSON.parse(localStorage.getItem('registerStep1'));
+        if (!step1Data) {
+            window.location.href = 'register.html';
+        }
+
+        function updatePhoneCode() {}
+        function updateCountryCode() {
+            const country = document.getElementById('country').value;
+            const phoneSelect = document.getElementById('phoneCountry');
+            const countryCodes = {
+                'France': '+33', 'Belgique': '+32', 'Suisse': '+41',
+                'Royaume-Uni': '+44', 'États-Unis': '+1', 'Allemagne': '+49',
+                'Espagne': '+34', 'Italie': '+39', 'Luxembourg': '+352'
+            };
+            if (countryCodes[country]) {
+                for (let option of phoneSelect.options) {
+                    if (option.value === countryCodes[country]) {
+                        phoneSelect.value = countryCodes[country];
+                        break;
+                    }
+                }
+            }
+        }
+
+        function toggleProfessionOther() {
+            const select = document.getElementById('profession');
+            const otherDiv = document.getElementById('professionOther');
+            if (select.value === 'Autre') {
+                otherDiv.classList.add('show');
+            } else {
+                otherDiv.classList.remove('show');
+            }
+        }
+
+        async function handleStep2(event) {
+            event.preventDefault();
+
+            const phone = document.getElementById('phone').value.trim();
+            const phoneCountry = document.getElementById('phoneCountry').value;
+            const streetNumber = document.getElementById('streetNumber').value.trim();
+            const streetName = document.getElementById('streetName').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const postalCode = document.getElementById('postalCode').value.trim();
+            const gender = document.getElementById('gender').value;
+            const maritalStatus = document.getElementById('maritalStatus').value;
+            let profession = document.getElementById('profession').value;
+            const country = document.getElementById('country').value;
+
+            if (profession === 'Autre') {
+                profession = document.getElementById('professionCustom').value.trim() || 'Autre';
+            }
+
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.style.display = 'none';
+
+            if (!phone || !streetNumber || !streetName || !city || !postalCode || !gender || !maritalStatus || !profession || !country) {
+                errorDiv.textContent = '❌ Tous les champs sont obligatoires';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            const userData = {
+                ...step1Data,
+                phone,
+                phoneCountry,
+                streetNumber,
+                streetName,
+                city,
+                postalCode,
+                gender,
+                maritalStatus,
+                profession,
+                country
+            };
+
+            const btn = document.getElementById('createBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Création en cours...';
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.removeItem('registerStep1');
+                    window.location.href = 'pending.html';
+                } else {
+                    errorDiv.textContent = '❌ ' + data.message;
+                    errorDiv.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'CRÉER MON COMPTE';
+                }
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                errorDiv.textContent = '❌ Erreur de connexion au serveur';
+                errorDiv.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'CRÉER MON COMPTE';
+            }
+        }
+    </script>
+
+</body>
+</html>

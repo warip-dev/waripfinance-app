@@ -4,13 +4,17 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 // ==========================================
-// INSCRIPTION
+// INSCRIPTION COMPLÈTE
 // ==========================================
 router.post('/register', async (req, res) => {
     try {
-        const { firstName, lastName, email, password, phone } = req.body;
+        const { 
+            firstName, lastName, email, password,
+            phone, phoneCountry, streetNumber, streetName,
+            city, postalCode, gender, maritalStatus,
+            profession, country
+        } = req.body;
 
-        // Vérifier si l'utilisateur existe déjà
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ 
@@ -19,35 +23,38 @@ router.post('/register', async (req, res) => {
             });
         }
 
-        // Créer l'utilisateur
+        const existingPhone = await User.findOne({ phone });
+        if (existingPhone) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Ce numéro de téléphone est déjà utilisé' 
+            });
+        }
+
         const user = new User({
             firstName,
             lastName,
             email,
             password,
-            phone
+            phone: phoneCountry + phone,
+            phoneCountry,
+            streetNumber,
+            streetName,
+            city,
+            postalCode,
+            gender,
+            maritalStatus,
+            profession,
+            country,
+            status: 'pending'
         });
 
         await user.save();
 
-        // Générer le token JWT
-        const token = jwt.sign(
-            { id: user._id, email: user.email },
-            process.env.JWT_SECRET,
-            { expiresIn: '7d' }
-        );
-
         res.status(201).json({
             success: true,
-            message: 'Compte créé avec succès !',
-            token,
-            user: {
-                id: user._id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                accounts: user.accounts
-            }
+            message: 'Compte créé avec succès, en attente de validation',
+            userId: user._id
         });
 
     } catch (error) {
@@ -66,7 +73,6 @@ router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Vérifier si l'utilisateur existe
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({
@@ -75,7 +81,20 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Vérifier le mot de passe
+        if (user.status === 'pending') {
+            return res.status(403).json({
+                success: false,
+                message: 'Votre compte est en attente de validation par notre équipe'
+            });
+        }
+
+        if (user.status === 'rejected') {
+            return res.status(403).json({
+                success: false,
+                message: 'Votre compte a été rejeté. Raison: ' + user.rejectionReason
+            });
+        }
+
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
             return res.status(401).json({
@@ -84,9 +103,8 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Générer le token JWT
         const token = jwt.sign(
-            { id: user._id, email: user.email },
+            { id: user._id, email: user.email, role: user.role || 'user' },
             process.env.JWT_SECRET,
             { expiresIn: '7d' }
         );
@@ -101,7 +119,9 @@ router.post('/login', async (req, res) => {
                 lastName: user.lastName,
                 email: user.email,
                 accounts: user.accounts,
-                transactions: user.transactions.slice(-5) // 5 dernières transactions
+                transactions: user.transactions.slice(-5),
+                status: user.status,
+                role: user.role
             }
         });
 
@@ -115,7 +135,7 @@ router.post('/login', async (req, res) => {
 });
 
 // ==========================================
-// RÉCUPÉRER LES DONNÉES UTILISATEUR
+// RÉCUPÉRER LE PROFIL UTILISATEUR
 // ==========================================
 router.get('/me', async (req, res) => {
     try {
@@ -128,7 +148,7 @@ router.get('/me', async (req, res) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findById(decoded.id);
+        const user = await User.findById(decoded.id).select('-password');
         
         if (!user) {
             return res.status(404).json({ 
@@ -144,8 +164,20 @@ router.get('/me', async (req, res) => {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
+                phone: user.phone,
+                phoneCountry: user.phoneCountry,
+                streetNumber: user.streetNumber,
+                streetName: user.streetName,
+                city: user.city,
+                postalCode: user.postalCode,
+                gender: user.gender,
+                maritalStatus: user.maritalStatus,
+                profession: user.profession,
+                country: user.country,
                 accounts: user.accounts,
-                transactions: user.transactions.slice(-10)
+                transactions: user.transactions.slice(-10),
+                status: user.status,
+                role: user.role
             }
         });
 
@@ -154,6 +186,38 @@ router.get('/me', async (req, res) => {
         res.status(401).json({ 
             success: false, 
             message: 'Token invalide' 
+        });
+    }
+});
+
+// ==========================================
+// CHANGER LE MOT DE PASSE
+// ==========================================
+router.post('/forgot-password', async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Email non trouvé'
+            });
+        }
+
+        user.password = newPassword;
+        await user.save();
+
+        res.json({
+            success: true,
+            message: 'Mot de passe modifié avec succès'
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors du changement de mot de passe'
         });
     }
 });

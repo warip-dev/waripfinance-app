@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warip Finance - Virement</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .transfer-container {
+            background: white;
+            max-width: 480px;
+            width: 100%;
+            padding: 40px 32px;
+            border-radius: 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+            border: 1px solid #eef1f5;
+        }
+        .logo { font-size: 28px; font-weight: 800; color: #1e2a3a; text-align: center; margin-bottom: 4px; }
+        .logo span { background: #ffd600; padding: 2px 12px; border-radius: 30px; }
+        .subtitle { text-align: center; color: #7a869a; font-size: 14px; margin-bottom: 28px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-weight: 600; font-size: 13px; color: #1e2a3a; margin-bottom: 6px; }
+        .form-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #eef1f5;
+            border-radius: 60px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            background: #fafbfc;
+            transition: border 0.2s;
+            outline: none;
+        }
+        .form-group input:focus { border-color: #ffd600; background: white; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn-transfer {
+            width: 100%;
+            padding: 16px;
+            background: #ffd600;
+            border: none;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 16px;
+            color: #1e2a3a;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+        .btn-transfer:hover { background: #f5c800; }
+        .btn-transfer:disabled { opacity: 0.6; cursor: not-allowed; }
+        .back-link { display: block; text-align: center; margin-top: 16px; font-size: 14px; color: #7a869a; text-decoration: none; }
+        .back-link:hover { color: #1e2a3a; }
+        .error-message {
+            background: #fff5f5; color: #e74c3c; padding: 12px 16px;
+            border-radius: 12px; font-size: 14px; margin-bottom: 16px; display: none;
+        }
+        .success-message {
+            background: #e8f8f6; color: #00b8a9; padding: 12px 16px;
+            border-radius: 12px; font-size: 14px; margin-bottom: 16px; display: none;
+        }
+        .balance-info {
+            text-align: center;
+            font-size: 14px;
+            color: #7a869a;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #f5f7fa;
+            border-radius: 12px;
+        }
+        .balance-info strong { color: #1e2a3a; }
+    </style>
+</head>
+<body>
+
+    <div class="transfer-container">
+        <div class="logo"><span>W</span>arip Finance</div>
+        <div class="subtitle">Effectuer un virement</div>
+
+        <div class="balance-info" id="balanceInfo">💰 Solde disponible : <strong>€0,00</strong></div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <form id="transferForm" onsubmit="handleTransfer(event)">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nom du bénéficiaire</label>
+                    <input type="text" id="beneficiaryName" placeholder="Jean" required>
+                </div>
+                <div class="form-group">
+                    <label>Prénom du bénéficiaire</label>
+                    <input type="text" id="beneficiaryLastName" placeholder="Dupont" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>IBAN</label>
+                <input type="text" id="iban" placeholder="FR76 1234 5678 9012 3456 789" required>
+            </div>
+
+            <div class="form-group">
+                <label>BIC</label>
+                <input type="text" id="bic" placeholder="BNPAFRPP" required>
+            </div>
+
+            <div class="form-group">
+                <label>Référence (optionnel)</label>
+                <input type="text" id="reference" placeholder="Facture #123">
+            </div>
+
+            <div class="form-group">
+                <label>Montant (€)</label>
+                <input type="number" id="amount" placeholder="0,00" step="0.01" min="0.01" required>
+            </div>
+
+            <button type="submit" class="btn-transfer" id="transferBtn">Lancer le virement</button>
+        </form>
+
+        <a href="dashboard.html" class="back-link">← Retour au tableau de bord</a>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        const userData = JSON.parse(localStorage.getItem('user'));
+
+        if (!token || !userData) {
+            window.location.href = 'login.html';
+        }
+
+        const balance = userData.accounts?.current?.balance || 0;
+        document.getElementById('balanceInfo').innerHTML = `💰 Solde disponible : <strong>€${balance.toFixed(2)}</strong>`;
+
+        async function handleTransfer(event) {
+            event.preventDefault();
+
+            const beneficiaryName = document.getElementById('beneficiaryName').value.trim();
+            const beneficiaryLastName = document.getElementById('beneficiaryLastName').value.trim();
+            const iban = document.getElementById('iban').value.trim().replace(/\s/g, '');
+            const bic = document.getElementById('bic').value.trim();
+            const reference = document.getElementById('reference').value.trim();
+            const amount = parseFloat(document.getElementById('amount').value);
+
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            const btn = document.getElementById('transferBtn');
+
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            if (!beneficiaryName || !beneficiaryLastName || !iban || !bic || !amount || amount <= 0) {
+                errorDiv.textContent = '❌ Tous les champs sont obligatoires';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (amount > balance) {
+                errorDiv.textContent = '❌ Solde insuffisant';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Envoi en cours...';
+
+            try {
+                const response = await fetch('/api/transfer/create', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ beneficiaryName, beneficiaryLastName, iban, bic, reference, amount })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    successDiv.textContent = '✅ ' + data.message;
+                    successDiv.style.display = 'block';
+                    btn.textContent = '✅ Virement envoyé';
+
+                    // Mettre à jour le solde affiché
+                    const newBalance = balance - amount;
+                    document.getElementById('balanceInfo').innerHTML = `💰 Solde disponible : <strong>€${newBalance.toFixed(2)}</strong>`;
+
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 3000);
+                } else {
+                    errorDiv.textContent = '❌ ' + data.message;
+                    errorDiv.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'Lancer le virement';
+                }
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                errorDiv.textContent = '❌ Erreur de connexion au serveur';
+                errorDiv.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Lancer le virement';
+            }
+        }
+    </script>
+
+</body>
+</html>

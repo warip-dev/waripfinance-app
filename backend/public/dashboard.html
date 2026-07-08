@@ -6,21 +6,11 @@
     <title>Warip Finance - Tableau de bord</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
     <style>
-        /* ============================================
-                   RESET & BASE
-                   ============================================ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bunq-yellow: #ffd600;
-            --bunq-dark: #1a2533;
             --bunq-blue: #1e2a3a;
             --bunq-green: #00b8a9;
-            --bunq-green-light: #e8f8f6;
             --bunq-gray: #7a869a;
             --bunq-light-gray: #f5f7fa;
             --bunq-border: #eef1f5;
@@ -29,19 +19,14 @@
             --bunq-radius: 24px;
             --bunq-radius-sm: 16px;
         }
-
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bunq-light-gray);
             color: var(--bunq-blue);
             padding: 0 0 100px 0;
             min-height: 100vh;
             line-height: 1.5;
         }
-
-        /* ============================================
-                   HEADER
-                   ============================================ */
         .header {
             background: var(--bunq-blue);
             padding: 20px 20px 20px 20px;
@@ -51,13 +36,11 @@
             z-index: 100;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         }
-
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
         .header-logo {
             display: flex;
             align-items: center;
@@ -67,7 +50,6 @@
             font-weight: 800;
             letter-spacing: -0.5px;
         }
-
         .header-logo span {
             background: var(--bunq-yellow);
             color: var(--bunq-blue);
@@ -75,14 +57,12 @@
             border-radius: 30px;
             font-size: 20px;
         }
-
         .header-user {
             display: flex;
             align-items: center;
             gap: 12px;
             cursor: pointer;
         }
-
         .header-user .avatar {
             width: 44px;
             height: 44px;
@@ -96,21 +76,8 @@
             color: var(--bunq-blue);
             border: 2px solid rgba(255, 255, 255, 0.2);
         }
-
-        .header-user .name {
-            color: white;
-            font-weight: 600;
-            font-size: 15px;
-        }
-
-        .header-user .sub {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 12px;
-        }
-
-        /* ============================================
-                   SOLDE TOTAL
-                   ============================================ */
+        .header-user .name { color: white; font-weight: 600; font-size: 15px; }
+        .header-user .sub { color: rgba(255, 255, 255, 0.6); font-size: 12px; }
         .total-balance-card {
             background: white;
             margin: 0 16px 20px 16px;
@@ -121,7 +88,6 @@
             position: relative;
             z-index: 10;
         }
-
         .total-balance-card .label {
             font-size: 13px;
             font-weight: 600;
@@ -129,7 +95,6 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
         .total-balance-card .amount {
             font-size: 40px;
             font-weight: 800;
@@ -137,16 +102,11 @@
             margin: 4px 0 8px 0;
             letter-spacing: -1px;
         }
-
         .total-balance-card .amount .currency {
             font-size: 22px;
             font-weight: 600;
             color: var(--bunq-gray);
         }
-
-        /* ============================================
-                   COMPTES
-                   ============================================ */
         .section-title {
             display: flex;
             justify-content: space-between;
@@ -154,13 +114,11 @@
             padding: 0 16px;
             margin: 28px 0 14px 0;
         }
-
         .section-title h2 {
             font-size: 18px;
             font-weight: 700;
             color: var(--bunq-blue);
         }
-
         .accounts-scroll {
             display: flex;
             gap: 14px;
@@ -170,21 +128,9 @@
             -webkit-overflow-scrolling: touch;
             padding-bottom: 6px;
         }
-
-        .accounts-scroll::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        .accounts-scroll::-webkit-scrollbar-track {
-            background: var(--bunq-border);
-            border-radius: 10px;
-        }
-
-        .accounts-scroll::-webkit-scrollbar-thumb {
-            background: var(--bunq-yellow);
-            border-radius: 10px;
-        }
-
+        .accounts-scroll::-webkit-scrollbar { height: 4px; }
+        .accounts-scroll::-webkit-scrollbar-track { background: var(--bunq-border); border-radius: 10px; }
+        .accounts-scroll::-webkit-scrollbar-thumb { background: var(--bunq-yellow); border-radius: 10px; }
         .account-card {
             min-width: 200px;
             background: white;
@@ -197,11 +143,7 @@
             transition: transform 0.2s;
             cursor: pointer;
         }
-
-        .account-card:active {
-            transform: scale(0.97);
-        }
-
+        .account-card:active { transform: scale(0.97); }
         .account-card .acct-label {
             font-size: 12px;
             font-weight: 600;
@@ -209,40 +151,22 @@
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
-
         .account-card .acct-balance {
             font-size: 24px;
             font-weight: 700;
             color: var(--bunq-blue);
             margin: 6px 0 4px 0;
         }
-
         .account-card .acct-iban {
             font-size: 11px;
             color: var(--bunq-gray);
             font-weight: 500;
             letter-spacing: 0.5px;
         }
-
-        .account-card .acct-icon {
-            font-size: 28px;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .card-yellow .acct-balance {
-            color: #e8a800;
-        }
-        .card-green .acct-balance {
-            color: var(--bunq-green);
-        }
-        .card-blue .acct-balance {
-            color: var(--bunq-blue);
-        }
-
-        /* ============================================
-                   ACTIONS RAPIDES
-                   ============================================ */
+        .account-card .acct-icon { font-size: 28px; margin-bottom: 8px; display: block; }
+        .card-yellow .acct-balance { color: #e8a800; }
+        .card-green .acct-balance { color: var(--bunq-green); }
+        .card-blue .acct-balance { color: var(--bunq-blue); }
         .quick-actions {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -250,7 +174,6 @@
             padding: 0 16px;
             margin: 20px 0 28px 0;
         }
-
         .quick-action {
             background: white;
             border-radius: var(--bunq-radius-sm);
@@ -263,26 +186,9 @@
             text-decoration: none;
             color: var(--bunq-blue);
         }
-
-        .quick-action:active {
-            transform: scale(0.95);
-            background: var(--bunq-light-gray);
-        }
-
-        .quick-action .icon {
-            font-size: 28px;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .quick-action .label {
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        /* ============================================
-                   TRANSACTIONS
-                   ============================================ */
+        .quick-action:active { transform: scale(0.95); background: var(--bunq-light-gray); }
+        .quick-action .icon { font-size: 28px; display: block; margin-bottom: 4px; }
+        .quick-action .label { font-size: 12px; font-weight: 600; }
         .transactions-list {
             background: white;
             margin: 0 16px;
@@ -291,7 +197,6 @@
             border: 1px solid var(--bunq-border);
             overflow: hidden;
         }
-
         .transaction-item {
             display: flex;
             justify-content: space-between;
@@ -301,15 +206,8 @@
             cursor: pointer;
             transition: background 0.15s;
         }
-
-        .transaction-item:last-child {
-            border-bottom: none;
-        }
-
-        .transaction-item:active {
-            background: var(--bunq-light-gray);
-        }
-
+        .transaction-item:last-child { border-bottom: none; }
+        .transaction-item:active { background: var(--bunq-light-gray); }
         .trans-left {
             display: flex;
             align-items: center;
@@ -317,7 +215,6 @@
             min-width: 0;
             flex: 1;
         }
-
         .trans-icon {
             width: 44px;
             height: 44px;
@@ -329,12 +226,7 @@
             font-size: 20px;
             flex-shrink: 0;
         }
-
-        .trans-info {
-            min-width: 0;
-            flex: 1;
-        }
-
+        .trans-info { min-width: 0; flex: 1; }
         .trans-info .name {
             font-weight: 600;
             font-size: 15px;
@@ -343,29 +235,10 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
-        .trans-info .date {
-            font-size: 12px;
-            color: var(--bunq-gray);
-        }
-
-        .trans-amount {
-            font-weight: 700;
-            font-size: 15px;
-            flex-shrink: 0;
-            margin-left: 8px;
-        }
-
-        .trans-amount.negative {
-            color: #e74c3c;
-        }
-        .trans-amount.positive {
-            color: var(--bunq-green);
-        }
-
-        /* ============================================
-                   NAVIGATION BASSE
-                   ============================================ */
+        .trans-info .date { font-size: 12px; color: var(--bunq-gray); }
+        .trans-amount { font-weight: 700; font-size: 15px; flex-shrink: 0; margin-left: 8px; }
+        .trans-amount.negative { color: #e74c3c; }
+        .trans-amount.positive { color: var(--bunq-green); }
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -379,7 +252,6 @@
             box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
             z-index: 200;
         }
-
         .bottom-nav a {
             display: flex;
             flex-direction: column;
@@ -393,16 +265,8 @@
             transition: color 0.2s;
             position: relative;
         }
-
-        .bottom-nav a .nav-icon {
-            font-size: 24px;
-            line-height: 1;
-        }
-
-        .bottom-nav a.active {
-            color: var(--bunq-yellow);
-        }
-
+        .bottom-nav a .nav-icon { font-size: 24px; line-height: 1; }
+        .bottom-nav a.active { color: var(--bunq-yellow); }
         .bottom-nav a.active::after {
             content: '';
             position: absolute;
@@ -414,7 +278,6 @@
             background: var(--bunq-yellow);
             border-radius: 10px;
         }
-
         .bottom-nav a .badge-nav {
             position: absolute;
             top: 0;
@@ -426,95 +289,28 @@
             border-radius: 20px;
             font-weight: 700;
         }
-
-        /* ============================================
-                   RESPONSIVE
-                   ============================================ */
         @media (max-width: 480px) {
-            .total-balance-card .amount {
-                font-size: 32px;
-            }
-            .quick-actions {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 8px;
-            }
-            .quick-action {
-                padding: 12px 4px;
-            }
-            .quick-action .icon {
-                font-size: 22px;
-            }
-            .account-card {
-                min-width: 160px;
-                padding: 16px 14px;
-            }
-            .account-card .acct-balance {
-                font-size: 20px;
-            }
-            .header-logo {
-                font-size: 18px;
-            }
-            .header-user .name {
-                font-size: 13px;
-            }
-            .bottom-nav a {
-                padding: 4px 8px;
-                font-size: 9px;
-            }
-            .bottom-nav a .nav-icon {
-                font-size: 20px;
-            }
+            .total-balance-card .amount { font-size: 32px; }
+            .quick-actions { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+            .quick-action { padding: 12px 4px; }
+            .quick-action .icon { font-size: 22px; }
+            .account-card { min-width: 160px; padding: 16px 14px; }
+            .account-card .acct-balance { font-size: 20px; }
+            .header-logo { font-size: 18px; }
+            .header-user .name { font-size: 13px; }
+            .bottom-nav a { padding: 4px 8px; font-size: 9px; }
+            .bottom-nav a .nav-icon { font-size: 20px; }
         }
-
         @media (min-width: 768px) {
-            body {
-                max-width: 480px;
-                margin: 0 auto;
-                background: #e8ecf2;
-            }
-            .header {
-                border-radius: 0 0 32px 32px;
-            }
-            .bottom-nav {
-                max-width: 480px;
-                left: 50%;
-                transform: translateX(-50%);
-                border-radius: 20px 20px 0 0;
-            }
+            body { max-width: 480px; margin: 0 auto; background: #e8ecf2; }
+            .header { border-radius: 0 0 32px 32px; }
+            .bottom-nav { max-width: 480px; left: 50%; transform: translateX(-50%); border-radius: 20px 20px 0 0; }
         }
-
-        /* Animation de chargement */
         @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .animate-in {
-            animation: fadeUp 0.4s ease-out both;
-        }
-        .animate-in:nth-child(2) {
-            animation-delay: 0.05s;
-        }
-        .animate-in:nth-child(3) {
-            animation-delay: 0.1s;
-        }
-        .animate-in:nth-child(4) {
-            animation-delay: 0.15s;
-        }
-        .animate-in:nth-child(5) {
-            animation-delay: 0.2s;
-        }
-        .animate-in:nth-child(6) {
-            animation-delay: 0.25s;
-        }
-
-        /* Loader */
+        .animate-in { animation: fadeUp 0.4s ease-out both; }
         .loader {
             display: flex;
             justify-content: center;
@@ -534,33 +330,48 @@
             animation: spin 0.8s linear infinite;
             margin-right: 16px;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .profile-menu {
+            display: none;
+            position: absolute;
+            right: 20px;
+            top: 70px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border: 1px solid var(--bunq-border);
+            padding: 16px 0;
+            min-width: 220px;
+            z-index: 200;
         }
+        .profile-menu.show { display: block; }
+        .profile-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: var(--bunq-blue);
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .profile-menu a:hover { background: var(--bunq-light-gray); }
+        .profile-menu .divider { border-top: 1px solid var(--bunq-border); margin: 6px 0; }
     </style>
 </head>
 <body>
 
-    <!-- ==========================================
-    LOADER
-    ========================================== -->
     <div id="loader" class="loader">
         <div class="spinner"></div>
         <span>Chargement de votre espace...</span>
     </div>
 
-    <!-- ==========================================
-    CONTENU PRINCIPAL (caché au départ)
-    ========================================== -->
     <div id="mainContent" style="display:none;">
-
-        <!-- HEADER -->
         <header class="header">
             <div class="header-top">
-                <div class="header-logo">
-                    <span>W</span>arip
-                </div>
-                <div class="header-user" onclick="toggleUserMenu()">
+                <div class="header-logo"><span>W</span>arip</div>
+                <div class="header-user" onclick="toggleProfileMenu()">
                     <div>
                         <div class="name" id="userName">Bonjour, Utilisateur</div>
                         <div class="sub" id="userEmail">email@exemple.com</div>
@@ -568,84 +379,49 @@
                     <div class="avatar" id="userAvatar">U</div>
                 </div>
             </div>
+            <div class="profile-menu" id="profileMenu">
+                <a href="#" onclick="showProfile()">👤 Informations</a>
+                <a href="#" onclick="alert('Support: support@waripfinance.com')">📧 Support</a>
+                <div class="divider"></div>
+                <a href="#" onclick="logout()" style="color:#e74c3c;">🚪 Déconnexion</a>
+            </div>
         </header>
 
-        <!-- SOLDE TOTAL -->
         <div class="total-balance-card animate-in">
             <div class="label">Solde total</div>
-            <div class="amount" id="totalBalance">
-                <span class="currency">€</span> 0,00
-            </div>
+            <div class="amount" id="totalBalance"><span class="currency">€</span> 0,00</div>
         </div>
 
-        <!-- COMPTES -->
-        <div class="section-title">
-            <h2>Mes comptes</h2>
-        </div>
+        <div class="section-title"><h2>Mes comptes</h2></div>
+        <div class="accounts-scroll" id="accountsContainer"></div>
 
-        <div class="accounts-scroll" id="accountsContainer">
-            <!-- Les comptes seront générés par JavaScript -->
-        </div>
-
-        <!-- ACTIONS RAPIDES -->
         <div class="quick-actions">
             <a href="deposit.html" class="quick-action animate-in">
-                <span class="icon">💸</span>
-                <span class="label">Déposer</span>
+                <span class="icon">💸</span><span class="label">Déposer</span>
+            </a>
+            <a href="transfer.html" class="quick-action animate-in">
+                <span class="icon">↗️</span><span class="label">Virement</span>
             </a>
             <a href="#" class="quick-action animate-in" onclick="alert('Fonctionnalité à venir')">
-                <span class="icon">↗️</span>
-                <span class="label">Virement</span>
+                <span class="icon">📊</span><span class="label">Analyser</span>
             </a>
             <a href="#" class="quick-action animate-in" onclick="alert('Fonctionnalité à venir')">
-                <span class="icon">📊</span>
-                <span class="label">Analyser</span>
-            </a>
-            <a href="#" class="quick-action animate-in" onclick="alert('Fonctionnalité à venir')">
-                <span class="icon">⚡</span>
-                <span class="label">Payer</span>
+                <span class="icon">⚡</span><span class="label">Payer</span>
             </a>
         </div>
 
-        <!-- TRANSACTIONS -->
-        <div class="section-title">
-            <h2>Dernières opérations</h2>
-        </div>
+        <div class="section-title"><h2>Dernières opérations</h2></div>
+        <div class="transactions-list animate-in" id="transactionsContainer"></div>
 
-        <div class="transactions-list animate-in" id="transactionsContainer">
-            <!-- Les transactions seront générées par JavaScript -->
-        </div>
-
-        <!-- NAVIGATION BASSE -->
         <nav class="bottom-nav">
-            <a href="#" class="active">
-                <span class="nav-icon">🏠</span>
-                Accueil
-            </a>
-            <a href="#" onclick="alert('Fonctionnalité à venir')">
-                <span class="nav-icon">💳</span>
-                Cartes
-                <span class="badge-nav">2</span>
-            </a>
-            <a href="#" onclick="alert('Fonctionnalité à venir')">
-                <span class="nav-icon">↗️</span>
-                Virements
-            </a>
-            <a href="#" onclick="logout()">
-                <span class="nav-icon">🚪</span>
-                Déconnexion
-            </a>
+            <a href="#" class="active"><span class="nav-icon">🏠</span>Accueil</a>
+            <a href="#" onclick="alert('Fonctionnalité à venir')"><span class="nav-icon">💳</span>Cartes</a>
+            <a href="transfer.html"><span class="nav-icon">↗️</span>Virements</a>
+            <a href="#" onclick="logout()"><span class="nav-icon">🚪</span>Déconnexion</a>
         </nav>
-
     </div>
 
-    <!-- ==========================================
-    SCRIPT PRINCIPAL
-    ========================================== -->
     <script>
-        // ==========================================
-        // VÉRIFICATION DE L'AUTHENTIFICATION
-        // ==========================================
         const token = localStorage.getItem('token');
         const userData = JSON.parse(localStorage.getItem('user'));
 
@@ -653,54 +429,66 @@
             window.location.href = 'login.html';
         }
 
-        // ==========================================
-        // AFFICHAGE DES DONNÉES UTILISATEUR
-        // ==========================================
-        function displayUserData() {
-            document.getElementById('userName').textContent = 'Bonjour, ' + userData.firstName;
-            document.getElementById('userEmail').textContent = userData.email;
-            document.getElementById('userAvatar').textContent = userData.firstName.charAt(0) + userData.lastName.charAt(0);
+        if (userData.status !== 'active') {
+            alert('Votre compte est en attente de validation ou a été rejeté.');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
 
-            const total = userData.accounts.current.balance + 
-                         userData.accounts.savings.balance + 
-                         userData.accounts.joint.balance;
+        function toggleProfileMenu() {
+            const menu = document.getElementById('profileMenu');
+            menu.classList.toggle('show');
+        }
+
+        function showProfile() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            alert(
+                '👤 Informations personnelles\n\n' +
+                'Nom: ' + user.firstName + ' ' + user.lastName + '\n' +
+                'Email: ' + user.email + '\n' +
+                'Téléphone: ' + (user.phone || 'Non renseigné') + '\n' +
+                'Adresse: ' + (user.streetNumber || '') + ' ' + (user.streetName || '') + '\n' +
+                'Ville: ' + (user.city || '') + ' ' + (user.postalCode || '') + '\n' +
+                'Pays: ' + (user.country || '') + '\n' +
+                'Sexe: ' + (user.gender || '') + '\n' +
+                'Situation: ' + (user.maritalStatus || '') + '\n' +
+                'Profession: ' + (user.profession || '')
+            );
+            document.getElementById('profileMenu').classList.remove('show');
+        }
+
+        function logout() {
+            if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+        }
+
+        function displayUserData() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            document.getElementById('userName').textContent = 'Bonjour, ' + user.firstName;
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('userAvatar').textContent = user.firstName.charAt(0) + (user.lastName ? user.lastName.charAt(0) : '');
+
+            const total = (user.accounts?.current?.balance || 0) + 
+                         (user.accounts?.savings?.balance || 0);
             document.getElementById('totalBalance').innerHTML = 
                 `<span class="currency">€</span> ${total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")}`;
 
-            displayAccounts();
-            displayTransactions();
+            displayAccounts(user);
+            displayTransactions(user);
         }
 
-        // ==========================================
-        // AFFICHAGE DES COMPTES
-        // ==========================================
-        function displayAccounts() {
+        function displayAccounts(user) {
             const container = document.getElementById('accountsContainer');
             const accounts = [
-                {
-                    icon: '💳',
-                    label: 'Compte Courant',
-                    balance: userData.accounts.current.balance,
-                    iban: userData.accounts.current.iban || 'FR76 CUR 0000 0000 0000 0000',
-                    color: 'card-yellow'
-                },
-                {
-                    icon: '💰',
-                    label: 'Compte Épargne',
-                    balance: userData.accounts.savings.balance,
-                    iban: userData.accounts.savings.iban || 'FR76 SAV 0000 0000 0000 0000',
-                    color: 'card-green'
-                },
-                {
-                    icon: '👥',
-                    label: 'Compte Commun',
-                    balance: userData.accounts.joint.balance,
-                    iban: userData.accounts.joint.iban || 'FR76 JNT 0000 0000 0000 0000',
-                    color: 'card-blue'
-                }
+                { icon: '💳', label: 'Compte Courant', balance: user.accounts?.current?.balance || 0, iban: user.accounts?.current?.iban || 'FR76 CUR 0000 0000 0000 0000', color: 'card-yellow' },
+                { icon: '💰', label: 'Compte Épargne', balance: user.accounts?.savings?.balance || 0, iban: user.accounts?.savings?.iban || 'FR76 SAV 0000 0000 0000 0000', color: 'card-green' }
             ];
 
-            container.innerHTML = accounts.map((acc, index) => `
+            container.innerHTML = accounts.map(acc => `
                 <div class="account-card ${acc.color} animate-in" onclick="alert('Détail du ${acc.label}')">
                     <span class="acct-icon">${acc.icon}</span>
                     <div class="acct-label">${acc.label}</div>
@@ -710,26 +498,18 @@
             `).join('');
         }
 
-        // ==========================================
-        // AFFICHAGE DES TRANSACTIONS
-        // ==========================================
-        function displayTransactions() {
+        function displayTransactions(user) {
             const container = document.getElementById('transactionsContainer');
-            
-            if (userData.transactions && userData.transactions.length > 0) {
-                const transactions = userData.transactions.slice(0, 5);
-                
-                container.innerHTML = transactions.map(tx => {
+            const transactions = user.transactions || [];
+
+            if (transactions.length > 0) {
+                const recent = transactions.slice(-5).reverse();
+                container.innerHTML = recent.map(tx => {
                     const isNegative = tx.type === 'withdrawal' || tx.type === 'payment' || tx.type === 'transfer';
                     const sign = isNegative ? '-' : '+';
                     const amountClass = isNegative ? 'negative' : 'positive';
                     const date = new Date(tx.date);
-                    const formattedDate = date.toLocaleDateString('fr-FR', { 
-                        day: 'numeric', 
-                        month: 'short', 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                    });
+                    const formattedDate = date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
                     
                     return `
                         <div class="transaction-item" onclick="alert('Détail de la transaction')">
@@ -749,42 +529,13 @@
                     <div class="transaction-item" style="justify-content:center; color:#7a869a; padding:30px;">
                         <span>Aucune transaction récente</span>
                     </div>
-                    <div class="transaction-item">
-                        <div class="trans-left">
-                            <div class="trans-icon">🎉</div>
-                            <div class="trans-info">
-                                <div class="name">Bienvenue chez Warip</div>
-                                <div class="date">Commencez à utiliser votre compte</div>
-                            </div>
-                        </div>
-                        <div class="trans-amount positive">+€0,00</div>
-                    </div>
                 `;
             }
         }
 
         function getTransactionIcon(type) {
-            const icons = {
-                'deposit': '📥',
-                'withdrawal': '📤',
-                'transfer': '↗️',
-                'payment': '💳',
-                'interest': '📈',
-                'default': '💰'
-            };
+            const icons = { 'deposit': '📥', 'withdrawal': '📤', 'transfer': '↗️', 'payment': '💳', 'interest': '📈', 'default': '💰' };
             return icons[type] || icons.default;
-        }
-
-        function logout() {
-            if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.href = 'login.html';
-            }
-        }
-
-        function toggleUserMenu() {
-            alert('👤 ' + userData.firstName + ' ' + userData.lastName + '\n📧 ' + userData.email);
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -792,7 +543,15 @@
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 displayUserData();
-            }, 800);
+            }, 500);
+
+            document.addEventListener('click', function(e) {
+                const menu = document.getElementById('profileMenu');
+                const userBtn = document.querySelector('.header-user');
+                if (menu.classList.contains('show') && !userBtn.contains(e.target) && !menu.contains(e.target)) {
+                    menu.classList.remove('show');
+                }
+            });
         });
     </script>
 

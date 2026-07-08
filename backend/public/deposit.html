@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warip Finance - Dépôt Crypto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .deposit-container {
+            background: white;
+            max-width: 480px;
+            width: 100%;
+            padding: 40px 32px;
+            border-radius: 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+            border: 1px solid #eef1f5;
+        }
+        .logo { font-size: 28px; font-weight: 800; color: #1e2a3a; text-align: center; margin-bottom: 4px; }
+        .logo span { background: #ffd600; padding: 2px 12px; border-radius: 30px; }
+        .subtitle { text-align: center; color: #7a869a; font-size: 14px; margin-bottom: 28px; }
+        .crypto-card {
+            background: #f5f7fa;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 2px solid #eef1f5;
+            transition: border 0.2s;
+        }
+        .crypto-card:hover { border-color: #ffd600; }
+        .crypto-card .crypto-name {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .crypto-card .crypto-address {
+            font-size: 14px;
+            color: #7a869a;
+            margin-top: 8px;
+            word-break: break-all;
+            background: white;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-family: monospace;
+            cursor: pointer;
+        }
+        .crypto-card .crypto-address:hover { background: #f0f0f0; }
+        .back-link { display: block; text-align: center; margin-top: 20px; font-size: 14px; color: #7a869a; text-decoration: none; }
+        .back-link:hover { color: #1e2a3a; }
+        .copy-btn {
+            background: #ffd600;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            margin-top: 8px;
+        }
+        .copy-btn:hover { background: #f5c800; }
+    </style>
+</head>
+<body>
+
+    <div class="deposit-container">
+        <div class="logo"><span>W</span>arip Finance</div>
+        <div class="subtitle">Déposer des cryptomonnaies</div>
+
+        <div class="crypto-card">
+            <div class="crypto-name">₿ Bitcoin (BTC)</div>
+            <div class="crypto-address" id="btcAddress" onclick="copyAddress('btcAddress')">
+                1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+            </div>
+            <button class="copy-btn" onclick="copyAddress('btcAddress')">📋 Copier</button>
+        </div>
+
+        <div class="crypto-card">
+            <div class="crypto-name">⟠ Ethereum (ETH)</div>
+            <div class="crypto-address" id="ethAddress" onclick="copyAddress('ethAddress')">
+                0x742d35Cc6634C0532925a3b844Bc454e4438f44e
+            </div>
+            <button class="copy-btn" onclick="copyAddress('ethAddress')">📋 Copier</button>
+        </div>
+
+        <p style="text-align:center;color:#7a869a;font-size:13px;margin-top:8px;">
+            ⚠️ Envoyez uniquement des fonds sur les adresses correspondantes.
+        </p>
+
+        <a href="dashboard.html" class="back-link">← Retour au tableau de bord</a>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        const userData = JSON.parse(localStorage.getItem('user'));
+
+        if (!token || !userData) {
+            window.location.href = 'login.html';
+        }
+
+        // Charger les adresses depuis le serveur
+        async function loadCryptoAddresses() {
+            try {
+                const response = await fetch('/api/admin/crypto-addresses', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
+                if (data.success && data.settings) {
+                    document.getElementById('btcAddress').textContent = data.settings.btcAddress;
+                    document.getElementById('ethAddress').textContent = data.settings.ethAddress;
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        function copyAddress(elementId) {
+            const address = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(address).then(() => {
+                alert('✅ Adresse copiée dans le presse-papier !');
+            }).catch(() => {
+                // Fallback
+                const range = document.createRange();
+                range.selectNode(document.getElementById(elementId));
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                alert('✅ Adresse copiée dans le presse-papier !');
+            });
+        }
+
+        loadCryptoAddresses();
+    </script>
+
+</body>
+</html>
