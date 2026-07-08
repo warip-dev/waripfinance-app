@@ -147,7 +147,6 @@ app.post('/api/auth/register', async (req, res) => {
 
         console.log('📝 Inscription reçue:', { first_name, last_name, email, country });
 
-        // Validation
         if (!first_name || !last_name || !email || !password) {
             return res.status(400).json({ error: 'Tous les champs sont obligatoires' });
         }
@@ -156,16 +155,13 @@ app.post('/api/auth/register', async (req, res) => {
             return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères' });
         }
 
-        // Vérifier si l'email existe déjà
         const [existing] = await pool.execute('SELECT id FROM users WHERE email = ?', [email]);
         if (existing.length > 0) {
             return res.status(400).json({ error: 'Cet email est déjà utilisé' });
         }
 
-        // Hacher le mot de passe
         const password_hash = await bcrypt.hash(password, 10);
 
-        // Insérer l'utilisateur
         const [result] = await pool.execute(
             `INSERT INTO users (
                 email, password_hash, first_name, last_name, phone, country,

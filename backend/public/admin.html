@@ -12,15 +12,16 @@
         .bg-gold { background: #e9b64a; }
         .text-dark { color: #1a1a2e; }
         .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.3); }
+        .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
         .btn-success { background: #22c55e; color: white; padding: 6px 14px; border-radius: 50px; border: none; cursor: pointer; font-size: 12px; transition: all 0.3s; }
         .btn-success:hover { background: #16a34a; transform: translateY(-2px); }
-        .btn-danger { background: #ef4444; color: white; padding: 6px 14px; border-radius: 50px; border: none; cursor: pointer; font-size: 12px; transition: all 0.3s; }
-        .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
         .btn-warning { background: #f59e0b; color: white; padding: 6px 14px; border-radius: 50px; border: none; cursor: pointer; font-size: 12px; transition: all 0.3s; }
         .btn-warning:hover { background: #d97706; transform: translateY(-2px); }
-        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 10px 20px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
-        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.3); }
         .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+        .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
         .status-pending { background: #fef9c3; color: #854d0e; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .status-active { background: #dcfce7; color: #166534; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .status-rejected { background: #fee2e2; color: #991b1b; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
@@ -32,79 +33,149 @@
 </head>
 <body>
 
-    <!-- HEADER ADMIN -->
-    <header class="gradient-header fixed w-full z-50 top-0">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <span class="text-white font-bold text-xl"><span class="gold">Warip</span> Finance <span class="text-gray-400 text-sm ml-2">Admin</span></span>
-                <div class="flex items-center gap-3">
-                    <span class="text-gray-300 text-sm hidden md:block" id="adminName">Admin</span>
-                    <button id="adminLogout" class="btn-danger px-4 py-1.5 text-sm">
-                        <i class="fas fa-sign-out-alt mr-1"></i>Déconnexion
-                    </button>
+    <!-- ========================================== -->
+    <!-- ADMIN LOGIN (affiché si non connecté) -->
+    <!-- ========================================== -->
+    <div id="adminLoginPage" class="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-8 card-shadow">
+            <div class="text-center mb-8">
+                <div class="text-5xl mb-3">👑</div>
+                <h1 class="text-3xl font-bold text-dark">Administration</h1>
+                <p class="text-gray-500 text-sm mt-2">Espace réservé aux administrateurs</p>
+            </div>
+            <div id="adminLoginError" class="hidden error-message"></div>
+            <form id="adminLoginForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="adminEmail" placeholder="admin@waripfinance.com" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                    <input type="password" id="adminPassword" placeholder="••••••••" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                </div>
+                <button type="submit" class="w-full btn-primary py-3 text-lg">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Se connecter
+                </button>
+            </form>
+            <div class="text-center mt-6">
+                <a href="/" class="text-sm text-gold hover:underline"><i class="fas fa-arrow-left mr-1"></i>Retour à l'accueil</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ADMIN DASHBOARD (affiché si connecté) -->
+    <!-- ========================================== -->
+    <div id="adminDashboardPage" class="hidden">
+        <header class="gradient-header fixed w-full z-50 top-0">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <span class="text-white font-bold text-xl"><span class="gold">Warip</span> Finance <span class="text-gray-400 text-sm ml-2">Admin</span></span>
+                    <div class="flex items-center gap-3">
+                        <span class="text-gray-300 text-sm hidden md:block" id="adminName">Admin</span>
+                        <button id="adminLogout" class="btn-danger px-4 py-1.5 text-sm">
+                            <i class="fas fa-sign-out-alt mr-1"></i>Déconnexion
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- MAIN -->
-    <div id="adminContent" class="pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
-        <h1 class="text-3xl font-bold text-dark mb-6">👑 Administration</h1>
+        <div id="adminContent" class="pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
+            <h1 class="text-3xl font-bold text-dark mb-6">👑 Administration</h1>
 
-        <!-- Navigation -->
-        <div class="flex gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow flex-wrap">
-            <button id="tabUsers" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark">Utilisateurs</button>
-            <button id="tabBeneficiaries" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Bénéficiaires</button>
-            <button id="tabTransfers" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Virements</button>
-            <button id="tabAddresses" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Adresses</button>
-        </div>
+            <div class="flex gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow flex-wrap">
+                <button id="tabUsers" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark">Utilisateurs</button>
+                <button id="tabBeneficiaries" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Bénéficiaires</button>
+                <button id="tabTransfers" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Virements</button>
+                <button id="tabAddresses" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Adresses</button>
+            </div>
 
-        <!-- CONTENUS -->
-        <div id="usersContent">
-            <div class="bg-white rounded-2xl p-6 card-shadow">
-                <h3 class="font-semibold text-dark mb-4">👥 Utilisateurs inscrits</h3>
-                <div id="usersList"><div class="loading-spinner"></div></div>
+            <div id="usersContent">
+                <div class="bg-white rounded-2xl p-6 card-shadow">
+                    <h3 class="font-semibold text-dark mb-4">👥 Utilisateurs inscrits</h3>
+                    <div id="usersList"><div class="loading-spinner"></div></div>
+                </div>
             </div>
-        </div>
-        <div id="beneficiariesContent" class="hidden">
-            <div class="bg-white rounded-2xl p-6 card-shadow">
-                <h3 class="font-semibold text-dark mb-4">📋 Bénéficiaires</h3>
-                <div id="adminBeneficiariesList"><div class="loading-spinner"></div></div>
+            <div id="beneficiariesContent" class="hidden">
+                <div class="bg-white rounded-2xl p-6 card-shadow">
+                    <h3 class="font-semibold text-dark mb-4">📋 Bénéficiaires</h3>
+                    <div id="adminBeneficiariesList"><div class="loading-spinner"></div></div>
+                </div>
             </div>
-        </div>
-        <div id="transfersContent" class="hidden">
-            <div class="bg-white rounded-2xl p-6 card-shadow">
-                <h3 class="font-semibold text-dark mb-4">💸 Virements en attente</h3>
-                <div id="adminTransfersList"><div class="loading-spinner"></div></div>
+            <div id="transfersContent" class="hidden">
+                <div class="bg-white rounded-2xl p-6 card-shadow">
+                    <h3 class="font-semibold text-dark mb-4">💸 Virements en attente</h3>
+                    <div id="adminTransfersList"><div class="loading-spinner"></div></div>
+                </div>
             </div>
-        </div>
-        <div id="addressesContent" class="hidden">
-            <div class="bg-white rounded-2xl p-6 card-shadow">
-                <h3 class="font-semibold text-dark mb-4">🔑 Adresses de dépôt</h3>
-                <div id="addressesList"><div class="loading-spinner"></div></div>
+            <div id="addressesContent" class="hidden">
+                <div class="bg-white rounded-2xl p-6 card-shadow">
+                    <h3 class="font-semibold text-dark mb-4">🔑 Adresses de dépôt</h3>
+                    <div id="addressesList"><div class="loading-spinner"></div></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         // ============================================
-        // VÉRIFICATION ADMIN
+        // GESTION ADMIN
         // ============================================
         (function() {
             const token = localStorage.getItem('admin_token');
             const user = JSON.parse(localStorage.getItem('admin_user') || '{}');
 
-            if (!token || user.role !== 'ADMIN') {
-                window.location.href = '/login.html';
+            // Si déjà connecté, afficher le dashboard
+            if (token && user.role === 'ADMIN') {
+                document.getElementById('adminLoginPage').classList.add('hidden');
+                document.getElementById('adminDashboardPage').classList.remove('hidden');
+                document.getElementById('adminName').textContent = user.first_name || 'Admin';
+                initApp();
                 return;
             }
 
-            document.getElementById('adminName').textContent = user.first_name || 'Admin';
-            initApp();
+            // Sinon, afficher le formulaire de login
+            document.getElementById('adminLoginPage').classList.remove('hidden');
+            document.getElementById('adminDashboardPage').classList.add('hidden');
+
+            // Gestion du login admin
+            document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const email = document.getElementById('adminEmail').value;
+                const password = document.getElementById('adminPassword').value;
+                const errorEl = document.getElementById('adminLoginError');
+                errorEl.classList.add('hidden');
+                errorEl.textContent = '';
+
+                try {
+                    const res = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    const data = await res.json();
+
+                    if (!res.ok || data.user?.role !== 'ADMIN') {
+                        errorEl.textContent = data.error || 'Accès refusé. Vous n\'êtes pas administrateur.';
+                        errorEl.classList.remove('hidden');
+                        return;
+                    }
+
+                    localStorage.setItem('admin_token', data.token);
+                    localStorage.setItem('admin_user', JSON.stringify(data.user));
+
+                    // Recharger la page pour afficher le dashboard
+                    window.location.reload();
+                } catch (err) {
+                    errorEl.textContent = 'Erreur de connexion au serveur';
+                    errorEl.classList.remove('hidden');
+                }
+            });
         })();
 
         // ============================================
-        // INIT APP
+        // INIT APP (dashboard)
         // ============================================
         function initApp() {
             setupTabs();
@@ -113,7 +184,7 @@
             document.getElementById('adminLogout').addEventListener('click', function() {
                 localStorage.removeItem('admin_token');
                 localStorage.removeItem('admin_user');
-                window.location.href = '/';
+                window.location.reload();
             });
         }
 
@@ -210,9 +281,6 @@
                 });
         }
 
-        // ============================================
-        // VALIDER / REJETER UN UTILISATEUR
-        // ============================================
         window.validateUser = function(id, status) {
             if (!confirm(`Voulez-vous vraiment ${status === 'ACTIVE' ? 'valider' : 'rejeter'} cet utilisateur ?`)) return;
 
