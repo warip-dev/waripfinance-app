@@ -38,6 +38,7 @@
         </div>
     </header>
 
+    <!-- SECTION PUBLIQUE -->
     <div id="publicSection" class="pt-20">
         <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-2xl max-w-md w-full p-8 relative">
@@ -82,11 +83,16 @@
         <footer class="bg-dark text-gray-400 py-12">...</footer>
     </div>
 
+    <!-- ========================================== -->
+    <!-- SECTION DASHBOARD (connecté) -->
+    <!-- ========================================== -->
     <div id="dashboardSection" class="hidden pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
+
         <div class="flex justify-between items-center mb-6">
             <div><h1 class="text-2xl font-bold text-dark">Bonjour <span id="userFirstName" class="gold">Client</span></h1><p class="text-gray-500 text-sm">Bienvenue sur votre espace client</p></div>
         </div>
 
+        <!-- SOLDE -->
         <div class="balance-card rounded-3xl p-6 md:p-8 text-white mb-8 card-shadow">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
@@ -97,13 +103,15 @@
                         <span class="text-gray-400">ETH: <span class="text-white font-mono" id="ethBalance">0,0000</span></span>
                     </div>
                 </div>
-                <div class="flex flex-wrap gap-3">
-                    <a href="/deposit.html" class="btn-primary bg-white text-dark hover:bg-gray-100"><i class="fas fa-arrow-down mr-2"></i>Déposer</a>
-                    <a href="/beneficiary.html" class="btn-primary bg-white text-dark hover:bg-gray-100"><i class="fas fa-user-plus mr-2"></i>Bénéficiaire</a>
-                </div>
+                <!-- ========================================== -->
+                <!-- BOUTONS SUPPRIMÉS ICI (plus de Déposer/Bénéficiaire sous le solde) -->
+                <!-- ========================================== -->
             </div>
         </div>
 
+        <!-- ========================================== -->
+        <!-- GRILLE DES ACTIONS (UNIQUEMENT ICI) -->
+        <!-- ========================================== -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <a href="/deposit.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition">
                 <div class="text-3xl gold mb-2"><i class="fas fa-arrow-down"></i></div>
@@ -123,6 +131,7 @@
             </a>
         </div>
 
+        <!-- BÉNÉFICIAIRES (aperçu) -->
         <div class="bg-white rounded-2xl p-6 card-shadow">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-semibold text-dark">Mes bénéficiaires</h3>
