@@ -16,10 +16,12 @@
         .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
         .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 14px 32px; border-radius: 50px; border: none; cursor: pointer; font-size: 16px; transition: all 0.3s; }
         .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.3); }
-        .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
-        .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
         .btn-outline { border: 2px solid #e9b64a; color: #e9b64a; background: transparent; font-weight: 600; padding: 10px 24px; border-radius: 50px; transition: all 0.3s; cursor: pointer; font-size: 14px; }
         .btn-outline:hover { background: #e9b64a; color: #1a1a2e; transform: translateY(-2px); }
+        .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-success { background: #22c55e; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .btn-success:hover { background: #16a34a; transform: translateY(-2px); }
         .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
         .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
         .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
@@ -30,11 +32,22 @@
         .hidden { display: none !important; }
         .copy-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.3s; }
         .copy-btn:hover { background: rgba(255,255,255,0.15); }
+        .beneficiary-card { transition: all 0.3s ease; }
+        .beneficiary-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.06); }
+        .deposit-address-box { background: #f8fafc; border: 1px dashed #d1d5db; border-radius: 12px; padding: 16px; transition: all 0.3s; }
+        .deposit-address-box:hover { border-color: #e9b64a; background: #fefcf5; }
+        .transaction-row { transition: all 0.2s; }
+        .transaction-row:hover { background: #f8fafc; }
+        .empty-state { color: #9ca3af; text-align: center; padding: 40px 20px; }
+        .empty-state i { font-size: 48px; color: #d1d5db; margin-bottom: 16px; }
+        .section-title { font-size: 18px; font-weight: 600; color: #1a1a2e; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
     </style>
 </head>
 <body>
 
+    <!-- ========================================== -->
     <!-- HEADER -->
+    <!-- ========================================== -->
     <header class="gradient-header fixed w-full z-50 top-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -42,11 +55,9 @@
                     <span class="gold">Warip</span> Finance
                 </a>
                 <div class="flex items-center gap-4">
-                    <!-- Affiché si non connecté -->
                     <button id="openLoginModal" class="btn-primary px-6 py-2 text-sm">
                         <i class="fas fa-user mr-2"></i>Se connecter
                     </button>
-                    <!-- Affiché si connecté -->
                     <div id="userInfo" class="hidden flex items-center gap-3">
                         <span class="text-gray-300 text-sm" id="userName">Client</span>
                         <button id="logoutBtn" class="btn-danger px-4 py-1.5 text-sm">
@@ -94,7 +105,7 @@
                     </p>
                 </div>
 
-                <!-- REGISTER (version simplifiée) -->
+                <!-- REGISTER -->
                 <div id="registerForm" class="hidden">
                     <h2 class="text-2xl font-bold text-dark mb-2">Créer un compte</h2>
                     <p class="text-gray-500 text-sm mb-6">Rejoignez Warip Finance en quelques clics</p>
@@ -144,7 +155,7 @@
             </div>
         </section>
 
-        <!-- FOOTER -->
+        <!-- FOOTER PUBLIC -->
         <footer class="bg-dark text-gray-400 py-12">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid md:grid-cols-4 gap-8">
@@ -189,41 +200,65 @@
     <!-- ========================================== -->
     <div id="dashboardSection" class="hidden pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
 
+        <!-- En-tête -->
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-dark">Bonjour <span id="userFirstName" class="gold">Client</span> 👋</h1>
+                <p class="text-gray-500 text-sm">Bienvenue sur votre espace client</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-gray-400">Dernière connexion</p>
+                <p class="text-sm text-gray-600" id="lastLogin">Aujourd'hui</p>
+            </div>
+        </div>
+
         <!-- SOLDE -->
         <div class="balance-card rounded-3xl p-6 md:p-8 text-white mb-8 card-shadow">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <p class="text-gray-400 text-sm">Solde total</p>
+                    <p class="text-gray-400 text-sm font-medium">Solde total</p>
                     <p class="text-3xl md:text-4xl font-bold" id="userBalance">0,00 €</p>
-                    <div class="flex gap-4 mt-2 text-sm">
-                        <span class="text-gray-400">BTC: <span class="text-white" id="btcBalance">0,0000</span></span>
-                        <span class="text-gray-400">ETH: <span class="text-white" id="ethBalance">0,0000</span></span>
+                    <div class="flex gap-6 mt-3 text-sm">
+                        <span class="text-gray-400">BTC: <span class="text-white font-mono" id="btcBalance">0,0000</span></span>
+                        <span class="text-gray-400">ETH: <span class="text-white font-mono" id="ethBalance">0,0000</span></span>
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-3">
-                    <button id="openDepositModal" class="btn-primary"><i class="fas fa-arrow-down mr-2"></i>Déposer</button>
-                    <button id="openBeneficiaryModal" class="btn-outline"><i class="fas fa-user-plus mr-2"></i>Bénéficiaire</button>
+                    <button id="openDepositModal" class="btn-primary bg-white text-dark hover:bg-gray-100">
+                        <i class="fas fa-arrow-down mr-2"></i>Déposer
+                    </button>
+                    <button id="openBeneficiaryModal" class="btn-outline border-white text-white hover:bg-white hover:text-dark">
+                        <i class="fas fa-user-plus mr-2"></i>Bénéficiaire
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- TABS -->
         <div class="flex gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow">
-            <button id="tabBeneficiaries" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark">Mes bénéficiaires</button>
-            <button id="tabTransfers" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Mes virements</button>
+            <button id="tabBeneficiaries" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark">
+                <i class="fas fa-users mr-2"></i>Mes bénéficiaires
+            </button>
+            <button id="tabTransfers" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">
+                <i class="fas fa-history mr-2"></i>Mes virements
+            </button>
         </div>
 
         <!-- BÉNÉFICIAIRES -->
         <div id="beneficiariesContent">
-            <div class="bg-white rounded-2xl p-6 card-shadow mb-6">
+            <div class="bg-white rounded-2xl p-6 card-shadow">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-semibold text-dark">📋 Mes bénéficiaires</h3>
+                    <h3 class="section-title"><i class="fas fa-user-friends gold"></i> Mes bénéficiaires</h3>
                     <button id="openAddBeneficiary" class="btn-primary px-4 py-2 text-sm">
                         <i class="fas fa-plus mr-1"></i>Ajouter
                     </button>
                 </div>
                 <div id="beneficiariesList">
-                    <p class="text-gray-400 text-sm">Chargement...</p>
+                    <div class="empty-state">
+                        <i class="fas fa-user-plus"></i>
+                        <p>Aucun bénéficiaire enregistré</p>
+                        <p class="text-xs mt-1">Ajoutez un bénéficiaire pour effectuer des virements</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -231,15 +266,21 @@
         <!-- VIREMENTS -->
         <div id="transfersContent" class="hidden">
             <div class="bg-white rounded-2xl p-6 card-shadow">
-                <h3 class="font-semibold text-dark mb-4">📤 Historique des virements</h3>
+                <h3 class="section-title"><i class="fas fa-clock gold"></i> Historique des virements</h3>
                 <div id="transfersList">
-                    <p class="text-gray-400 text-sm">Chargement...</p>
+                    <div class="empty-state">
+                        <i class="fas fa-exchange-alt"></i>
+                        <p>Aucun virement effectué</p>
+                        <p class="text-xs mt-1">Vos virements apparaîtront ici</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ========================================== -->
     <!-- MODAL AJOUT BÉNÉFICIAIRE -->
+    <!-- ========================================== -->
     <div id="addBeneficiaryModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full p-8 relative card-shadow">
             <button id="closeAddBeneficiary" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
@@ -268,7 +309,9 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
     <!-- MODAL VIREMENT -->
+    <!-- ========================================== -->
     <div id="transferModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full p-8 relative card-shadow">
             <button id="closeTransferModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
@@ -299,15 +342,47 @@
         </div>
     </div>
 
-    <!-- MODAL DÉPÔT -->
+    <!-- ========================================== -->
+    <!-- MODAL DÉPÔT (avec adresses BTC/ETH modifiables par admin) -->
+    <!-- ========================================== -->
     <div id="depositModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full p-8 relative card-shadow">
             <button id="closeDepositModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
                 <i class="fas fa-times"></i>
             </button>
             <h2 class="text-2xl font-bold text-dark mb-2">📥 Déposer des cryptos</h2>
+            <p class="text-gray-500 text-sm mb-4">Utilisez les adresses ci-dessous pour déposer vos cryptomonnaies.</p>
             <div id="depositAddresses">
-                <p class="text-gray-400 text-sm">Chargement...</p>
+                <div class="deposit-address-box mb-3">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">₿</span>
+                            <div>
+                                <p class="font-semibold text-dark">Bitcoin</p>
+                                <p class="text-xs text-gray-400">Réseau Bitcoin</p>
+                            </div>
+                        </div>
+                        <button onclick="copyAddress('btc')" class="copy-btn">
+                            <i class="fas fa-copy mr-1"></i>Copier
+                        </button>
+                    </div>
+                    <p id="btcAddress" class="text-gray-600 text-sm font-mono mt-2 break-all bg-gray-50 p-2 rounded-lg">Chargement...</p>
+                </div>
+                <div class="deposit-address-box">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">⟠</span>
+                            <div>
+                                <p class="font-semibold text-dark">Ethereum</p>
+                                <p class="text-xs text-gray-400">Réseau ERC20</p>
+                            </div>
+                        </div>
+                        <button onclick="copyAddress('eth')" class="copy-btn">
+                            <i class="fas fa-copy mr-1"></i>Copier
+                        </button>
+                    </div>
+                    <p id="ethAddress" class="text-gray-600 text-sm font-mono mt-2 break-all bg-gray-50 p-2 rounded-lg">Chargement...</p>
+                </div>
             </div>
             <div class="mt-4 p-3 bg-yellow-50 rounded-xl text-xs text-yellow-700">
                 <i class="fas fa-exclamation-triangle mr-2"></i>
@@ -335,13 +410,13 @@
             document.getElementById('dashboardSection').classList.remove('hidden');
             document.getElementById('openLoginModal').classList.add('hidden');
             document.getElementById('userInfo').classList.remove('hidden');
-            document.getElementById('userName').textContent = user.first_name || 'Client';
+            document.getElementById('userName').textContent = (user.first_name || 'Client') + ' ' + (user.last_name || '');
+            document.getElementById('userFirstName').textContent = user.first_name || 'Client';
             document.getElementById('userBalance').textContent = (user.balance || 0).toFixed(2) + ' €';
             loadBeneficiaries();
             loadDepositAddresses();
         }
 
-        // Vérifier si l'utilisateur est connecté
         if (token && user.email) {
             showDashboard();
         } else {
@@ -349,7 +424,7 @@
         }
 
         // ============================================
-        // MODAL
+        // MODAL LOGIN/REGISTER
         // ============================================
         const modal = document.getElementById('authModal');
         const loginForm = document.getElementById('loginForm');
@@ -502,7 +577,7 @@
         });
 
         // ============================================
-        // FONCTIONS DASHBOARD
+        // API CALL
         // ============================================
         function apiCall(url, options = {}) {
             const token = localStorage.getItem('token');
@@ -516,21 +591,29 @@
             return fetch(url, mergedOptions).then(res => res.json());
         }
 
+        // ============================================
+        // BÉNÉFICIAIRES
+        // ============================================
         function loadBeneficiaries() {
             const list = document.getElementById('beneficiariesList');
-            list.innerHTML = '<p class="text-gray-400 text-sm">Chargement...</p>';
 
             apiCall('/api/beneficiaries')
                 .then(data => {
                     if (!data.beneficiaries || data.beneficiaries.length === 0) {
-                        list.innerHTML = '<p class="text-gray-400 text-sm">Aucun bénéficiaire enregistré.</p>';
+                        list.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-user-plus"></i>
+                                <p>Aucun bénéficiaire enregistré</p>
+                                <p class="text-xs mt-1">Ajoutez un bénéficiaire pour effectuer des virements</p>
+                            </div>
+                        `;
                         return;
                     }
                     list.innerHTML = data.beneficiaries.map(b => {
                         const statusClass = b.status === 'ACTIVE' ? 'status-active' : b.status === 'REJECTED' ? 'status-rejected' : 'status-pending';
                         const statusLabel = b.status === 'ACTIVE' ? '✅ Validé' : b.status === 'REJECTED' ? '❌ Rejeté' : '⏳ En attente';
                         return `
-                            <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
+                            <div class="beneficiary-card flex justify-between items-center p-4 border border-gray-100 rounded-xl mb-2">
                                 <div>
                                     <p class="font-semibold text-dark">${b.name}</p>
                                     <p class="text-xs text-gray-400 font-mono">${b.iban}</p>
@@ -543,7 +626,7 @@
                                             <i class="fas fa-paper-plane mr-1"></i>Virement
                                         </button>
                                     ` : ''}
-                                    ${b.status === 'PENDING' ? '<span class="text-xs text-yellow-600">En attente de validation</span>' : ''}
+                                    ${b.status === 'PENDING' ? '<span class="text-xs text-yellow-600">En attente de validation admin</span>' : ''}
                                     ${b.status === 'REJECTED' ? '<span class="text-xs text-red-500">Rejeté</span>' : ''}
                                 </div>
                             </div>
@@ -551,113 +634,13 @@
                     }).join('');
                 })
                 .catch(err => {
-                    list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
-                    console.error(err);
-                });
-        }
-
-        function loadDepositAddresses() {
-            const container = document.getElementById('depositAddresses');
-            container.innerHTML = '<p class="text-gray-400 text-sm">Chargement...</p>';
-
-            apiCall('/api/admin/deposit-addresses')
-                .then(data => {
-                    if (!data.addresses || data.addresses.length === 0) {
-                        container.innerHTML = '<p class="text-gray-400 text-sm">Aucune adresse disponible.</p>';
-                        return;
-                    }
-                    const uniqueMap = {};
-                    data.addresses.forEach(a => {
-                        if (!uniqueMap[a.currency]) {
-                            uniqueMap[a.currency] = a;
-                        }
-                    });
-                    const uniqueAddresses = Object.values(uniqueMap);
-
-                    container.innerHTML = uniqueAddresses.map(a => `
-                        <div class="border border-gray-200 rounded-xl p-4 mb-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-2xl">${a.currency === 'BTC' ? '₿' : '⟠'}</span>
-                                    <div>
-                                        <h4 class="font-semibold text-dark">${a.currency}</h4>
-                                        <span class="text-xs text-gray-400">Réseau ${a.network}</span>
-                                    </div>
-                                </div>
-                                <button onclick="copyAddress('${a.address}')" class="copy-btn">
-                                    <i class="fas fa-copy mr-1"></i>Copier
-                                </button>
-                            </div>
-                            <p class="text-gray-600 text-sm font-mono mt-2 break-all bg-gray-50 p-2 rounded-lg">${a.address}</p>
-                        </div>
-                    `).join('');
-                })
-                .catch(err => {
-                    container.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
-                    console.error(err);
-                });
-        }
-
-        function copyAddress(address) {
-            navigator.clipboard.writeText(address);
-            alert('✅ Adresse copiée !');
-        }
-
-        // ============================================
-        // TABS
-        // ============================================
-        document.getElementById('tabBeneficiaries').addEventListener('click', function() {
-            document.getElementById('beneficiariesContent').classList.remove('hidden');
-            document.getElementById('transfersContent').classList.add('hidden');
-            this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
-            document.getElementById('tabTransfers').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
-            loadBeneficiaries();
-        });
-
-        document.getElementById('tabTransfers').addEventListener('click', function() {
-            document.getElementById('transfersContent').classList.remove('hidden');
-            document.getElementById('beneficiariesContent').classList.add('hidden');
-            this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
-            document.getElementById('tabBeneficiaries').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
-            loadTransfers();
-        });
-
-        function loadTransfers() {
-            const list = document.getElementById('transfersList');
-            list.innerHTML = '<p class="text-gray-400 text-sm">Chargement...</p>';
-
-            apiCall('/api/transfers')
-                .then(data => {
-                    if (!data.transfers || data.transfers.length === 0) {
-                        list.innerHTML = '<p class="text-gray-400 text-sm">Aucun virement effectué.</p>';
-                        return;
-                    }
-                    list.innerHTML = data.transfers.map(t => {
-                        const statusClass = t.status === 'COMPLETED' ? 'status-active' : t.status === 'REJECTED' ? 'status-rejected' : 'status-pending';
-                        const statusLabel = t.status === 'COMPLETED' ? '✅ Validé' : t.status === 'REJECTED' ? '❌ Rejeté' : '⏳ En attente';
-                        return `
-                            <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl mb-2">
-                                <div>
-                                    <p class="font-semibold text-dark">${t.amount} €</p>
-                                    <p class="text-xs text-gray-500">Bénéficiaire: ${t.beneficiary_name}</p>
-                                    <p class="text-xs text-gray-400">${new Date(t.created_at).toLocaleDateString('fr-FR')}</p>
-                                </div>
-                                <div class="text-right">
-                                    <span class="${statusClass}">${statusLabel}</span>
-                                    ${t.admin_comment ? `<p class="text-xs text-red-500 mt-1">Motif: ${t.admin_comment}</p>` : ''}
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                })
-                .catch(err => {
-                    list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
+                    list.innerHTML = '<p class="text-red-500 text-sm">❌ Erreur de chargement</p>';
                     console.error(err);
                 });
         }
 
         // ============================================
-        // MODALS
+        // AJOUT BÉNÉFICIAIRE
         // ============================================
         document.getElementById('openAddBeneficiary').addEventListener('click', function() {
             document.getElementById('addBeneficiaryModal').classList.remove('hidden');
@@ -700,6 +683,9 @@
             }
         });
 
+        // ============================================
+        // VIREMENT
+        // ============================================
         function openTransferForBeneficiary(id, name, iban) {
             const modal = document.getElementById('transferModal');
             modal.classList.remove('hidden');
@@ -768,6 +754,107 @@
             }
         });
 
+        // ============================================
+        // HISTORIQUE VIREMENTS
+        // ============================================
+        function loadTransfers() {
+            const list = document.getElementById('transfersList');
+
+            apiCall('/api/transfers')
+                .then(data => {
+                    if (!data.transfers || data.transfers.length === 0) {
+                        list.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-exchange-alt"></i>
+                                <p>Aucun virement effectué</p>
+                                <p class="text-xs mt-1">Vos virements apparaîtront ici</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    list.innerHTML = data.transfers.map(t => {
+                        const statusClass = t.status === 'COMPLETED' ? 'status-active' : t.status === 'REJECTED' ? 'status-rejected' : 'status-pending';
+                        const statusLabel = t.status === 'COMPLETED' ? '✅ Validé' : t.status === 'REJECTED' ? '❌ Rejeté' : '⏳ En attente';
+                        return `
+                            <div class="transaction-row flex justify-between items-center p-4 border border-gray-100 rounded-xl mb-2">
+                                <div>
+                                    <p class="font-semibold text-dark">${t.amount} €</p>
+                                    <p class="text-xs text-gray-500">Bénéficiaire: ${t.beneficiary_name}</p>
+                                    <p class="text-xs text-gray-400">${new Date(t.created_at).toLocaleDateString('fr-FR')}</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="${statusClass}">${statusLabel}</span>
+                                    ${t.admin_comment ? `<p class="text-xs text-red-500 mt-1">Motif: ${t.admin_comment}</p>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                })
+                .catch(err => {
+                    list.innerHTML = '<p class="text-red-500 text-sm">❌ Erreur de chargement</p>';
+                    console.error(err);
+                });
+        }
+
+        // ============================================
+        // DÉPÔT - ADRESSES BTC/ETH (modifiables par admin)
+        // ============================================
+        function loadDepositAddresses() {
+            const btcEl = document.getElementById('btcAddress');
+            const ethEl = document.getElementById('ethAddress');
+
+            apiCall('/api/admin/deposit-addresses')
+                .then(data => {
+                    if (!data.addresses || data.addresses.length === 0) {
+                        btcEl.textContent = 'Adresse non configurée';
+                        ethEl.textContent = 'Adresse non configurée';
+                        return;
+                    }
+                    const btc = data.addresses.find(a => a.currency === 'BTC');
+                    const eth = data.addresses.find(a => a.currency === 'ETH');
+                    btcEl.textContent = btc ? btc.address : 'Adresse non configurée';
+                    ethEl.textContent = eth ? eth.address : 'Adresse non configurée';
+                })
+                .catch(err => {
+                    btcEl.textContent = 'Erreur de chargement';
+                    ethEl.textContent = 'Erreur de chargement';
+                    console.error(err);
+                });
+        }
+
+        function copyAddress(type) {
+            const el = type === 'btc' ? document.getElementById('btcAddress') : document.getElementById('ethAddress');
+            const address = el.textContent;
+            if (address && address !== 'Adresse non configurée' && address !== 'Erreur de chargement') {
+                navigator.clipboard.writeText(address);
+                alert('✅ Adresse copiée !');
+            } else {
+                alert('❌ Aucune adresse disponible');
+            }
+        }
+
+        // ============================================
+        // TABS
+        // ============================================
+        document.getElementById('tabBeneficiaries').addEventListener('click', function() {
+            document.getElementById('beneficiariesContent').classList.remove('hidden');
+            document.getElementById('transfersContent').classList.add('hidden');
+            this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
+            document.getElementById('tabTransfers').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
+            loadBeneficiaries();
+        });
+
+        document.getElementById('tabTransfers').addEventListener('click', function() {
+            document.getElementById('transfersContent').classList.remove('hidden');
+            document.getElementById('beneficiariesContent').classList.add('hidden');
+            this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
+            document.getElementById('tabBeneficiaries').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
+            loadTransfers();
+        });
+
+        // ============================================
+        // MODALS
+        // ============================================
         document.getElementById('openDepositModal').addEventListener('click', function() {
             document.getElementById('depositModal').classList.remove('hidden');
             loadDepositAddresses();
@@ -785,6 +872,13 @@
                 document.getElementById('depositModal').classList.add('hidden');
             }
         });
+
+        // ============================================
+        // INIT
+        // ============================================
+        if (token && user.email) {
+            loadDepositAddresses();
+        }
     </script>
 </body>
 </html>
