@@ -27,16 +27,18 @@
         .loading-spinner { border: 3px solid #f3f3f3; border-top: 3px solid #e9b64a; border-radius: 50%; width: 30px; height: 30px; animation: spin 0.8s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .hidden { display: none !important; }
+        .error-message { background: #fee2e2; color: #dc2626; padding: 12px; border-radius: 8px; border: 1px solid #fecaca; margin-bottom: 16px; font-size: 14px; }
     </style>
 </head>
 <body>
 
+    <!-- HEADER ADMIN -->
     <header class="gradient-header fixed w-full z-50 top-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <span class="text-white font-bold text-xl"><span class="gold">Warip</span> Finance</span>
+                <span class="text-white font-bold text-xl"><span class="gold">Warip</span> Finance <span class="text-gray-400 text-sm ml-2">Admin</span></span>
                 <div class="flex items-center gap-3">
-                    <span class="text-gray-300 text-sm">Admin</span>
+                    <span class="text-gray-300 text-sm hidden md:block" id="adminName">Admin</span>
                     <button id="adminLogout" class="btn-danger px-4 py-1.5 text-sm">
                         <i class="fas fa-sign-out-alt mr-1"></i>Déconnexion
                     </button>
@@ -45,9 +47,11 @@
         </div>
     </header>
 
+    <!-- MAIN -->
     <div id="adminContent" class="pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
         <h1 class="text-3xl font-bold text-dark mb-6">👑 Administration</h1>
 
+        <!-- Navigation -->
         <div class="flex gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow flex-wrap">
             <button id="tabUsers" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark">Utilisateurs</button>
             <button id="tabBeneficiaries" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Bénéficiaires</button>
@@ -55,6 +59,7 @@
             <button id="tabAddresses" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Adresses</button>
         </div>
 
+        <!-- CONTENUS -->
         <div id="usersContent">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">👥 Utilisateurs inscrits</h3>
@@ -94,6 +99,7 @@
                 return;
             }
 
+            document.getElementById('adminName').textContent = user.first_name || 'Admin';
             initApp();
         })();
 
@@ -204,6 +210,9 @@
                 });
         }
 
+        // ============================================
+        // VALIDER / REJETER UN UTILISATEUR
+        // ============================================
         window.validateUser = function(id, status) {
             if (!confirm(`Voulez-vous vraiment ${status === 'ACTIVE' ? 'valider' : 'rejeter'} cet utilisateur ?`)) return;
 

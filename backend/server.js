@@ -470,7 +470,7 @@ app.put('/api/admin/transfers/:id/validate', async (req, res) => {
 });
 
 // ============================================
-// ROUTES STATIQUES
+// ROUTES STATIQUES - ADMIN CORRIGÉES
 // ============================================
 app.get('/confirmation.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'confirmation.html'));
@@ -480,14 +480,17 @@ app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
+// Route pour admin.html (fichier séparé)
 app.get('/admin.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
+// Redirection de /admin vers admin.html
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
+// Route par défaut - DOIT ÊTRE LA DERNIÈRE
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
