@@ -19,32 +19,34 @@
         .btn-outline:hover { background: #e9b64a; color: #1a1a2e; transform: translateY(-2px); }
         .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
         .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
-        .btn-success { background: #22c55e; color: white; padding: 6px 14px; border-radius: 50px; border: none; cursor: pointer; font-size: 12px; transition: all 0.3s; }
-        .btn-success:hover { background: #16a34a; transform: translateY(-2px); }
         .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
         .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
         .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
         .balance-card { background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%); }
         .hidden { display: none !important; }
-        .copy-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.3s; }
-        .copy-btn:hover { background: rgba(255,255,255,0.15); }
-        .status-pending { background: #fef9c3; color: #854d0e; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .status-active { background: #dcfce7; color: #166534; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .status-rejected { background: #fee2e2; color: #991b1b; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .deposit-address-box { background: #f8fafc; border: 1px dashed #d1d5db; border-radius: 12px; padding: 16px; transition: all 0.3s; }
-        .deposit-address-box:hover { border-color: #e9b64a; background: #fefcf5; }
-        .empty-state { color: #9ca3af; text-align: center; padding: 30px 20px; }
-        .empty-state i { font-size: 40px; color: #d1d5db; margin-bottom: 12px; }
-        .beneficiary-card { transition: all 0.3s ease; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 8px; }
-        .beneficiary-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.06); }
         .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #e9b64a, #d4a03a); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: #1a1a2e; }
         .nav-item { padding: 10px 16px; border-radius: 10px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #6b7280; }
         .nav-item:hover { background: #f3f4f6; color: #1a1a2e; }
         .nav-item.active { background: #e9b64a20; color: #e9b64a; font-weight: 600; }
         .nav-item i { width: 20px; text-align: center; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: #6b7280; font-size: 14px; }
+        .info-value { color: #1a1a2e; font-weight: 500; font-size: 14px; }
         .tab-btn { flex: 1; padding: 12px 16px; border-radius: 12px; text-align: center; font-size: 14px; font-weight: 500; transition: all 0.3s; cursor: pointer; border: none; background: transparent; color: #6b7280; }
         .tab-btn:hover { background: #f3f4f6; }
         .tab-btn.active { background: #e9b64a; color: #1a1a2e; font-weight: 600; }
+        .deposit-address-box { background: #f8fafc; border: 1px dashed #d1d5db; border-radius: 12px; padding: 16px; transition: all 0.3s; }
+        .deposit-address-box:hover { border-color: #e9b64a; background: #fefcf5; }
+        .copy-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.3s; }
+        .copy-btn:hover { background: rgba(255,255,255,0.15); }
+        .beneficiary-card { transition: all 0.3s ease; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 8px; }
+        .beneficiary-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.06); }
+        .status-pending { background: #fef9c3; color: #854d0e; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-active { background: #dcfce7; color: #166534; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-rejected { background: #fee2e2; color: #991b1b; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .empty-state { color: #9ca3af; text-align: center; padding: 30px 20px; }
+        .empty-state i { font-size: 40px; color: #d1d5db; margin-bottom: 12px; }
     </style>
 </head>
 <body>
@@ -74,9 +76,8 @@
     <!-- SECTION PUBLIQUE (non connecté) -->
     <!-- ========================================== -->
     <div id="publicSection" class="pt-20">
-        <!-- MODAL CONNEXION / INSCRIPTION -->
         <div id="authModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl max-w-md w-full p-8 relative card-shadow max-h-[90vh] overflow-y-auto">
+            <div class="bg-white rounded-2xl max-w-md w-full p-8 relative card-shadow">
                 <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
                     <i class="fas fa-times"></i>
                 </button>
@@ -157,38 +158,12 @@
         <footer class="bg-dark text-gray-400 py-12">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid md:grid-cols-4 gap-8">
-                    <div>
-                        <h3 class="text-white font-bold text-lg"><span class="gold">Warip</span> Finance</h3>
-                        <p class="text-sm mt-2">La banque qui réinvente la crypto.</p>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-semibold">Produits</h4>
-                        <ul class="mt-2 space-y-1 text-sm">
-                            <li><a href="#" class="text-gray-400 hover:text-gold">Compte courant</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-gold">Épargne</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-gold">Crypto</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-semibold">À propos</h4>
-                        <ul class="mt-2 space-y-1 text-sm">
-                            <li><a href="#" class="text-gray-400 hover:text-gold">Qui sommes-nous ?</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-gold">Carrières</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-gold">Contact</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-semibold">Légal</h4>
-                        <ul class="mt-2 space-y-1 text-sm">
-                            <li><a href="#" class="text-gray-400 hover:text-gold">Mentions légales</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-gold">Politique de confidentialité</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-gold">CGU</a></li>
-                        </ul>
-                    </div>
+                    <div><h3 class="text-white font-bold text-lg"><span class="gold">Warip</span> Finance</h3><p class="text-sm mt-2">La banque qui réinvente la crypto.</p></div>
+                    <div><h4 class="text-white font-semibold">Produits</h4><ul class="mt-2 space-y-1 text-sm"><li><a href="#" class="text-gray-400 hover:text-gold">Compte courant</a></li><li><a href="#" class="text-gray-400 hover:text-gold">Épargne</a></li><li><a href="#" class="text-gray-400 hover:text-gold">Crypto</a></li></ul></div>
+                    <div><h4 class="text-white font-semibold">À propos</h4><ul class="mt-2 space-y-1 text-sm"><li><a href="#" class="text-gray-400 hover:text-gold">Qui sommes-nous ?</a></li><li><a href="#" class="text-gray-400 hover:text-gold">Carrières</a></li><li><a href="#" class="text-gray-400 hover:text-gold">Contact</a></li></ul></div>
+                    <div><h4 class="text-white font-semibold">Légal</h4><ul class="mt-2 space-y-1 text-sm"><li><a href="#" class="text-gray-400 hover:text-gold">Mentions légales</a></li><li><a href="#" class="text-gray-400 hover:text-gold">Politique de confidentialité</a></li><li><a href="#" class="text-gray-400 hover:text-gold">CGU</a></li></ul></div>
                 </div>
-                <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
-                    &copy; 2025 Warip Finance. Tous droits réservés.
-                </div>
+                <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">&copy; 2025 Warip Finance. Tous droits réservés.</div>
             </div>
         </footer>
     </div>
@@ -229,12 +204,8 @@
 
         <!-- TABS -->
         <div class="flex gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow">
-            <button class="tab-btn active" data-tab="beneficiaries">
-                <i class="fas fa-users mr-2"></i>Mes bénéficiaires
-            </button>
-            <button class="tab-btn" data-tab="transfers">
-                <i class="fas fa-history mr-2"></i>Mes virements
-            </button>
+            <button class="tab-btn active" data-tab="beneficiaries"><i class="fas fa-users mr-2"></i>Mes bénéficiaires</button>
+            <button class="tab-btn" data-tab="transfers"><i class="fas fa-history mr-2"></i>Mes virements</button>
         </div>
 
         <!-- BÉNÉFICIAIRES -->
@@ -247,10 +218,7 @@
                     </button>
                 </div>
                 <div id="beneficiariesList">
-                    <div class="empty-state">
-                        <i class="fas fa-user-plus"></i>
-                        <p>Aucun bénéficiaire enregistré</p>
-                    </div>
+                    <div class="empty-state"><i class="fas fa-user-plus"></i><p>Aucun bénéficiaire enregistré</p></div>
                 </div>
             </div>
         </div>
@@ -260,25 +228,23 @@
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">Historique des virements</h3>
                 <div id="transfersList">
-                    <div class="empty-state">
-                        <i class="fas fa-exchange-alt"></i>
-                        <p>Aucun virement effectué</p>
-                    </div>
+                    <div class="empty-state"><i class="fas fa-exchange-alt"></i><p>Aucun virement effectué</p></div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- MODAL PROFIL -->
+    <!-- MODAL PROFIL (COMPLET) -->
     <!-- ========================================== -->
     <div id="profileModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-2xl w-full p-8 relative card-shadow max-h-[90vh] overflow-y-auto">
             <button id="closeProfileModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
                 <i class="fas fa-times"></i>
             </button>
+
             <div class="flex items-center gap-6 mb-6">
-                <div class="profile-avatar" id="profileAvatar">JD</div>
+                <div class="profile-avatar" id="profileAvatar">U</div>
                 <div>
                     <h2 class="text-2xl font-bold text-dark" id="profileFullName">Client</h2>
                     <p class="text-gray-500 text-sm" id="profileEmail">email@exemple.com</p>
@@ -286,39 +252,94 @@
                 </div>
             </div>
 
+            <!-- Navigation du profil -->
             <div class="flex flex-wrap border-b border-gray-200 mb-6">
-                <button class="nav-item active" data-tab="info"><i class="fas fa-info-circle"></i> Informations</button>
-                <button class="nav-item" data-tab="support"><i class="fas fa-headset"></i> Support</button>
-                <button class="nav-item" data-tab="logout" id="profileLogoutBtn"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
+                <button class="nav-item active" data-tab="info">
+                    <i class="fas fa-info-circle"></i> Informations
+                </button>
+                <button class="nav-item" data-tab="support">
+                    <i class="fas fa-headset"></i> Support
+                </button>
+                <button class="nav-item" data-tab="logout" id="profileLogoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                </button>
             </div>
 
-            <div id="profileInfo" class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div><p class="text-xs text-gray-400">Prénom</p><p class="font-medium text-dark" id="pFirstName">-</p></div>
-                    <div><p class="text-xs text-gray-400">Nom</p><p class="font-medium text-dark" id="pLastName">-</p></div>
-                    <div><p class="text-xs text-gray-400">Email</p><p class="font-medium text-dark" id="pEmail">-</p></div>
-                    <div><p class="text-xs text-gray-400">Téléphone</p><p class="font-medium text-dark" id="pPhone">-</p></div>
-                    <div><p class="text-xs text-gray-400">Pays</p><p class="font-medium text-dark" id="pCountry">-</p></div>
-                    <div><p class="text-xs text-gray-400">Ville</p><p class="font-medium text-dark" id="pCity">-</p></div>
-                    <div><p class="text-xs text-gray-400">Code postal</p><p class="font-medium text-dark" id="pPostalCode">-</p></div>
-                    <div><p class="text-xs text-gray-400">Adresse</p><p class="font-medium text-dark" id="pAddress">-</p></div>
-                    <div><p class="text-xs text-gray-400">Profession</p><p class="font-medium text-dark" id="pProfession">-</p></div>
-                    <div><p class="text-xs text-gray-400">Sexe</p><p class="font-medium text-dark" id="pGender">-</p></div>
-                    <div><p class="text-xs text-gray-400">Situation</p><p class="font-medium text-dark" id="pMaritalStatus">-</p></div>
-                    <div><p class="text-xs text-gray-400">Statut</p><p class="font-medium text-dark" id="pStatus">-</p></div>
+            <!-- ========================================== -->
+            <!-- INFORMATIONS (données de l'utilisateur) -->
+            <!-- ========================================== -->
+            <div id="profileInfo" class="space-y-2">
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-envelope gold mr-2"></i>Email</span>
+                    <span class="info-value" id="pEmail">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-user gold mr-2"></i>Prénom</span>
+                    <span class="info-value" id="pFirstName">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-user gold mr-2"></i>Nom</span>
+                    <span class="info-value" id="pLastName">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-phone gold mr-2"></i>Téléphone</span>
+                    <span class="info-value" id="pPhone">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-map-marker-alt gold mr-2"></i>Pays</span>
+                    <span class="info-value" id="pCountry">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-city gold mr-2"></i>Ville</span>
+                    <span class="info-value" id="pCity">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-mail-bulk gold mr-2"></i>Code postal</span>
+                    <span class="info-value" id="pPostalCode">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-road gold mr-2"></i>Rue</span>
+                    <span class="info-value" id="pStreet">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-hashtag gold mr-2"></i>Numéro de rue</span>
+                    <span class="info-value" id="pStreetNumber">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-briefcase gold mr-2"></i>Profession</span>
+                    <span class="info-value" id="pProfession">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-venus-mars gold mr-2"></i>Sexe</span>
+                    <span class="info-value" id="pGender">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-heart gold mr-2"></i>Situation matrimoniale</span>
+                    <span class="info-value" id="pMaritalStatus">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-circle gold mr-2"></i>Statut du compte</span>
+                    <span class="info-value" id="pStatus">-</span>
                 </div>
             </div>
 
-            <div id="profileSupport" class="hidden">
+            <!-- ========================================== -->
+            <!-- SUPPORT -->
+            <!-- ========================================== -->
+            <div id="profileSupport" class="hidden space-y-4">
                 <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-                    <h3 class="font-semibold text-dark">Service client</h3>
-                    <p class="text-gray-600 text-sm mb-4">Notre équipe est à votre disposition.</p>
-                    <a href="mailto:support@waripfinance.com" class="btn-primary inline-block text-sm">
-                        <i class="fas fa-envelope mr-2"></i>Contacter le support
-                    </a>
-                    <p class="text-xs text-gray-400 mt-3">Réponse sous 24h</p>
+                    <h3 class="font-semibold text-dark mb-2"><i class="fas fa-headset gold mr-2"></i>Service client</h3>
+                    <p class="text-gray-600 text-sm mb-4">
+                        Notre équipe est à votre disposition pour toute question.
+                    </p>
+                    <div class="space-y-3">
+                        <a href="mailto:support@waripfinance.com" class="btn-primary inline-block text-sm">
+                            <i class="fas fa-envelope mr-2"></i>Contacter le support
+                        </a>
+                        <p class="text-xs text-gray-400">Réponse sous 24h ouvrées</p>
+                    </div>
                 </div>
-                <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-500 mt-4">
+                <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-500">
                     <p><i class="fas fa-phone gold mr-2"></i>+33 1 23 45 67 89</p>
                     <p><i class="fas fa-clock gold mr-2"></i>Lun - Ven : 9h - 18h</p>
                 </div>
@@ -424,7 +445,7 @@
 
     <script>
         // ============================================
-        // GESTION DE L'AUTHENTIFICATION
+        // AUTHENTIFICATION
         // ============================================
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -552,7 +573,7 @@
         });
 
         // ============================================
-        // LOGOUT
+        // LOGOUT (déconnexion depuis le profil)
         // ============================================
         function handleLogout() {
             if (confirm('Voulez-vous vous déconnecter ?')) {
@@ -580,43 +601,63 @@
         }
 
         // ============================================
-        // PROFIL
+        // PROFIL UTILISATEUR (charge les données)
         // ============================================
         function loadUserProfile() {
             const u = user;
             document.getElementById('profileFullName').textContent = (u.first_name || '') + ' ' + (u.last_name || '');
             document.getElementById('profileEmail').textContent = u.email || '-';
             document.getElementById('profileAvatar').textContent = (u.first_name ? u.first_name.charAt(0) : 'U');
+
+            document.getElementById('pEmail').textContent = u.email || '-';
             document.getElementById('pFirstName').textContent = u.first_name || '-';
             document.getElementById('pLastName').textContent = u.last_name || '-';
-            document.getElementById('pEmail').textContent = u.email || '-';
             document.getElementById('pPhone').textContent = u.phone || '-';
             document.getElementById('pCountry').textContent = u.country || '-';
             document.getElementById('pCity').textContent = u.city || '-';
             document.getElementById('pPostalCode').textContent = u.postal_code || '-';
-            document.getElementById('pAddress').textContent = (u.street_number || '') + ' ' + (u.street_name || '') || '-';
+            document.getElementById('pStreet').textContent = u.street_name || '-';
+            document.getElementById('pStreetNumber').textContent = u.street_number || '-';
             document.getElementById('pProfession').textContent = u.profession || '-';
             document.getElementById('pGender').textContent = u.gender === 'M' ? 'Masculin' : u.gender === 'F' ? 'Féminin' : u.gender || '-';
             document.getElementById('pMaritalStatus').textContent = u.marital_status || '-';
             document.getElementById('pStatus').textContent = u.status || '-';
         }
 
+        // ============================================
+        // OUVERTURE DU PROFIL
+        // ============================================
         document.getElementById('openProfileBtn').addEventListener('click', function() {
             document.getElementById('profileModal').classList.remove('hidden');
             loadUserProfile();
+            // Réinitialiser les onglets
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelector('.nav-item[data-tab="info"]').classList.add('active');
+            document.getElementById('profileInfo').classList.remove('hidden');
+            document.getElementById('profileSupport').classList.add('hidden');
         });
+
         document.getElementById('closeProfileModal').addEventListener('click', function() {
             document.getElementById('profileModal').classList.add('hidden');
         });
 
-        // Navigation profil
+        // ============================================
+        // NAVIGATION PROFIL
+        // ============================================
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', function() {
                 document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
                 this.classList.add('active');
                 const tab = this.dataset.tab;
-                document.getElementById('profileInfo').classList.toggle('hidden', tab !== 'info');
-                document.getElementById('profileSupport').classList.toggle('hidden', tab !== 'support');
+                if (tab === 'info') {
+                    document.getElementById('profileInfo').classList.remove('hidden');
+                    document.getElementById('profileSupport').classList.add('hidden');
+                } else if (tab === 'support') {
+                    document.getElementById('profileInfo').classList.add('hidden');
+                    document.getElementById('profileSupport').classList.remove('hidden');
+                } else if (tab === 'logout') {
+                    handleLogout();
+                }
             });
         });
 
