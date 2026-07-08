@@ -6,7 +6,6 @@
     <title>Tableau de bord - Warip Finance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
         * { font-family: 'Inter', sans-serif; }
         body { background: #f0f2f5; }
@@ -14,19 +13,17 @@
         .bg-gold { background: #e9b64a; }
         .text-dark { color: #1a1a2e; }
         .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
-        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 12px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 10px 20px; border-radius: 50px; border: none; cursor: pointer; font-size: 14px; transition: all 0.3s; }
         .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.3); }
-        .btn-danger { background: #ef4444; color: white; padding: 10px 20px; border-radius: 50px; border: none; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
         .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
-        .btn-outline { border: 2px solid #e9b64a; color: #e9b64a; background: transparent; font-weight: 600; padding: 10px 24px; border-radius: 50px; transition: all 0.3s; cursor: pointer; font-size: 14px; }
+        .btn-outline { border: 2px solid #e9b64a; color: #e9b64a; background: transparent; font-weight: 600; padding: 8px 18px; border-radius: 50px; transition: all 0.3s; cursor: pointer; font-size: 13px; }
         .btn-outline:hover { background: #e9b64a; color: #1a1a2e; transform: translateY(-2px); }
-        .btn-success { background: #22c55e; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
-        .btn-success:hover { background: #16a34a; transform: translateY(-2px); }
         .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
         .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
         .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
         .balance-card { background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%); }
-        .copy-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; transition: all 0.3s; }
+        .copy-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.3s; }
         .copy-btn:hover { background: rgba(255,255,255,0.15); }
         .status-pending { background: #fef9c3; color: #854d0e; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .status-active { background: #dcfce7; color: #166534; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
@@ -54,6 +51,7 @@
 
     <!-- MAIN -->
     <div class="pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
+
         <!-- SOLDE -->
         <div class="balance-card rounded-3xl p-6 md:p-8 text-white mb-8 card-shadow">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -67,7 +65,7 @@
                 </div>
                 <div class="flex flex-wrap gap-3">
                     <button id="openDepositModal" class="btn-primary"><i class="fas fa-arrow-down mr-2"></i>Déposer</button>
-                    <button id="openAddBeneficiary" class="btn-outline"><i class="fas fa-user-plus mr-2"></i>Bénéficiaire</button>
+                    <button id="openBeneficiaryModal" class="btn-outline"><i class="fas fa-user-plus mr-2"></i>Bénéficiaire</button>
                 </div>
             </div>
         </div>
@@ -83,11 +81,11 @@
             <div class="bg-white rounded-2xl p-6 card-shadow mb-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-semibold text-dark">📋 Mes bénéficiaires</h3>
-                    <button id="openAddBeneficiaryBtn" class="btn-primary px-4 py-2 text-sm">
+                    <button id="openAddBeneficiary" class="btn-primary px-4 py-2 text-sm">
                         <i class="fas fa-plus mr-1"></i>Ajouter
                     </button>
                 </div>
-                <div id="beneficiariesList" class="space-y-3">
+                <div id="beneficiariesList">
                     <div class="loading-spinner"></div>
                 </div>
             </div>
@@ -171,7 +169,6 @@
                 <i class="fas fa-times"></i>
             </button>
             <h2 class="text-2xl font-bold text-dark mb-2">📥 Déposer des cryptos</h2>
-            <p class="text-gray-500 text-sm mb-4">Utilisez les adresses ci-dessous pour déposer vos cryptomonnaies.</p>
             <div id="depositAddresses">
                 <div class="loading-spinner"></div>
             </div>
@@ -184,10 +181,12 @@
 
     <script>
         // ============================================
-        // INIT
+        // VÉRIFICATION CONNEXION
         // ============================================
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        if (!user.email) window.location.href = '/';
+        if (!user.email) {
+            window.location.href = '/';
+        }
         document.getElementById('userName').textContent = user.first_name || 'Client';
         document.getElementById('userBalance').textContent = (user.balance || 0).toFixed(2) + ' €';
 
@@ -201,6 +200,7 @@
             document.getElementById('tabTransfers').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
             loadBeneficiaries();
         });
+
         document.getElementById('tabTransfers').addEventListener('click', function() {
             document.getElementById('transfersContent').classList.remove('hidden');
             document.getElementById('beneficiariesContent').classList.add('hidden');
@@ -219,14 +219,29 @@
         });
 
         // ============================================
+        // FONCTION APPEL API
+        // ============================================
+        function apiCall(url, options = {}) {
+            const token = localStorage.getItem('token');
+            const defaultOptions = {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                }
+            };
+            const mergedOptions = { ...defaultOptions, ...options };
+            return fetch(url, mergedOptions).then(res => res.json());
+        }
+
+        // ============================================
         // BÉNÉFICIAIRES
         // ============================================
         function loadBeneficiaries() {
-            const token = localStorage.getItem('token');
-            fetch('/api/beneficiaries', { headers: { 'Authorization': 'Bearer ' + token } })
-                .then(res => res.json())
+            const list = document.getElementById('beneficiariesList');
+            list.innerHTML = '<div class="loading-spinner"></div>';
+
+            apiCall('/api/beneficiaries')
                 .then(data => {
-                    const list = document.getElementById('beneficiariesList');
                     if (!data.beneficiaries || data.beneficiaries.length === 0) {
                         list.innerHTML = '<p class="text-gray-400 text-sm">Aucun bénéficiaire enregistré.</p>';
                         return;
@@ -256,7 +271,7 @@
                     }).join('');
                 })
                 .catch(err => {
-                    document.getElementById('beneficiariesList').innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
+                    list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
                     console.error(err);
                 });
         }
@@ -264,15 +279,12 @@
         // ============================================
         // AJOUT BÉNÉFICIAIRE
         // ============================================
-        document.getElementById('openAddBeneficiary').addEventListener('click', () => {
+        document.getElementById('openAddBeneficiary').addEventListener('click', function() {
             document.getElementById('addBeneficiaryModal').classList.remove('hidden');
             document.getElementById('beneficiaryMessage').innerHTML = '';
         });
-        document.getElementById('openAddBeneficiaryBtn').addEventListener('click', () => {
-            document.getElementById('addBeneficiaryModal').classList.remove('hidden');
-            document.getElementById('beneficiaryMessage').innerHTML = '';
-        });
-        document.getElementById('closeAddBeneficiary').addEventListener('click', () => {
+
+        document.getElementById('closeAddBeneficiary').addEventListener('click', function() {
             document.getElementById('addBeneficiaryModal').classList.add('hidden');
         });
 
@@ -280,7 +292,6 @@
             e.preventDefault();
             const btn = document.getElementById('addBeneficiaryBtn');
             const msg = document.getElementById('beneficiaryMessage');
-            const token = localStorage.getItem('token');
             const name = document.getElementById('beneficiaryName').value;
             const iban = document.getElementById('beneficiaryIban').value;
             const bic = document.getElementById('beneficiaryBic').value;
@@ -289,19 +300,17 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi...';
 
             try {
-                const res = await fetch('/api/beneficiaries', {
+                const data = await apiCall('/api/beneficiaries', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                     body: JSON.stringify({ name, iban, bic })
                 });
-                const data = await res.json();
-                if (!res.ok) {
-                    msg.innerHTML = '<span class="text-red-500">' + (data.error || 'Erreur') + '</span>';
-                } else {
+                if (data.success) {
                     msg.innerHTML = '<span class="text-green-500">✅ Bénéficiaire ajouté, en attente de validation admin.</span>';
                     document.getElementById('addBeneficiaryForm').reset();
                     loadBeneficiaries();
                     setTimeout(() => document.getElementById('addBeneficiaryModal').classList.add('hidden'), 2000);
+                } else {
+                    msg.innerHTML = '<span class="text-red-500">' + (data.error || 'Erreur') + '</span>';
                 }
             } catch (err) {
                 msg.innerHTML = '<span class="text-red-500">Erreur de connexion au serveur</span>';
@@ -328,9 +337,7 @@
             const modal = document.getElementById('transferModal');
             modal.classList.remove('hidden');
             document.getElementById('transferMessage').innerHTML = '';
-            const token = localStorage.getItem('token');
-            fetch('/api/beneficiaries', { headers: { 'Authorization': 'Bearer ' + token } })
-                .then(res => res.json())
+            apiCall('/api/beneficiaries')
                 .then(data => {
                     const select = document.getElementById('transferBeneficiary');
                     const active = (data.beneficiaries || []).filter(b => b.status === 'ACTIVE');
@@ -343,7 +350,7 @@
                 });
         });
 
-        document.getElementById('closeTransferModal').addEventListener('click', () => {
+        document.getElementById('closeTransferModal').addEventListener('click', function() {
             document.getElementById('transferModal').classList.add('hidden');
         });
 
@@ -351,7 +358,6 @@
             e.preventDefault();
             const btn = document.getElementById('transferBtn');
             const msg = document.getElementById('transferMessage');
-            const token = localStorage.getItem('token');
             const beneficiaryId = document.getElementById('transferBeneficiary').value;
             const amount = document.getElementById('transferAmount').value;
             const reference = document.getElementById('transferRef').value;
@@ -361,28 +367,21 @@
                 return;
             }
 
-            if (!amount || amount <= 0) {
-                msg.innerHTML = '<span class="text-red-500">Montant invalide.</span>';
-                return;
-            }
-
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi...';
 
             try {
-                const res = await fetch('/api/transfers', {
+                const data = await apiCall('/api/transfers', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                     body: JSON.stringify({ beneficiary_id: beneficiaryId, amount, reference })
                 });
-                const data = await res.json();
-                if (!res.ok) {
-                    msg.innerHTML = '<span class="text-red-500">' + (data.error || 'Erreur') + '</span>';
-                } else {
+                if (data.success) {
                     msg.innerHTML = '<span class="text-green-500">✅ Virement soumis avec succès ! En attente de validation par notre équipe.</span>';
                     document.getElementById('transferForm').reset();
                     loadTransfers();
                     setTimeout(() => document.getElementById('transferModal').classList.add('hidden'), 3000);
+                } else {
+                    msg.innerHTML = '<span class="text-red-500">' + (data.error || 'Erreur') + '</span>';
                 }
             } catch (err) {
                 msg.innerHTML = '<span class="text-red-500">Erreur de connexion au serveur</span>';
@@ -396,11 +395,11 @@
         // HISTORIQUE VIREMENTS
         // ============================================
         function loadTransfers() {
-            const token = localStorage.getItem('token');
-            fetch('/api/transfers', { headers: { 'Authorization': 'Bearer ' + token } })
-                .then(res => res.json())
+            const list = document.getElementById('transfersList');
+            list.innerHTML = '<div class="loading-spinner"></div>';
+
+            apiCall('/api/transfers')
                 .then(data => {
-                    const list = document.getElementById('transfersList');
                     if (!data.transfers || data.transfers.length === 0) {
                         list.innerHTML = '<p class="text-gray-400 text-sm">Aucun virement effectué.</p>';
                         return;
@@ -422,6 +421,10 @@
                             </div>
                         `;
                     }).join('');
+                })
+                .catch(err => {
+                    list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
+                    console.error(err);
                 });
         }
 
@@ -430,15 +433,23 @@
         // ============================================
         function loadDepositAddresses() {
             const container = document.getElementById('depositAddresses');
-            const token = localStorage.getItem('token');
-            fetch('/api/admin/deposit-addresses', { headers: { 'Authorization': 'Bearer ' + token } })
-                .then(res => res.json())
+            container.innerHTML = '<div class="loading-spinner"></div>';
+
+            apiCall('/api/admin/deposit-addresses')
                 .then(data => {
                     if (!data.addresses || data.addresses.length === 0) {
                         container.innerHTML = '<p class="text-gray-400 text-sm">Aucune adresse disponible.</p>';
                         return;
                     }
-                    container.innerHTML = data.addresses.map(a => `
+                    const uniqueMap = {};
+                    data.addresses.forEach(a => {
+                        if (!uniqueMap[a.currency]) {
+                            uniqueMap[a.currency] = a;
+                        }
+                    });
+                    const uniqueAddresses = Object.values(uniqueMap);
+
+                    container.innerHTML = uniqueAddresses.map(a => `
                         <div class="border border-gray-200 rounded-xl p-4 mb-3">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -471,14 +482,14 @@
         // MODAL DÉPÔT
         // ============================================
         const depositModal = document.getElementById('depositModal');
-        document.getElementById('openDepositModal').addEventListener('click', () => {
+        document.getElementById('openDepositModal').addEventListener('click', function() {
             depositModal.classList.remove('hidden');
             loadDepositAddresses();
         });
-        document.getElementById('closeDepositModal').addEventListener('click', () => {
+        document.getElementById('closeDepositModal').addEventListener('click', function() {
             depositModal.classList.add('hidden');
         });
-        depositModal.addEventListener('click', (e) => {
+        depositModal.addEventListener('click', function(e) {
             if (e.target === depositModal) depositModal.classList.add('hidden');
         });
 
