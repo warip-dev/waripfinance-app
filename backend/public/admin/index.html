@@ -48,6 +48,7 @@
     <div class="pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
         <h1 class="text-3xl font-bold text-dark mb-6">👑 Administration</h1>
 
+        <!-- Navigation -->
         <div class="flex gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow flex-wrap">
             <button id="tabUsers" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark">Utilisateurs</button>
             <button id="tabBeneficiaries" class="tab-btn flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">Bénéficiaires</button>
@@ -59,9 +60,7 @@
         <div id="usersContent">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">👥 Utilisateurs inscrits</h3>
-                <div id="usersList">
-                    <div class="loading-spinner"></div>
-                </div>
+                <div id="usersList"><div class="loading-spinner"></div></div>
             </div>
         </div>
 
@@ -69,9 +68,7 @@
         <div id="beneficiariesContent" class="hidden">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">📋 Bénéficiaires</h3>
-                <div id="adminBeneficiariesList">
-                    <div class="loading-spinner"></div>
-                </div>
+                <div id="adminBeneficiariesList"><div class="loading-spinner"></div></div>
             </div>
         </div>
 
@@ -79,9 +76,7 @@
         <div id="transfersContent" class="hidden">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">💸 Virements en attente</h3>
-                <div id="adminTransfersList">
-                    <div class="loading-spinner"></div>
-                </div>
+                <div id="adminTransfersList"><div class="loading-spinner"></div></div>
             </div>
         </div>
 
@@ -89,9 +84,7 @@
         <div id="addressesContent" class="hidden">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <h3 class="font-semibold text-dark mb-4">🔑 Adresses de dépôt</h3>
-                <div id="addressesList">
-                    <div class="loading-spinner"></div>
-                </div>
+                <div id="addressesList"><div class="loading-spinner"></div></div>
             </div>
         </div>
     </div>
@@ -120,16 +113,10 @@
 
             tabs.forEach(tab => {
                 tab.addEventListener('click', function() {
-                    Object.values(contents).forEach(id => {
-                        document.getElementById(id).classList.add('hidden');
-                    });
+                    Object.values(contents).forEach(id => document.getElementById(id).classList.add('hidden'));
                     const contentId = contents[this.id];
-                    if (contentId) {
-                        document.getElementById(contentId).classList.remove('hidden');
-                    }
-                    tabs.forEach(b => {
-                        b.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
-                    });
+                    if (contentId) document.getElementById(contentId).classList.remove('hidden');
+                    tabs.forEach(b => b.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50');
                     this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
 
                     if (this.id === 'tabUsers') loadUsers();
@@ -151,13 +138,11 @@
         });
 
         // ============================================
-        // APPEL API
+        // FONCTION APPEL API
         // ============================================
         async function apiCall(url, options = {}) {
             const defaultOptions = {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
-                }
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('admin_token') }
             };
             const mergedOptions = { ...defaultOptions, ...options };
             const response = await fetch(url, mergedOptions);
@@ -170,7 +155,6 @@
         function loadUsers() {
             const list = document.getElementById('usersList');
             list.innerHTML = '<div class="loading-spinner"></div>';
-
             apiCall('/api/admin/users')
                 .then(data => {
                     if (!data.users || data.users.length === 0) {
@@ -183,18 +167,16 @@
                                 <p class="font-semibold text-dark">${u.first_name} ${u.last_name}</p>
                                 <p class="text-sm text-gray-500">${u.email}</p>
                                 <p class="text-xs text-gray-400">Solde: ${u.balance || 0} €</p>
-                                <p class="text-xs text-gray-400 font-mono">BTC: ${u.btc_address || 'Non défini'}</p>
-                                <p class="text-xs text-gray-400 font-mono">ETH: ${u.eth_address || 'Non défini'}</p>
                                 <span class="${u.status === 'PENDING' ? 'status-pending' : u.status === 'ACTIVE' ? 'status-active' : 'status-rejected'}">
                                     ${u.status === 'PENDING' ? '⏳ En attente' : u.status === 'ACTIVE' ? '✅ Actif' : '❌ Bloqué'}
                                 </span>
                             </div>
                             <div class="text-right">
                                 ${u.status === 'PENDING' ? `
-                                    <button onclick="window.validateUser(${u.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1">
+                                    <button onclick="validateUser(${u.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1">
                                         <i class="fas fa-check"></i> Valider
                                     </button>
-                                    <button onclick="window.validateUser(${u.id}, 'BLOCKED')" class="btn-danger px-3 py-1 text-xs">
+                                    <button onclick="validateUser(${u.id}, 'BLOCKED')" class="btn-danger px-3 py-1 text-xs">
                                         <i class="fas fa-times"></i> Rejeter
                                     </button>
                                 ` : '<span class="text-xs text-gray-400">Déjà traité</span>'}
@@ -203,12 +185,11 @@
                     `).join('');
                 })
                 .catch(err => {
-                    list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement des utilisateurs</p>';
+                    list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
                     console.error(err);
                 });
         }
 
-        // ⚠️ ATTENTION : Ces fonctions doivent être globales
         window.validateUser = function(id, status) {
             if (!confirm(`Valider ou rejeter l'utilisateur ?`)) return;
             apiCall(`/api/admin/users/${id}/validate`, {
@@ -224,7 +205,6 @@
         function loadAdminBeneficiaries() {
             const list = document.getElementById('adminBeneficiariesList');
             list.innerHTML = '<div class="loading-spinner"></div>';
-
             apiCall('/api/admin/beneficiaries')
                 .then(data => {
                     if (!data.beneficiaries || data.beneficiaries.length === 0) {
@@ -244,10 +224,10 @@
                             </div>
                             <div>
                                 ${b.status === 'PENDING' ? `
-                                    <button onclick="window.validateBeneficiary(${b.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1">
+                                    <button onclick="validateBeneficiary(${b.id}, 'ACTIVE')" class="btn-success px-3 py-1 text-xs mr-1">
                                         <i class="fas fa-check"></i> Valider
                                     </button>
-                                    <button onclick="window.validateBeneficiary(${b.id}, 'REJECTED')" class="btn-danger px-3 py-1 text-xs">
+                                    <button onclick="validateBeneficiary(${b.id}, 'REJECTED')" class="btn-danger px-3 py-1 text-xs">
                                         <i class="fas fa-times"></i> Rejeter
                                     </button>
                                 ` : ''}
@@ -277,7 +257,6 @@
         function loadAdminTransfers() {
             const list = document.getElementById('adminTransfersList');
             list.innerHTML = '<div class="loading-spinner"></div>';
-
             apiCall('/api/admin/transfers')
                 .then(data => {
                     if (!data.transfers || data.transfers.length === 0) {
@@ -293,10 +272,10 @@
                                 <p class="text-xs text-gray-400">${new Date(t.created_at).toLocaleDateString('fr-FR')}</p>
                             </div>
                             <div>
-                                <button onclick="window.validateTransfer(${t.id}, 'COMPLETED')" class="btn-success px-3 py-1 text-xs mr-1">
+                                <button onclick="validateTransfer(${t.id}, 'COMPLETED')" class="btn-success px-3 py-1 text-xs mr-1">
                                     <i class="fas fa-check"></i> Valider
                                 </button>
-                                <button onclick="window.validateTransfer(${t.id}, 'REJECTED')" class="btn-danger px-3 py-1 text-xs">
+                                <button onclick="validateTransfer(${t.id}, 'REJECTED')" class="btn-danger px-3 py-1 text-xs">
                                     <i class="fas fa-times"></i> Rejeter
                                 </button>
                             </div>
@@ -320,19 +299,27 @@
         };
 
         // ============================================
-        // ADRESSES (Admin)
+        // ADRESSES (Admin) - Une seule par devise
         // ============================================
         function loadAddresses() {
             const list = document.getElementById('addressesList');
             list.innerHTML = '<div class="loading-spinner"></div>';
-
             apiCall('/api/admin/deposit-addresses')
                 .then(data => {
                     if (!data.addresses || data.addresses.length === 0) {
                         list.innerHTML = '<p class="text-gray-400 text-sm">Aucune adresse configurée.</p>';
                         return;
                     }
-                    list.innerHTML = data.addresses.map(a => `
+                    // Garder une seule adresse par devise
+                    const uniqueMap = {};
+                    data.addresses.forEach(a => {
+                        if (!uniqueMap[a.currency]) {
+                            uniqueMap[a.currency] = a;
+                        }
+                    });
+                    const uniqueAddresses = Object.values(uniqueMap);
+
+                    list.innerHTML = uniqueAddresses.map(a => `
                         <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
                             <div>
                                 <p class="font-semibold text-dark">${a.currency}</p>
@@ -340,7 +327,7 @@
                                 <p class="text-xs text-gray-400">Réseau: ${a.network}</p>
                             </div>
                             <div>
-                                <button onclick="window.editAddress(${a.id})" class="btn-warning px-3 py-1 text-xs">
+                                <button onclick="editAddress(${a.id})" class="btn-warning px-3 py-1 text-xs">
                                     <i class="fas fa-edit"></i> Modifier
                                 </button>
                             </div>
@@ -348,7 +335,7 @@
                     `).join('');
                 })
                 .catch(err => {
-                    list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement des adresses</p>';
+                    list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
                     console.error(err);
                 });
         }
@@ -364,7 +351,7 @@
         };
 
         // ============================================
-        // INIT
+        // INIT - Charger les utilisateurs par défaut
         // ============================================
         loadUsers();
     </script>
