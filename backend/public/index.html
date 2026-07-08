@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Warip Finance - Banque nouvelle génération</title>
+    <title>Warip Finance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
         * { font-family: 'Inter', sans-serif; }
         body { background: #f0f2f5; }
@@ -26,36 +25,31 @@
         .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
         .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
         .balance-card { background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%); }
-        .status-pending { background: #fef9c3; color: #854d0e; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .status-active { background: #dcfce7; color: #166534; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .status-rejected { background: #fee2e2; color: #991b1b; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .hidden { display: none !important; }
         .copy-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.3s; }
         .copy-btn:hover { background: rgba(255,255,255,0.15); }
-        .beneficiary-card { transition: all 0.3s ease; }
-        .beneficiary-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.06); }
+        .status-pending { background: #fef9c3; color: #854d0e; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-active { background: #dcfce7; color: #166534; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-rejected { background: #fee2e2; color: #991b1b; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .deposit-address-box { background: #f8fafc; border: 1px dashed #d1d5db; border-radius: 12px; padding: 16px; transition: all 0.3s; }
         .deposit-address-box:hover { border-color: #e9b64a; background: #fefcf5; }
-        .transaction-row { transition: all 0.2s; }
-        .transaction-row:hover { background: #f8fafc; }
         .empty-state { color: #9ca3af; text-align: center; padding: 30px 20px; }
         .empty-state i { font-size: 40px; color: #d1d5db; margin-bottom: 12px; }
-        .section-title { font-size: 16px; font-weight: 600; color: #1a1a2e; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .beneficiary-card { transition: all 0.3s ease; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 8px; }
+        .beneficiary-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.06); }
         .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #e9b64a, #d4a03a); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: #1a1a2e; }
         .nav-item { padding: 10px 16px; border-radius: 10px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #6b7280; }
         .nav-item:hover { background: #f3f4f6; color: #1a1a2e; }
         .nav-item.active { background: #e9b64a20; color: #e9b64a; font-weight: 600; }
         .nav-item i { width: 20px; text-align: center; }
-        .sticker { display: none !important; }
-        .btn-secondary { background: #6b7280; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
-        .btn-secondary:hover { background: #4b5563; transform: translateY(-2px); }
+        .tab-btn { flex: 1; padding: 12px 16px; border-radius: 12px; text-align: center; font-size: 14px; font-weight: 500; transition: all 0.3s; cursor: pointer; border: none; background: transparent; color: #6b7280; }
+        .tab-btn:hover { background: #f3f4f6; }
+        .tab-btn.active { background: #e9b64a; color: #1a1a2e; font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <!-- ========================================== -->
-    <!-- HEADER (sans sticker) -->
-    <!-- ========================================== -->
+    <!-- HEADER -->
     <header class="gradient-header fixed w-full z-50 top-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -67,7 +61,7 @@
                         <i class="fas fa-user mr-2"></i>Se connecter
                     </button>
                     <div id="userInfo" class="hidden flex items-center gap-3">
-                        <button id="openProfileModal" class="btn-outline text-sm flex items-center gap-2" style="border-color: rgba(255,255,255,0.3); color: white;">
+                        <button id="openProfileBtn" class="btn-outline text-sm flex items-center gap-2" style="border-color: rgba(255,255,255,0.3); color: white;">
                             <i class="fas fa-user-circle"></i> Mon profil
                         </button>
                     </div>
@@ -82,7 +76,7 @@
     <div id="publicSection" class="pt-20">
         <!-- MODAL CONNEXION / INSCRIPTION -->
         <div id="authModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl max-w-2xl w-full p-8 relative card-shadow max-h-[90vh] overflow-y-auto">
+            <div class="bg-white rounded-2xl max-w-md w-full p-8 relative card-shadow max-h-[90vh] overflow-y-auto">
                 <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
                     <i class="fas fa-times"></i>
                 </button>
@@ -90,7 +84,6 @@
                 <!-- LOGIN -->
                 <div id="loginForm">
                     <h2 class="text-2xl font-bold text-dark mb-2">Connexion</h2>
-                    <p class="text-gray-500 text-sm mb-6">Accédez à votre espace client</p>
                     <div id="loginError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
                     <form id="loginFormSubmit">
                         <div class="mb-4">
@@ -115,7 +108,6 @@
                 <!-- REGISTER -->
                 <div id="registerForm" class="hidden">
                     <h2 class="text-2xl font-bold text-dark mb-2">Créer un compte</h2>
-                    <p class="text-gray-500 text-sm mb-6">Rejoignez Warip Finance en quelques clics</p>
                     <div id="registerError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
                     <form id="registerFormSubmit">
                         <div class="grid grid-cols-2 gap-3 mb-3">
@@ -162,7 +154,6 @@
             </div>
         </section>
 
-        <!-- FOOTER PUBLIC -->
         <footer class="bg-dark text-gray-400 py-12">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid md:grid-cols-4 gap-8">
@@ -173,25 +164,25 @@
                     <div>
                         <h4 class="text-white font-semibold">Produits</h4>
                         <ul class="mt-2 space-y-1 text-sm">
-                            <li><a href="#" class="footer-link text-gray-400 hover:text-gold">Compte courant</a></li>
-                            <li><a href="#" class="footer-link text-gray-400 hover:text-gold">Épargne</a></li>
-                            <li><a href="#" class="footer-link text-gray-400 hover:text-gold">Crypto</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-gold">Compte courant</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-gold">Épargne</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-gold">Crypto</a></li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="text-white font-semibold">À propos</h4>
                         <ul class="mt-2 space-y-1 text-sm">
-                            <li><a href="#" class="footer-link text-gray-400 hover:text-gold">Qui sommes-nous ?</a></li>
-                            <li><a href="#" class="footer-link text-gray-400 hover:text-gold">Carrières</a></li>
-                            <li><a href="#" class="footer-link text-gray-400 hover:text-gold">Contact</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-gold">Qui sommes-nous ?</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-gold">Carrières</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-gold">Contact</a></li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="text-white font-semibold">Légal</h4>
                         <ul class="mt-2 space-y-1 text-sm">
-                            <li><a href="#" class="footer-link text-gray-400 hover:text-gold">Mentions légales</a></li>
-                            <li><a href="#" class="footer-link text-gray-400 hover:text-gold">Politique de confidentialité</a></li>
-                            <li><a href="#" class="footer-link text-gray-400 hover:text-gold">CGU</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-gold">Mentions légales</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-gold">Politique de confidentialité</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-gold">CGU</a></li>
                         </ul>
                     </div>
                 </div>
@@ -207,10 +198,9 @@
     <!-- ========================================== -->
     <div id="dashboardSection" class="hidden pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
 
-        <!-- En-tête avec bienvenue -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <div class="flex justify-between items-center mb-6">
             <div>
-                <h1 class="text-2xl font-bold text-dark">Bonjour <span id="userFirstName" class="gold">Client</span> 👋</h1>
+                <h1 class="text-2xl font-bold text-dark">Bonjour <span id="userFirstName" class="gold">Client</span></h1>
                 <p class="text-gray-500 text-sm">Bienvenue sur votre espace client</p>
             </div>
         </div>
@@ -219,7 +209,7 @@
         <div class="balance-card rounded-3xl p-6 md:p-8 text-white mb-8 card-shadow">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <p class="text-gray-400 text-sm font-medium">Solde total</p>
+                    <p class="text-gray-400 text-sm">Solde total</p>
                     <p class="text-3xl md:text-4xl font-bold" id="userBalance">0,00 €</p>
                     <div class="flex gap-6 mt-3 text-sm">
                         <span class="text-gray-400">BTC: <span class="text-white font-mono" id="btcBalance">0,0000</span></span>
@@ -227,22 +217,22 @@
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-3">
-                    <button id="openDepositModal" class="btn-primary bg-white text-dark hover:bg-gray-100">
+                    <button id="btnDeposit" class="btn-primary bg-white text-dark hover:bg-gray-100">
                         <i class="fas fa-arrow-down mr-2"></i>Déposer
                     </button>
-                    <button id="openAddBeneficiary" class="btn-outline border-white text-white hover:bg-white hover:text-dark">
+                    <button id="btnAddBeneficiary" class="btn-outline border-white text-white hover:bg-white hover:text-dark">
                         <i class="fas fa-user-plus mr-2"></i>Bénéficiaire
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Navigation Dashboard -->
-        <div class="flex flex-wrap gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow">
-            <button id="tabBeneficiaries" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark">
+        <!-- TABS -->
+        <div class="flex gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow">
+            <button class="tab-btn active" data-tab="beneficiaries">
                 <i class="fas fa-users mr-2"></i>Mes bénéficiaires
             </button>
-            <button id="tabTransfers" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50">
+            <button class="tab-btn" data-tab="transfers">
                 <i class="fas fa-history mr-2"></i>Mes virements
             </button>
         </div>
@@ -251,8 +241,8 @@
         <div id="beneficiariesContent">
             <div class="bg-white rounded-2xl p-6 card-shadow">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="section-title"><i class="fas fa-user-friends gold"></i> Mes bénéficiaires</h3>
-                    <button id="openAddBeneficiaryBtn" class="btn-primary px-4 py-2 text-sm">
+                    <h3 class="font-semibold text-dark">Mes bénéficiaires</h3>
+                    <button id="btnAddBeneficiary2" class="btn-primary px-4 py-2 text-sm">
                         <i class="fas fa-plus mr-1"></i>Ajouter
                     </button>
                 </div>
@@ -260,7 +250,6 @@
                     <div class="empty-state">
                         <i class="fas fa-user-plus"></i>
                         <p>Aucun bénéficiaire enregistré</p>
-                        <p class="text-xs mt-1">Ajoutez un bénéficiaire pour effectuer des virements</p>
                     </div>
                 </div>
             </div>
@@ -269,12 +258,11 @@
         <!-- VIREMENTS -->
         <div id="transfersContent" class="hidden">
             <div class="bg-white rounded-2xl p-6 card-shadow">
-                <h3 class="section-title"><i class="fas fa-clock gold"></i> Historique des virements</h3>
+                <h3 class="font-semibold text-dark mb-4">Historique des virements</h3>
                 <div id="transfersList">
                     <div class="empty-state">
                         <i class="fas fa-exchange-alt"></i>
                         <p>Aucun virement effectué</p>
-                        <p class="text-xs mt-1">Vos virements apparaîtront ici</p>
                     </div>
                 </div>
             </div>
@@ -282,7 +270,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- MODAL PROFIL UTILISATEUR -->
+    <!-- MODAL PROFIL -->
     <!-- ========================================== -->
     <div id="profileModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-2xl w-full p-8 relative card-shadow max-h-[90vh] overflow-y-auto">
@@ -292,94 +280,45 @@
             <div class="flex items-center gap-6 mb-6">
                 <div class="profile-avatar" id="profileAvatar">JD</div>
                 <div>
-                    <h2 class="text-2xl font-bold text-dark" id="profileFullName">Jean Dupont</h2>
-                    <p class="text-gray-500 text-sm" id="profileEmail">jean.dupont@email.com</p>
-                    <span class="status-active text-xs" id="profileStatus">✅ Actif</span>
+                    <h2 class="text-2xl font-bold text-dark" id="profileFullName">Client</h2>
+                    <p class="text-gray-500 text-sm" id="profileEmail">email@exemple.com</p>
+                    <span class="status-active text-xs" id="profileStatus">Actif</span>
                 </div>
             </div>
 
-            <!-- Navigation du profil -->
             <div class="flex flex-wrap border-b border-gray-200 mb-6">
-                <button class="nav-item active" data-tab="info" onclick="showProfileTab('info')">
-                    <i class="fas fa-info-circle"></i> Informations
-                </button>
-                <button class="nav-item" data-tab="support" onclick="showProfileTab('support')">
-                    <i class="fas fa-headset"></i> Support
-                </button>
-                <button class="nav-item" data-tab="logout" onclick="handleLogout()">
-                    <i class="fas fa-sign-out-alt"></i> Déconnexion
-                </button>
+                <button class="nav-item active" data-tab="info"><i class="fas fa-info-circle"></i> Informations</button>
+                <button class="nav-item" data-tab="support"><i class="fas fa-headset"></i> Support</button>
+                <button class="nav-item" data-tab="logout" id="profileLogoutBtn"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
             </div>
 
-            <!-- Contenu Info -->
             <div id="profileInfo" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-xs text-gray-400">Prénom</p>
-                        <p class="font-medium text-dark" id="pFirstName">-</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400">Nom</p>
-                        <p class="font-medium text-dark" id="pLastName">-</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400">Email</p>
-                        <p class="font-medium text-dark" id="pEmail">-</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400">Téléphone</p>
-                        <p class="font-medium text-dark" id="pPhone">-</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400">Pays</p>
-                        <p class="font-medium text-dark" id="pCountry">-</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400">Ville</p>
-                        <p class="font-medium text-dark" id="pCity">-</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400">Code postal</p>
-                        <p class="font-medium text-dark" id="pPostalCode">-</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400">Adresse</p>
-                        <p class="font-medium text-dark" id="pAddress">-</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400">Profession</p>
-                        <p class="font-medium text-dark" id="pProfession">-</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400">Sexe</p>
-                        <p class="font-medium text-dark" id="pGender">-</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400">Situation matrimoniale</p>
-                        <p class="font-medium text-dark" id="pMaritalStatus">-</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400">Statut</p>
-                        <p class="font-medium text-dark" id="pStatus">-</p>
-                    </div>
+                    <div><p class="text-xs text-gray-400">Prénom</p><p class="font-medium text-dark" id="pFirstName">-</p></div>
+                    <div><p class="text-xs text-gray-400">Nom</p><p class="font-medium text-dark" id="pLastName">-</p></div>
+                    <div><p class="text-xs text-gray-400">Email</p><p class="font-medium text-dark" id="pEmail">-</p></div>
+                    <div><p class="text-xs text-gray-400">Téléphone</p><p class="font-medium text-dark" id="pPhone">-</p></div>
+                    <div><p class="text-xs text-gray-400">Pays</p><p class="font-medium text-dark" id="pCountry">-</p></div>
+                    <div><p class="text-xs text-gray-400">Ville</p><p class="font-medium text-dark" id="pCity">-</p></div>
+                    <div><p class="text-xs text-gray-400">Code postal</p><p class="font-medium text-dark" id="pPostalCode">-</p></div>
+                    <div><p class="text-xs text-gray-400">Adresse</p><p class="font-medium text-dark" id="pAddress">-</p></div>
+                    <div><p class="text-xs text-gray-400">Profession</p><p class="font-medium text-dark" id="pProfession">-</p></div>
+                    <div><p class="text-xs text-gray-400">Sexe</p><p class="font-medium text-dark" id="pGender">-</p></div>
+                    <div><p class="text-xs text-gray-400">Situation</p><p class="font-medium text-dark" id="pMaritalStatus">-</p></div>
+                    <div><p class="text-xs text-gray-400">Statut</p><p class="font-medium text-dark" id="pStatus">-</p></div>
                 </div>
             </div>
 
-            <!-- Contenu Support -->
-            <div id="profileSupport" class="hidden space-y-4">
+            <div id="profileSupport" class="hidden">
                 <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-                    <h3 class="font-semibold text-dark mb-2"><i class="fas fa-headset gold mr-2"></i>Service client</h3>
-                    <p class="text-gray-600 text-sm mb-4">
-                        Notre équipe est à votre disposition pour toute question.
-                    </p>
+                    <h3 class="font-semibold text-dark">Service client</h3>
+                    <p class="text-gray-600 text-sm mb-4">Notre équipe est à votre disposition.</p>
                     <a href="mailto:support@waripfinance.com" class="btn-primary inline-block text-sm">
                         <i class="fas fa-envelope mr-2"></i>Contacter le support
                     </a>
-                    <p class="text-xs text-gray-400 mt-3">
-                        Réponse sous 24h ouvrées
-                    </p>
+                    <p class="text-xs text-gray-400 mt-3">Réponse sous 24h</p>
                 </div>
-                <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-500">
+                <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-500 mt-4">
                     <p><i class="fas fa-phone gold mr-2"></i>+33 1 23 45 67 89</p>
                     <p><i class="fas fa-clock gold mr-2"></i>Lun - Ven : 9h - 18h</p>
                 </div>
@@ -395,24 +334,24 @@
             <button id="closeAddBeneficiary" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
                 <i class="fas fa-times"></i>
             </button>
-            <h2 class="text-2xl font-bold text-dark mb-2">➕ Ajouter un bénéficiaire</h2>
-            <p class="text-gray-500 text-sm mb-6">Le bénéficiaire sera soumis à validation par notre équipe (délai moyen 24h).</p>
+            <h2 class="text-2xl font-bold text-dark mb-2">Ajouter un bénéficiaire</h2>
+            <p class="text-gray-500 text-sm mb-6">Le bénéficiaire sera soumis à validation (24h).</p>
             <div id="beneficiaryMessage" class="text-sm mb-4"></div>
             <form id="addBeneficiaryForm">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nom du bénéficiaire</label>
-                    <input type="text" id="beneficiaryName" placeholder="Dupont Jean" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                    <input type="text" id="beneficiaryName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">IBAN</label>
-                    <input type="text" id="beneficiaryIban" placeholder="FR76 1234 5678 9012 3456 7890 123" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
+                    <input type="text" id="beneficiaryIban" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">BIC (optionnel)</label>
-                    <input type="text" id="beneficiaryBic" placeholder="BNPAFRPP" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus">
+                    <input type="text" id="beneficiaryBic" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus">
                 </div>
                 <button type="submit" id="addBeneficiaryBtn" class="w-full btn-primary py-3 text-lg">
-                    <i class="fas fa-save mr-2"></i>Enregistrer le bénéficiaire
+                    <i class="fas fa-save mr-2"></i>Enregistrer
                 </button>
             </form>
         </div>
@@ -426,76 +365,59 @@
             <button id="closeTransferModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
                 <i class="fas fa-times"></i>
             </button>
-            <h2 class="text-2xl font-bold text-dark mb-2">💸 Virement SEPA</h2>
-            <p class="text-gray-500 text-sm mb-6">Sélectionnez un bénéficiaire validé.</p>
+            <h2 class="text-2xl font-bold text-dark mb-2">Virement SEPA</h2>
             <div id="transferMessage" class="text-sm mb-4"></div>
             <form id="transferForm">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Bénéficiaire</label>
                     <select id="transferBeneficiary" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required>
-                        <option value="">-- Sélectionnez un bénéficiaire --</option>
+                        <option value="">-- Sélectionnez --</option>
                     </select>
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Montant (EUR)</label>
-                    <input type="number" id="transferAmount" placeholder="0,00" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required step="0.01" min="0.01">
+                    <input type="number" id="transferAmount" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required step="0.01" min="0.01">
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Référence (optionnel)</label>
-                    <input type="text" id="transferRef" placeholder="Facture #12345" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus">
+                    <input type="text" id="transferRef" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus">
                 </div>
                 <button type="submit" id="transferBtn" class="w-full btn-primary py-3 text-lg">
-                    <i class="fas fa-paper-plane mr-2"></i>Envoyer le virement
+                    <i class="fas fa-paper-plane mr-2"></i>Envoyer
                 </button>
             </form>
         </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- MODAL DÉPÔT (avec adresses BTC/ETH) -->
+    <!-- MODAL DÉPÔT -->
     <!-- ========================================== -->
     <div id="depositModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full p-8 relative card-shadow">
             <button id="closeDepositModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
                 <i class="fas fa-times"></i>
             </button>
-            <h2 class="text-2xl font-bold text-dark mb-2">📥 Déposer des cryptos</h2>
-            <p class="text-gray-500 text-sm mb-4">Utilisez les adresses ci-dessous pour déposer vos cryptomonnaies.</p>
+            <h2 class="text-2xl font-bold text-dark mb-2">Déposer des cryptos</h2>
             <div id="depositAddresses">
                 <div class="deposit-address-box mb-3">
                     <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <span class="text-2xl">₿</span>
-                            <div>
-                                <p class="font-semibold text-dark">Bitcoin</p>
-                                <p class="text-xs text-gray-400">Réseau Bitcoin</p>
-                            </div>
-                        </div>
-                        <button onclick="copyAddress('btc')" class="copy-btn">
-                            <i class="fas fa-copy mr-1"></i>Copier
-                        </button>
+                        <span class="text-2xl">₿</span>
+                        <button onclick="copyAddress('btc')" class="copy-btn"><i class="fas fa-copy mr-1"></i>Copier</button>
                     </div>
-                    <p id="btcAddress" class="text-gray-600 text-sm font-mono mt-2 break-all bg-gray-50 p-2 rounded-lg">Chargement...</p>
+                    <p id="btcAddress" class="text-gray-600 text-sm font-mono mt-2 bg-gray-50 p-2 rounded-lg">Chargement...</p>
+                    <p class="text-xs text-gray-400">Réseau Bitcoin</p>
                 </div>
                 <div class="deposit-address-box">
                     <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <span class="text-2xl">⟠</span>
-                            <div>
-                                <p class="font-semibold text-dark">Ethereum</p>
-                                <p class="text-xs text-gray-400">Réseau ERC20</p>
-                            </div>
-                        </div>
-                        <button onclick="copyAddress('eth')" class="copy-btn">
-                            <i class="fas fa-copy mr-1"></i>Copier
-                        </button>
+                        <span class="text-2xl">⟠</span>
+                        <button onclick="copyAddress('eth')" class="copy-btn"><i class="fas fa-copy mr-1"></i>Copier</button>
                     </div>
-                    <p id="ethAddress" class="text-gray-600 text-sm font-mono mt-2 break-all bg-gray-50 p-2 rounded-lg">Chargement...</p>
+                    <p id="ethAddress" class="text-gray-600 text-sm font-mono mt-2 bg-gray-50 p-2 rounded-lg">Chargement...</p>
+                    <p class="text-xs text-gray-400">Réseau ERC20</p>
                 </div>
             </div>
             <div class="mt-4 p-3 bg-yellow-50 rounded-xl text-xs text-yellow-700">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
-                Envoyez uniquement les cryptos correspondantes sur ces adresses.
+                <i class="fas fa-exclamation-triangle mr-2"></i>Envoyez uniquement les cryptos correspondantes.
             </div>
         </div>
     </div>
@@ -536,39 +458,32 @@
         // MODAL LOGIN/REGISTER
         // ============================================
         const modal = document.getElementById('authModal');
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
+        document.getElementById('openLoginModal').addEventListener('click', () => modal.classList.remove('hidden'));
+        document.getElementById('heroOpenRegister').addEventListener('click', () => {
+            modal.classList.remove('hidden');
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        });
+        document.getElementById('closeModal').addEventListener('click', () => modal.classList.add('hidden'));
 
-        function openModal() { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
-        function closeModal() { modal.classList.add('hidden'); document.body.style.overflow = ''; }
-
-        document.getElementById('openLoginModal').addEventListener('click', openModal);
-        document.getElementById('heroOpenRegister').addEventListener('click', () => { openModal(); showRegister(); });
-        document.getElementById('closeModal').addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-
-        function showLogin() { loginForm.classList.remove('hidden'); registerForm.classList.add('hidden'); }
-        function showRegister() { loginForm.classList.add('hidden'); registerForm.classList.remove('hidden'); }
-
-        document.getElementById('showRegister').addEventListener('click', showRegister);
-        document.getElementById('showLogin').addEventListener('click', showLogin);
+        document.getElementById('showRegister').addEventListener('click', () => {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        });
+        document.getElementById('showLogin').addEventListener('click', () => {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+        });
 
         // ============================================
         // CONNEXION
         // ============================================
         document.getElementById('loginFormSubmit').addEventListener('submit', function(e) {
             e.preventDefault();
-
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const errorEl = document.getElementById('loginError');
-
             errorEl.classList.add('hidden');
-            errorEl.textContent = '';
-
-            const btn = document.querySelector('#loginFormSubmit button[type="submit"]');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Connexion...';
 
             fetch('/api/auth/login', {
                 method: 'POST',
@@ -577,25 +492,13 @@
             })
             .then(res => res.json())
             .then(data => {
-                btn.disabled = false;
-                btn.innerHTML = 'Se connecter';
-
                 if (!data.success || !data.user) {
                     errorEl.textContent = data.error || 'Email ou mot de passe incorrect';
                     errorEl.classList.remove('hidden');
-
-                    if (data.status === 'PENDING') {
-                        errorEl.textContent = '⏳ Votre compte est en attente de validation.';
-                    }
-                    if (data.status === 'BLOCKED') {
-                        errorEl.textContent = '❌ Votre compte a été bloqué.';
-                    }
                     return;
                 }
-
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
-
                 if (data.user.role === 'ADMIN') {
                     window.location.href = '/admin.html';
                 } else if (data.user.status === 'PENDING') {
@@ -604,12 +507,9 @@
                     window.location.reload();
                 }
             })
-            .catch(err => {
-                btn.disabled = false;
-                btn.innerHTML = 'Se connecter';
-                errorEl.textContent = '❌ Erreur de connexion au serveur.';
+            .catch(() => {
+                errorEl.textContent = 'Erreur de connexion au serveur';
                 errorEl.classList.remove('hidden');
-                console.error('Erreur:', err);
             });
         });
 
@@ -618,21 +518,12 @@
         // ============================================
         document.getElementById('registerFormSubmit').addEventListener('submit', function(e) {
             e.preventDefault();
-
-            const firstName = document.getElementById('regFirstName').value.trim();
-            const lastName = document.getElementById('regLastName').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
+            const firstName = document.getElementById('regFirstName').value;
+            const lastName = document.getElementById('regLastName').value;
+            const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
             const errorEl = document.getElementById('registerError');
-
             errorEl.classList.add('hidden');
-            errorEl.textContent = '';
-
-            if (!firstName || !lastName || !email || !password) {
-                errorEl.textContent = 'Tous les champs sont obligatoires';
-                errorEl.classList.remove('hidden');
-                return;
-            }
 
             if (password.length < 8) {
                 errorEl.textContent = 'Le mot de passe doit contenir au moins 8 caractères';
@@ -640,39 +531,23 @@
                 return;
             }
 
-            const btn = document.querySelector('#registerFormSubmit button[type="submit"]');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi...';
-
             fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    first_name: firstName,
-                    last_name: lastName,
-                    email: email,
-                    password: password,
-                    country: 'FR'
-                })
+                body: JSON.stringify({ first_name: firstName, last_name: lastName, email, password, country: 'FR' })
             })
             .then(res => res.json())
             .then(data => {
-                btn.disabled = false;
-                btn.innerHTML = 'Créer mon compte';
-
                 if (data.success) {
                     window.location.href = '/pending.html';
                 } else {
-                    errorEl.textContent = data.error || 'Erreur lors de l\'inscription';
+                    errorEl.textContent = data.error || 'Erreur';
                     errorEl.classList.remove('hidden');
                 }
             })
-            .catch(err => {
-                btn.disabled = false;
-                btn.innerHTML = 'Créer mon compte';
-                errorEl.textContent = '❌ Erreur de connexion au serveur.';
+            .catch(() => {
+                errorEl.textContent = 'Erreur de connexion au serveur';
                 errorEl.classList.remove('hidden');
-                console.error('Erreur:', err);
             });
         });
 
@@ -680,37 +555,38 @@
         // LOGOUT
         // ============================================
         function handleLogout() {
-            if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+            if (confirm('Voulez-vous vous déconnecter ?')) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
                 document.getElementById('profileModal').classList.add('hidden');
                 window.location.reload();
             }
         }
+        document.getElementById('profileLogoutBtn').addEventListener('click', handleLogout);
 
         // ============================================
         // API CALL
         // ============================================
         function apiCall(url, options = {}) {
             const token = localStorage.getItem('token');
-            const defaultOptions = {
+            return fetch(url, {
+                ...options,
                 headers: {
                     'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    ...(options.headers || {})
                 }
-            };
-            const mergedOptions = { ...defaultOptions, ...options };
-            return fetch(url, mergedOptions).then(res => res.json());
+            }).then(res => res.json());
         }
 
         // ============================================
-        // PROFIL UTILISATEUR
+        // PROFIL
         // ============================================
         function loadUserProfile() {
             const u = user;
             document.getElementById('profileFullName').textContent = (u.first_name || '') + ' ' + (u.last_name || '');
             document.getElementById('profileEmail').textContent = u.email || '-';
-            document.getElementById('profileAvatar').textContent = (u.first_name ? u.first_name.charAt(0) : 'C') + (u.last_name ? u.last_name.charAt(0) : 'l');
+            document.getElementById('profileAvatar').textContent = (u.first_name ? u.first_name.charAt(0) : 'U');
             document.getElementById('pFirstName').textContent = u.first_name || '-';
             document.getElementById('pLastName').textContent = u.last_name || '-';
             document.getElementById('pEmail').textContent = u.email || '-';
@@ -723,161 +599,147 @@
             document.getElementById('pGender').textContent = u.gender === 'M' ? 'Masculin' : u.gender === 'F' ? 'Féminin' : u.gender || '-';
             document.getElementById('pMaritalStatus').textContent = u.marital_status || '-';
             document.getElementById('pStatus').textContent = u.status || '-';
-            document.getElementById('profileStatus').textContent = u.status === 'ACTIVE' ? '✅ Actif' : u.status === 'PENDING' ? '⏳ En attente' : '❌ Bloqué';
-            document.getElementById('profileStatus').className = u.status === 'ACTIVE' ? 'status-active text-xs' : u.status === 'PENDING' ? 'status-pending text-xs' : 'status-rejected text-xs';
         }
 
-        document.getElementById('openProfileModal').addEventListener('click', function() {
+        document.getElementById('openProfileBtn').addEventListener('click', function() {
             document.getElementById('profileModal').classList.remove('hidden');
-            document.getElementById('profileInfo').classList.remove('hidden');
-            document.getElementById('profileSupport').classList.add('hidden');
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.querySelector('.nav-item[data-tab="info"]').classList.add('active');
             loadUserProfile();
         });
-
         document.getElementById('closeProfileModal').addEventListener('click', function() {
             document.getElementById('profileModal').classList.add('hidden');
         });
 
-        function showProfileTab(tab) {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.querySelector(`.nav-item[data-tab="${tab}"]`).classList.add('active');
-
-            if (tab === 'info') {
-                document.getElementById('profileInfo').classList.remove('hidden');
-                document.getElementById('profileSupport').classList.add('hidden');
-            } else if (tab === 'support') {
-                document.getElementById('profileInfo').classList.add('hidden');
-                document.getElementById('profileSupport').classList.remove('hidden');
-            }
-        }
+        // Navigation profil
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+                const tab = this.dataset.tab;
+                document.getElementById('profileInfo').classList.toggle('hidden', tab !== 'info');
+                document.getElementById('profileSupport').classList.toggle('hidden', tab !== 'support');
+            });
+        });
 
         // ============================================
-        // BÉNÉFICIAIRES - CHARGEMENT
+        // TABS DASHBOARD
+        // ============================================
+        document.querySelectorAll('.tab-btn').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+                const target = this.dataset.tab;
+                document.getElementById('beneficiariesContent').classList.toggle('hidden', target !== 'beneficiaries');
+                document.getElementById('transfersContent').classList.toggle('hidden', target !== 'transfers');
+                if (target === 'beneficiaries') loadBeneficiaries();
+                if (target === 'transfers') loadTransfers();
+            });
+        });
+
+        // ============================================
+        // BÉNÉFICIAIRES
         // ============================================
         function loadBeneficiaries() {
             const list = document.getElementById('beneficiariesList');
-
             apiCall('/api/beneficiaries')
                 .then(data => {
                     if (!data.beneficiaries || data.beneficiaries.length === 0) {
-                        list.innerHTML = `
-                            <div class="empty-state">
-                                <i class="fas fa-user-plus"></i>
-                                <p>Aucun bénéficiaire enregistré</p>
-                                <p class="text-xs mt-1">Ajoutez un bénéficiaire pour effectuer des virements</p>
-                            </div>
-                        `;
+                        list.innerHTML = '<div class="empty-state"><i class="fas fa-user-plus"></i><p>Aucun bénéficiaire</p></div>';
                         return;
                     }
                     list.innerHTML = data.beneficiaries.map(b => {
                         const statusClass = b.status === 'ACTIVE' ? 'status-active' : b.status === 'REJECTED' ? 'status-rejected' : 'status-pending';
-                        const statusLabel = b.status === 'ACTIVE' ? '✅ Validé' : b.status === 'REJECTED' ? '❌ Rejeté' : '⏳ En attente (24h)';
+                        const statusLabel = b.status === 'ACTIVE' ? 'Validé' : b.status === 'REJECTED' ? 'Rejeté' : 'En attente (24h)';
                         return `
-                            <div class="beneficiary-card flex justify-between items-center p-4 border border-gray-100 rounded-xl mb-2">
+                            <div class="beneficiary-card flex justify-between items-center">
                                 <div>
                                     <p class="font-semibold text-dark">${b.name}</p>
                                     <p class="text-xs text-gray-400 font-mono">${b.iban}</p>
                                     <span class="${statusClass}">${statusLabel}</span>
-                                    ${b.rejection_reason ? `<p class="text-xs text-red-500 mt-1">Motif: ${b.rejection_reason}</p>` : ''}
-                                    ${b.status === 'PENDING' ? '<p class="text-xs text-yellow-600 mt-1">⏳ Validation admin sous 24h</p>' : ''}
+                                    ${b.rejection_reason ? `<p class="text-xs text-red-500">Motif: ${b.rejection_reason}</p>` : ''}
                                 </div>
                                 <div>
                                     ${b.status === 'ACTIVE' ? `
-                                        <button onclick="openTransferForBeneficiary('${b.id}', '${b.name}', '${b.iban}')" class="btn-primary px-3 py-1 text-xs">
+                                        <button onclick="openTransfer('${b.id}', '${b.name}')" class="btn-primary px-3 py-1 text-xs">
                                             <i class="fas fa-paper-plane mr-1"></i>Virement
                                         </button>
                                     ` : ''}
-                                    ${b.status === 'PENDING' ? '<span class="text-xs text-yellow-600">En attente</span>' : ''}
-                                    ${b.status === 'REJECTED' ? '<span class="text-xs text-red-500">Rejeté</span>' : ''}
                                 </div>
                             </div>
                         `;
                     }).join('');
                 })
-                .catch(err => {
-                    list.innerHTML = '<p class="text-red-500 text-sm">❌ Erreur de chargement</p>';
-                    console.error(err);
+                .catch(() => {
+                    list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
                 });
         }
 
         // ============================================
         // AJOUT BÉNÉFICIAIRE
         // ============================================
-        document.getElementById('openAddBeneficiary').addEventListener('click', function() {
+        document.getElementById('btnAddBeneficiary').addEventListener('click', function() {
             document.getElementById('addBeneficiaryModal').classList.remove('hidden');
-            document.getElementById('beneficiaryMessage').innerHTML = '';
         });
-
-        document.getElementById('openAddBeneficiaryBtn').addEventListener('click', function() {
+        document.getElementById('btnAddBeneficiary2').addEventListener('click', function() {
             document.getElementById('addBeneficiaryModal').classList.remove('hidden');
-            document.getElementById('beneficiaryMessage').innerHTML = '';
         });
-
         document.getElementById('closeAddBeneficiary').addEventListener('click', function() {
             document.getElementById('addBeneficiaryModal').classList.add('hidden');
         });
 
-        document.getElementById('addBeneficiaryForm').addEventListener('submit', async function(e) {
+        document.getElementById('addBeneficiaryForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const btn = document.getElementById('addBeneficiaryBtn');
             const msg = document.getElementById('beneficiaryMessage');
-            const name = document.getElementById('beneficiaryName').value;
-            const iban = document.getElementById('beneficiaryIban').value;
-            const bic = document.getElementById('beneficiaryBic').value;
-
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi...';
 
-            try {
-                const data = await apiCall('/api/beneficiaries', {
-                    method: 'POST',
-                    body: JSON.stringify({ name, iban, bic })
-                });
+            apiCall('/api/beneficiaries', {
+                method: 'POST',
+                body: JSON.stringify({
+                    name: document.getElementById('beneficiaryName').value,
+                    iban: document.getElementById('beneficiaryIban').value,
+                    bic: document.getElementById('beneficiaryBic').value
+                })
+            })
+            .then(data => {
                 if (data.success) {
-                    msg.innerHTML = '<span class="text-green-500">✅ Bénéficiaire ajouté. En attente de validation admin (délai 24h).</span>';
+                    msg.innerHTML = '<span class="text-green-500">✅ Bénéficiaire ajouté, en attente de validation (24h).</span>';
                     document.getElementById('addBeneficiaryForm').reset();
                     loadBeneficiaries();
-                    setTimeout(() => document.getElementById('addBeneficiaryModal').classList.add('hidden'), 3000);
+                    setTimeout(() => document.getElementById('addBeneficiaryModal').classList.add('hidden'), 2000);
                 } else {
                     msg.innerHTML = '<span class="text-red-500">' + (data.error || 'Erreur') + '</span>';
                 }
-            } catch (err) {
-                msg.innerHTML = '<span class="text-red-500">Erreur de connexion au serveur</span>';
-            } finally {
+            })
+            .catch(() => {
+                msg.innerHTML = '<span class="text-red-500">Erreur de connexion</span>';
+            })
+            .finally(() => {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-save mr-2"></i>Enregistrer le bénéficiaire';
-            }
+                btn.innerHTML = '<i class="fas fa-save mr-2"></i>Enregistrer';
+            });
         });
 
         // ============================================
         // VIREMENT
         // ============================================
-        function openTransferForBeneficiary(id, name, iban) {
-            const modal = document.getElementById('transferModal');
-            modal.classList.remove('hidden');
+        function openTransfer(id, name) {
+            document.getElementById('transferModal').classList.remove('hidden');
             const select = document.getElementById('transferBeneficiary');
-            select.innerHTML = `<option value="${id}">${name} - ${iban}</option>`;
+            select.innerHTML = `<option value="${id}">${name}</option>`;
             document.getElementById('transferMessage').innerHTML = '';
             document.getElementById('transferAmount').value = '';
             document.getElementById('transferRef').value = '';
         }
 
         document.getElementById('openTransferModal').addEventListener('click', function() {
-            const modal = document.getElementById('transferModal');
-            modal.classList.remove('hidden');
-            document.getElementById('transferMessage').innerHTML = '';
+            document.getElementById('transferModal').classList.remove('hidden');
             apiCall('/api/beneficiaries')
                 .then(data => {
                     const select = document.getElementById('transferBeneficiary');
                     const active = (data.beneficiaries || []).filter(b => b.status === 'ACTIVE');
-                    if (active.length === 0) {
-                        select.innerHTML = '<option value="">-- Aucun bénéficiaire validé --</option>';
-                    } else {
-                        select.innerHTML = '<option value="">-- Sélectionnez un bénéficiaire --</option>' +
-                            active.map(b => `<option value="${b.id}">${b.name} - ${b.iban}</option>`).join('');
-                    }
+                    select.innerHTML = '<option value="">-- Sélectionnez --</option>' +
+                        active.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
                 });
         });
 
@@ -885,7 +747,7 @@
             document.getElementById('transferModal').classList.add('hidden');
         });
 
-        document.getElementById('transferForm').addEventListener('submit', async function(e) {
+        document.getElementById('transferForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const btn = document.getElementById('transferBtn');
             const msg = document.getElementById('transferMessage');
@@ -894,32 +756,34 @@
             const reference = document.getElementById('transferRef').value;
 
             if (!beneficiaryId) {
-                msg.innerHTML = '<span class="text-red-500">Veuillez sélectionner un bénéficiaire.</span>';
+                msg.innerHTML = '<span class="text-red-500">Sélectionnez un bénéficiaire</span>';
                 return;
             }
 
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi...';
 
-            try {
-                const data = await apiCall('/api/transfers', {
-                    method: 'POST',
-                    body: JSON.stringify({ beneficiary_id: beneficiaryId, amount, reference })
-                });
+            apiCall('/api/transfers', {
+                method: 'POST',
+                body: JSON.stringify({ beneficiary_id: beneficiaryId, amount, reference })
+            })
+            .then(data => {
                 if (data.success) {
-                    msg.innerHTML = '<span class="text-green-500">✅ Virement soumis avec succès ! En attente de validation admin.</span>';
+                    msg.innerHTML = '<span class="text-green-500">✅ Virement soumis, en attente de validation.</span>';
                     document.getElementById('transferForm').reset();
                     loadTransfers();
-                    setTimeout(() => document.getElementById('transferModal').classList.add('hidden'), 3000);
+                    setTimeout(() => document.getElementById('transferModal').classList.add('hidden'), 2000);
                 } else {
                     msg.innerHTML = '<span class="text-red-500">' + (data.error || 'Erreur') + '</span>';
                 }
-            } catch (err) {
-                msg.innerHTML = '<span class="text-red-500">Erreur de connexion au serveur</span>';
-            } finally {
+            })
+            .catch(() => {
+                msg.innerHTML = '<span class="text-red-500">Erreur de connexion</span>';
+            })
+            .finally(() => {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Envoyer le virement';
-            }
+                btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Envoyer';
+            });
         });
 
         // ============================================
@@ -927,24 +791,17 @@
         // ============================================
         function loadTransfers() {
             const list = document.getElementById('transfersList');
-
             apiCall('/api/transfers')
                 .then(data => {
                     if (!data.transfers || data.transfers.length === 0) {
-                        list.innerHTML = `
-                            <div class="empty-state">
-                                <i class="fas fa-exchange-alt"></i>
-                                <p>Aucun virement effectué</p>
-                                <p class="text-xs mt-1">Vos virements apparaîtront ici</p>
-                            </div>
-                        `;
+                        list.innerHTML = '<div class="empty-state"><i class="fas fa-exchange-alt"></i><p>Aucun virement</p></div>';
                         return;
                     }
                     list.innerHTML = data.transfers.map(t => {
                         const statusClass = t.status === 'COMPLETED' ? 'status-active' : t.status === 'REJECTED' ? 'status-rejected' : 'status-pending';
-                        const statusLabel = t.status === 'COMPLETED' ? '✅ Validé' : t.status === 'REJECTED' ? '❌ Rejeté' : '⏳ En attente';
+                        const statusLabel = t.status === 'COMPLETED' ? 'Validé' : t.status === 'REJECTED' ? 'Rejeté' : 'En attente';
                         return `
-                            <div class="transaction-row flex justify-between items-center p-4 border border-gray-100 rounded-xl mb-2">
+                            <div class="flex justify-between items-center p-4 border border-gray-100 rounded-xl mb-2">
                                 <div>
                                     <p class="font-semibold text-dark">${t.amount} €</p>
                                     <p class="text-xs text-gray-500">Bénéficiaire: ${t.beneficiary_name}</p>
@@ -952,93 +809,57 @@
                                 </div>
                                 <div class="text-right">
                                     <span class="${statusClass}">${statusLabel}</span>
-                                    ${t.admin_comment ? `<p class="text-xs text-red-500 mt-1">Motif: ${t.admin_comment}</p>` : ''}
+                                    ${t.admin_comment ? `<p class="text-xs text-red-500">Motif: ${t.admin_comment}</p>` : ''}
                                 </div>
                             </div>
                         `;
                     }).join('');
                 })
-                .catch(err => {
-                    list.innerHTML = '<p class="text-red-500 text-sm">❌ Erreur de chargement</p>';
-                    console.error(err);
+                .catch(() => {
+                    list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
                 });
         }
 
         // ============================================
-        // DÉPÔT - ADRESSES BTC/ETH
+        // DÉPÔT
         // ============================================
         function loadDepositAddresses() {
-            const btcEl = document.getElementById('btcAddress');
-            const ethEl = document.getElementById('ethAddress');
-
             apiCall('/api/admin/deposit-addresses')
                 .then(data => {
-                    if (!data.addresses || data.addresses.length === 0) {
-                        btcEl.textContent = 'Adresse non configurée';
-                        ethEl.textContent = 'Adresse non configurée';
-                        return;
-                    }
+                    if (!data.addresses) return;
                     const btc = data.addresses.find(a => a.currency === 'BTC');
                     const eth = data.addresses.find(a => a.currency === 'ETH');
-                    btcEl.textContent = btc ? btc.address : 'Adresse non configurée';
-                    ethEl.textContent = eth ? eth.address : 'Adresse non configurée';
+                    document.getElementById('btcAddress').textContent = btc ? btc.address : 'Non configurée';
+                    document.getElementById('ethAddress').textContent = eth ? eth.address : 'Non configurée';
                 })
-                .catch(err => {
-                    btcEl.textContent = 'Erreur de chargement';
-                    ethEl.textContent = 'Erreur de chargement';
-                    console.error(err);
+                .catch(() => {
+                    document.getElementById('btcAddress').textContent = 'Erreur';
+                    document.getElementById('ethAddress').textContent = 'Erreur';
                 });
         }
 
-        function copyAddress(type) {
-            const el = type === 'btc' ? document.getElementById('btcAddress') : document.getElementById('ethAddress');
-            const address = el.textContent;
-            if (address && address !== 'Adresse non configurée' && address !== 'Erreur de chargement') {
-                navigator.clipboard.writeText(address);
-                alert('✅ Adresse copiée !');
-            } else {
-                alert('❌ Aucune adresse disponible');
-            }
-        }
-
-        // ============================================
-        // TABS
-        // ============================================
-        document.getElementById('tabBeneficiaries').addEventListener('click', function() {
-            document.getElementById('beneficiariesContent').classList.remove('hidden');
-            document.getElementById('transfersContent').classList.add('hidden');
-            this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
-            document.getElementById('tabTransfers').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
-            loadBeneficiaries();
-        });
-
-        document.getElementById('tabTransfers').addEventListener('click', function() {
-            document.getElementById('transfersContent').classList.remove('hidden');
-            document.getElementById('beneficiariesContent').classList.add('hidden');
-            this.className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition bg-gold text-dark';
-            document.getElementById('tabBeneficiaries').className = 'flex-1 py-3 px-4 rounded-xl text-sm font-medium transition text-gray-500 hover:bg-gray-50';
-            loadTransfers();
-        });
-
-        // ============================================
-        // MODALS
-        // ============================================
-        document.getElementById('openDepositModal').addEventListener('click', function() {
+        document.getElementById('btnDeposit').addEventListener('click', function() {
             document.getElementById('depositModal').classList.remove('hidden');
             loadDepositAddresses();
         });
-
         document.getElementById('closeDepositModal').addEventListener('click', function() {
             document.getElementById('depositModal').classList.add('hidden');
         });
 
+        function copyAddress(type) {
+            const el = type === 'btc' ? document.getElementById('btcAddress') : document.getElementById('ethAddress');
+            if (el.textContent && el.textContent !== 'Non configurée' && el.textContent !== 'Erreur') {
+                navigator.clipboard.writeText(el.textContent);
+                alert('✅ Adresse copiée !');
+            }
+        }
+
+        // ============================================
+        // ESC
+        // ============================================
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                closeModal();
-                document.getElementById('addBeneficiaryModal').classList.add('hidden');
-                document.getElementById('transferModal').classList.add('hidden');
-                document.getElementById('depositModal').classList.add('hidden');
-                document.getElementById('profileModal').classList.add('hidden');
+                document.querySelectorAll('.modal-overlay').forEach(el => el.classList.add('hidden'));
             }
         });
 
