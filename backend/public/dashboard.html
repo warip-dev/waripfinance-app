@@ -1,517 +1,804 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warip Finance - Banque nouvelle génération</title>
-    <!-- Police moderne comme Bunq -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Warip Finance - Tableau de bord</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
     <style>
-        /* --- RESET & BASE --- */
+        /* ============================================
+                   RESET & BASE - STYLE BUNQ
+                   ============================================ */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --bunq-yellow: #ffd600;
+            --bunq-dark: #1a2533;
+            --bunq-blue: #1e2a3a;
+            --bunq-green: #00b8a9;
+            --bunq-green-light: #e8f8f6;
+            --bunq-gray: #7a869a;
+            --bunq-light-gray: #f5f7fa;
+            --bunq-border: #eef1f5;
+            --bunq-white: #ffffff;
+            --bunq-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            --bunq-radius: 24px;
+            --bunq-radius-sm: 16px;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f5f7fa;
-            color: #1e2a3a;
-            line-height: 1.6;
-            padding: 20px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bunq-light-gray);
+            color: var(--bunq-blue);
+            padding: 0 0 100px 0;
+            min-height: 100vh;
+            line-height: 1.5;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* --- HEADER (style Bunq) --- */
+        /* ============================================
+                   HEADER - Style Bunq
+                   ============================================ */
         .header {
+            background: var(--bunq-blue);
+            padding: 20px 20px 30px 20px;
+            border-radius: 0 0 32px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 0 30px 0;
-            border-bottom: 1px solid rgba(30, 42, 58, 0.05);
         }
 
-        .logo {
-            font-size: 28px;
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header-logo span {
+            background: var(--bunq-yellow);
+            color: var(--bunq-blue);
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 20px;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-user .avatar {
+            width: 44px;
+            height: 44px;
+            background: var(--bunq-yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: 700;
-            color: #1e2a3a;
-            letter-spacing: -0.5px;
+            font-size: 18px;
+            color: var(--bunq-blue);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
-        .logo span {
-            color: #ffd600;
-            background: #1e2a3a;
-            padding: 2px 10px;
-            border-radius: 30px;
-            margin-right: 5px;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 15px;
-        }
-
-        .header-actions a {
-            text-decoration: none;
+        .header-user .name {
+            color: white;
             font-weight: 600;
-            font-size: 14px;
-            padding: 10px 20px;
-            border-radius: 40px;
-            transition: all 0.2s;
+            font-size: 15px;
         }
 
-        .btn-outline {
-            color: #1e2a3a;
-            border: 2px solid #e2e6ec;
+        .header-user .sub {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
         }
 
-        .btn-outline:hover {
-            background: #e2e6ec;
-        }
-
-        .btn-primary {
-            background: #ffd600;
-            color: #1e2a3a;
-            border: 2px solid #ffd600;
-        }
-
-        .btn-primary:hover {
-            background: #f5c800;
-            border-color: #f5c800;
-        }
-
-        .btn-green {
-            background: #00b8a9;
-            color: white;
-            border: 2px solid #00b8a9;
-        }
-
-        .btn-green:hover {
-            background: #009e91;
-            border-color: #009e91;
-        }
-
-        /* --- HERO / BIENVENUE (style Bunq) --- */
-        .hero {
-            background: linear-gradient(135deg, #1e2a3a 0%, #2a3a4e 100%);
-            color: white;
-            padding: 40px 50px;
-            border-radius: 40px;
-            margin: 30px 0;
+        .header-badge {
+            margin-top: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: var(--bunq-radius-sm);
+            padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .hero h1 {
-            font-size: 32px;
-            font-weight: 600;
-            letter-spacing: -0.5px;
+        .header-badge .text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
         }
 
-        .hero h1 small {
-            display: block;
-            font-size: 16px;
-            font-weight: 400;
-            color: rgba(255,255,255,0.7);
-            margin-top: 8px;
+        .header-badge .text strong {
+            color: white;
         }
 
-        .hero .badge {
-            background: #ffd600;
-            color: #1e2a3a;
-            padding: 12px 28px;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 14px;
-            box-shadow: 0 8px 20px rgba(255, 214, 0, 0.3);
+        .header-badge .badge-btn {
+            background: var(--bunq-yellow);
+            color: var(--bunq-blue);
+            border: none;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
         }
 
-        /* --- GRILLE DES COMPTES (cartes Bunq) --- */
-        .accounts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .account-card {
+        /* ============================================
+                   SOLDE TOTAL - Carte principale
+                   ============================================ */
+        .total-balance-card {
             background: white;
-            padding: 25px;
-            border-radius: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid rgba(0,0,0,0.02);
+            margin: -20px 16px 20px 16px;
+            padding: 24px 24px 28px 24px;
+            border-radius: var(--bunq-radius);
+            box-shadow: var(--bunq-shadow);
+            border: 1px solid var(--bunq-border);
+            position: relative;
+            z-index: 10;
         }
 
-        .account-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
-        }
-
-        .account-card .label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #7a869a;
+        .total-balance-card .label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--bunq-gray);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .account-card .balance {
-            font-size: 32px;
-            font-weight: 700;
-            margin: 12px 0 5px 0;
-            color: #1e2a3a;
+        .total-balance-card .amount {
+            font-size: 40px;
+            font-weight: 800;
+            color: var(--bunq-blue);
+            margin: 4px 0 8px 0;
+            letter-spacing: -1px;
         }
 
-        .account-card .iban {
-            font-size: 13px;
-            color: #7a869a;
-            font-weight: 500;
+        .total-balance-card .amount .currency {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--bunq-gray);
         }
 
-        .account-card .action-link {
+        .total-balance-card .change {
             display: inline-block;
-            margin-top: 15px;
-            font-weight: 600;
-            font-size: 14px;
-            color: #00b8a9;
-            text-decoration: none;
-        }
-
-        .account-card .action-link:hover {
-            text-decoration: underline;
-        }
-
-        /* Couleurs spécifiques pour les cartes */
-        .card-yellow .balance { color: #ffd600; }
-        .card-green .balance { color: #00b8a9; }
-        .card-blue .balance { color: #1e2a3a; }
-
-        /* --- SECTION CONNEXION (carte blanche style Bunq) --- */
-        .login-section {
-            background: white;
+            background: var(--bunq-green-light);
+            color: var(--bunq-green);
+            padding: 4px 14px;
             border-radius: 40px;
-            padding: 40px 45px;
-            margin: 40px 0;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.04);
-            border: 1px solid rgba(0,0,0,0.02);
-            max-width: 480px;
-        }
-
-        .login-section h2 {
-            font-size: 24px;
+            font-size: 13px;
             font-weight: 600;
-            margin-bottom: 8px;
         }
 
-        .login-section .sub {
-            color: #7a869a;
-            margin-bottom: 30px;
-            font-size: 15px;
+        /* ============================================
+                   COMPTES - Cartes style Bunq
+                   ============================================ */
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            margin: 28px 0 14px 0;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 500;
-            font-size: 14px;
-            margin-bottom: 6px;
-            color: #1e2a3a;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #eef1f5;
-            border-radius: 60px;
-            font-size: 15px;
-            font-family: 'Inter', sans-serif;
-            background: #fafbfc;
-            transition: border 0.2s;
-            outline: none;
-        }
-
-        .form-group input:focus {
-            border-color: #ffd600;
-            background: white;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 16px;
-            background: #ffd600;
-            border: none;
-            border-radius: 60px;
+        .section-title h2 {
+            font-size: 18px;
             font-weight: 700;
-            font-size: 16px;
-            color: #1e2a3a;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 8px;
-            font-family: 'Inter', sans-serif;
+            color: var(--bunq-blue);
         }
 
-        .login-btn:hover {
-            background: #f5c800;
-        }
-
-        .login-footer {
-            margin-top: 25px;
-            text-align: center;
+        .section-title a {
+            color: var(--bunq-green);
             font-size: 14px;
-            color: #7a869a;
-        }
-
-        .login-footer a {
-            color: #1e2a3a;
             font-weight: 600;
             text-decoration: none;
         }
 
-        .login-footer a:hover {
-            text-decoration: underline;
+        .accounts-scroll {
+            display: flex;
+            gap: 14px;
+            padding: 0 16px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 6px;
         }
 
-        /* --- TRANSACTIONS RÉCENTES --- */
-        .transactions {
+        .accounts-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .accounts-scroll::-webkit-scrollbar-track {
+            background: var(--bunq-border);
+            border-radius: 10px;
+        }
+
+        .accounts-scroll::-webkit-scrollbar-thumb {
+            background: var(--bunq-yellow);
+            border-radius: 10px;
+        }
+
+        .account-card {
+            min-width: 200px;
             background: white;
-            border-radius: 30px;
-            padding: 30px 35px;
-            margin: 30px 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
-            border: 1px solid rgba(0,0,0,0.02);
+            border-radius: var(--bunq-radius-sm);
+            padding: 20px 18px;
+            box-shadow: var(--bunq-shadow);
+            border: 1px solid var(--bunq-border);
+            scroll-snap-align: start;
+            flex-shrink: 0;
+            transition: transform 0.2s;
         }
 
-        .transactions h3 {
-            font-size: 20px;
+        .account-card:active {
+            transform: scale(0.97);
+        }
+
+        .account-card .acct-label {
+            font-size: 12px;
             font-weight: 600;
-            margin-bottom: 20px;
+            color: var(--bunq-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .account-card .acct-balance {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--bunq-blue);
+            margin: 6px 0 4px 0;
+        }
+
+        .account-card .acct-iban {
+            font-size: 11px;
+            color: var(--bunq-gray);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .account-card .acct-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* Couleurs des cartes */
+        .card-yellow .acct-balance {
+            color: #e8a800;
+        }
+        .card-green .acct-balance {
+            color: var(--bunq-green);
+        }
+        .card-blue .acct-balance {
+            color: var(--bunq-blue);
+        }
+
+        /* ============================================
+                   ACTIONS RAPIDES (style Bunq)
+                   ============================================ */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 0 16px;
+            margin: 20px 0 28px 0;
+        }
+
+        .quick-action {
+            background: white;
+            border-radius: var(--bunq-radius-sm);
+            padding: 16px 8px;
+            text-align: center;
+            border: 1px solid var(--bunq-border);
+            box-shadow: var(--bunq-shadow);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: var(--bunq-blue);
+        }
+
+        .quick-action:active {
+            transform: scale(0.95);
+            background: var(--bunq-light-gray);
+        }
+
+        .quick-action .icon {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .quick-action .label {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ============================================
+                   TRANSACTIONS RÉCENTES
+                   ============================================ */
+        .transactions-list {
+            background: white;
+            margin: 0 16px;
+            border-radius: var(--bunq-radius);
+            box-shadow: var(--bunq-shadow);
+            border: 1px solid var(--bunq-border);
+            overflow: hidden;
         }
 
         .transaction-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 0;
-            border-bottom: 1px solid #f0f2f6;
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--bunq-border);
+            cursor: pointer;
+            transition: background 0.15s;
         }
 
         .transaction-item:last-child {
             border-bottom: none;
         }
 
-        .trans-detail {
+        .transaction-item:active {
+            background: var(--bunq-light-gray);
+        }
+
+        .trans-left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 14px;
+            min-width: 0;
+            flex: 1;
         }
 
         .trans-icon {
             width: 44px;
             height: 44px;
-            background: #f5f7fa;
             border-radius: 50%;
+            background: var(--bunq-light-gray);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
-            color: #1e2a3a;
+            font-size: 20px;
+            flex-shrink: 0;
         }
 
-        .trans-name {
-            font-weight: 600;
+        .trans-info {
+            min-width: 0;
+            flex: 1;
         }
 
-        .trans-date {
-            font-size: 13px;
-            color: #7a869a;
+        .trans-info .name {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--bunq-blue);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .trans-info .date {
+            font-size: 12px;
+            color: var(--bunq-gray);
         }
 
         .trans-amount {
             font-weight: 700;
+            font-size: 15px;
+            flex-shrink: 0;
+            margin-left: 8px;
         }
 
-        .trans-amount.negative { color: #e74c3c; }
-        .trans-amount.positive { color: #00b8a9; }
+        .trans-amount.negative {
+            color: #e74c3c;
+        }
+        .trans-amount.positive {
+            color: var(--bunq-green);
+        }
 
-        /* --- RESPONSIVE --- */
-        @media (max-width: 768px) {
-            .hero {
-                flex-direction: column;
-                text-align: center;
-                padding: 30px;
+        /* ============================================
+                   NAVIGATION BASSE (comme l'app Bunq)
+                   ============================================ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--bunq-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 env(safe-area-inset-bottom, 10px) 0;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
+            z-index: 200;
+        }
+
+        .bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--bunq-gray);
+            font-size: 10px;
+            font-weight: 600;
+            gap: 2px;
+            padding: 4px 16px;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .bottom-nav a .nav-icon {
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        .bottom-nav a.active {
+            color: var(--bunq-yellow);
+        }
+
+        .bottom-nav a.active::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background: var(--bunq-yellow);
+            border-radius: 10px;
+        }
+
+        .bottom-nav a .badge-nav {
+            position: absolute;
+            top: 0;
+            right: 4px;
+            background: #e74c3c;
+            color: white;
+            font-size: 10px;
+            padding: 1px 7px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        /* ============================================
+                   RESPONSIVE
+                   ============================================ */
+        @media (max-width: 480px) {
+            .total-balance-card .amount {
+                font-size: 32px;
             }
-            .hero .badge {
-                margin-top: 20px;
+            .quick-actions {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
             }
-            .login-section {
-                padding: 30px 25px;
+            .quick-action {
+                padding: 12px 4px;
+            }
+            .quick-action .icon {
+                font-size: 22px;
+            }
+            .account-card {
+                min-width: 160px;
+                padding: 16px 14px;
+            }
+            .account-card .acct-balance {
+                font-size: 20px;
+            }
+            .header-logo {
+                font-size: 18px;
+            }
+            .header-user .name {
+                font-size: 13px;
+            }
+            .bottom-nav a {
+                padding: 4px 8px;
+                font-size: 9px;
+            }
+            .bottom-nav a .nav-icon {
+                font-size: 20px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            body {
+                max-width: 480px;
+                margin: 0 auto;
+                background: #e8ecf2;
             }
             .header {
-                flex-direction: column;
-                gap: 15px;
-                align-items: stretch;
-                text-align: center;
+                border-radius: 0 0 32px 32px;
             }
-            .header-actions {
-                justify-content: center;
-                flex-wrap: wrap;
+            .bottom-nav {
+                max-width: 480px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 20px 20px 0 0;
             }
+        }
+
+        /* Animation de chargement */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeUp 0.4s ease-out both;
+        }
+        .animate-in:nth-child(2) {
+            animation-delay: 0.05s;
+        }
+        .animate-in:nth-child(3) {
+            animation-delay: 0.1s;
+        }
+        .animate-in:nth-child(4) {
+            animation-delay: 0.15s;
+        }
+        .animate-in:nth-child(5) {
+            animation-delay: 0.2s;
+        }
+        .animate-in:nth-child(6) {
+            animation-delay: 0.25s;
         }
     </style>
 </head>
 <body>
-    <div class="container">
 
-        <!-- HEADER -->
-        <header class="header">
-            <div class="logo"><span>W</span>arip Finance</div>
-            <div class="header-actions">
-                <a href="#" class="btn-outline">FR</a>
-                <a href="#" class="btn-outline">Aide</a>
-                <a href="#" class="btn-primary">Ouvrir un compte</a>
+    <!-- ==========================================
+    HEADER - Style Bunq
+    ========================================== -->
+    <header class="header">
+        <div class="header-top">
+            <div class="header-logo">
+                <span>W</span>arip
             </div>
-        </header>
-
-        <!-- HERO BUNQ STYLE -->
-        <div class="hero">
-            <div>
-                <h1>
-                    Bienvenue chez Warip
-                    <small>La banque qui vous fait gagner du temps et de l'argent.</small>
-                </h1>
-            </div>
-            <div class="badge">
-                ⚡ 2,4% d'intérêts sur votre compte
+            <div class="header-user">
+                <div>
+                    <div class="name">Bonjour, Thomas</div>
+                    <div class="sub">Compte personnel</div>
+                </div>
+                <div class="avatar">T</div>
             </div>
         </div>
-
-        <!-- COMPTES (cartes) -->
-        <div class="accounts-grid">
-            <div class="account-card card-yellow">
-                <div class="label">💳 Compte Courant</div>
-                <div class="balance">€ 4.582,40</div>
-                <div class="iban">NL50 WARIP 1234 5678 90</div>
-                <a href="#" class="action-link">Voir les transactions →</a>
+        <div class="header-badge">
+            <div class="text">
+                🎯 <strong>+2,4%</strong> d'intérêts sur ton épargne
             </div>
-            <div class="account-card card-green">
-                <div class="label">💰 Compte Épargne</div>
-                <div class="balance">€ 12.300,00</div>
-                <div class="iban">NL50 WARIP 9876 5432 10</div>
-                <a href="#" class="action-link">Voir les transactions →</a>
-            </div>
-            <div class="account-card card-blue">
-                <div class="label">🌟 Compte Commun</div>
-                <div class="balance">€ 840,15</div>
-                <div class="iban">NL50 WARIP 1122 3344 55</div>
-                <a href="#" class="action-link">Voir les transactions →</a>
-            </div>
+            <button class="badge-btn">En savoir plus</button>
         </div>
+    </header>
 
-        <!-- ZONE CONNEXION (comme une carte Bunq) -->
-        <div class="login-section">
-            <h2>Connexion sécurisée</h2>
-            <p class="sub">Accédez à votre espace Warip en un clic.</p>
-
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="email">Adresse email</label>
-                    <input type="email" id="email" placeholder="vous@exemple.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Mot de passe</label>
-                    <input type="password" id="password" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="login-btn">Se connecter</button>
-            </form>
-
-            <div class="login-footer">
-                Pas encore de compte ? <a href="#">Créer un compte gratuitement</a><br>
-                <span style="font-size:13px; color:#aab3c5;">ou</span> <a href="#" style="font-weight:400;">Mot de passe oublié ?</a>
-            </div>
+    <!-- ==========================================
+    SOLDE TOTAL
+    ========================================== -->
+    <div class="total-balance-card animate-in">
+        <div class="label">💰 Solde total</div>
+        <div class="amount">
+            <span class="currency">€</span> 17.722,55
         </div>
-
-        <!-- TRANSACTIONS RÉCENTES -->
-        <div class="transactions">
-            <h3>Dernières opérations</h3>
-
-            <div class="transaction-item">
-                <div class="trans-detail">
-                    <div class="trans-icon">🍕</div>
-                    <div>
-                        <div class="trans-name">Pizza Roma</div>
-                        <div class="trans-date">Aujourd'hui, 12:34</div>
-                    </div>
-                </div>
-                <div class="trans-amount negative">- € 24,50</div>
-            </div>
-
-            <div class="transaction-item">
-                <div class="trans-detail">
-                    <div class="trans-icon">💼</div>
-                    <div>
-                        <div class="trans-name">Virement reçu - Dupont SAS</div>
-                        <div class="trans-date">Hier, 09:15</div>
-                    </div>
-                </div>
-                <div class="trans-amount positive">+ € 1.200,00</div>
-            </div>
-
-            <div class="transaction-item">
-                <div class="trans-detail">
-                    <div class="trans-icon">🛒</div>
-                    <div>
-                        <div class="trans-name">Carrefour Market</div>
-                        <div class="trans-date">Hier, 18:20</div>
-                    </div>
-                </div>
-                <div class="trans-amount negative">- € 68,30</div>
-            </div>
-
-            <div class="transaction-item">
-                <div class="trans-detail">
-                    <div class="trans-icon">📈</div>
-                    <div>
-                        <div class="trans-name">Intérêts créditeurs</div>
-                        <div class="trans-date">01/06/2026</div>
-                    </div>
-                </div>
-                <div class="trans-amount positive">+ € 8,42</div>
-            </div>
-        </div>
-
-        <!-- PETIT FOOTER STYLE BUNQ -->
-        <div style="text-align:center; padding: 40px 0 20px; color: #7a869a; font-size:14px; border-top:1px solid #eef1f5; margin-top:20px;">
-            Warip Finance est une marque de la banque nouvelle génération. © 2026
-        </div>
-
+        <span class="change">↑ +2,8% ce mois</span>
     </div>
 
-    <script>
-        // Petite interaction pour la connexion (style Bunq : message de bienvenue)
-        function handleLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+    <!-- ==========================================
+    COMPTES (scroll horizontal style Bunq)
+    ========================================== -->
+    <div class="section-title">
+        <h2>🏦 Mes comptes</h2>
+        <a href="#">Voir tout →</a>
+    </div>
 
-            if (email && password) {
-                alert('🚀 Connexion réussie ! Bienvenue chez Warip Finance, ' + email);
-                // Ici tu pourrais rediriger vers un vrai tableau de bord
-                // window.location.href = 'dashboard.html';
-            } else {
-                alert('Veuillez remplir tous les champs.');
-            }
-        }
+    <div class="accounts-scroll">
+        <div class="account-card card-yellow animate-in">
+            <span class="acct-icon">💳</span>
+            <div class="acct-label">Compte Courant</div>
+            <div class="acct-balance">€ 4.582,40</div>
+            <div class="acct-iban">NL50 WARIP 1234 5678 90</div>
+        </div>
+
+        <div class="account-card card-green animate-in">
+            <span class="acct-icon">💰</span>
+            <div class="acct-label">Compte Épargne</div>
+            <div class="acct-balance">€ 12.300,00</div>
+            <div class="acct-iban">NL50 WARIP 9876 5432 10</div>
+        </div>
+
+        <div class="account-card card-blue animate-in">
+            <span class="acct-icon">👥</span>
+            <div class="acct-label">Compte Commun</div>
+            <div class="acct-balance">€ 840,15</div>
+            <div class="acct-iban">NL50 WARIP 1122 3344 55</div>
+        </div>
+
+        <div class="account-card card-blue animate-in">
+            <span class="acct-icon">🌍</span>
+            <div class="acct-label">Compte Devises</div>
+            <div class="acct-balance">$ 2.150,00</div>
+            <div class="acct-iban">NL50 WARIP 5566 7788 99</div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+    ACTIONS RAPIDES
+    ========================================== -->
+    <div class="quick-actions">
+        <a href="deposit.html" class="quick-action animate-in">
+            <span class="icon">💸</span>
+            <span class="label">Déposer</span>
+        </a>
+        <a href="#" class="quick-action animate-in">
+            <span class="icon">↗️</span>
+            <span class="label">Virement</span>
+        </a>
+        <a href="#" class="quick-action animate-in">
+            <span class="icon">📊</span>
+            <span class="label">Analyser</span>
+        </a>
+        <a href="#" class="quick-action animate-in">
+            <span class="icon">⚡</span>
+            <span class="label">Payer</span>
+        </a>
+    </div>
+
+    <!-- ==========================================
+    TRANSACTIONS RÉCENTES
+    ========================================== -->
+    <div class="section-title">
+        <h2>📋 Dernières opérations</h2>
+        <a href="#">Voir tout →</a>
+    </div>
+
+    <div class="transactions-list animate-in">
+        <!-- Transaction 1 -->
+        <div class="transaction-item">
+            <div class="trans-left">
+                <div class="trans-icon">🍕</div>
+                <div class="trans-info">
+                    <div class="name">Pizza Roma</div>
+                    <div class="date">Aujourd'hui, 12:34</div>
+                </div>
+            </div>
+            <div class="trans-amount negative">-€24,50</div>
+        </div>
+
+        <!-- Transaction 2 -->
+        <div class="transaction-item">
+            <div class="trans-left">
+                <div class="trans-icon">💼</div>
+                <div class="trans-info">
+                    <div class="name">Virement reçu - Dupont SAS</div>
+                    <div class="date">Hier, 09:15</div>
+                </div>
+            </div>
+            <div class="trans-amount positive">+€1.200,00</div>
+        </div>
+
+        <!-- Transaction 3 -->
+        <div class="transaction-item">
+            <div class="trans-left">
+                <div class="trans-icon">🛒</div>
+                <div class="trans-info">
+                    <div class="name">Carrefour Market</div>
+                    <div class="date">Hier, 18:20</div>
+                </div>
+            </div>
+            <div class="trans-amount negative">-€68,30</div>
+        </div>
+
+        <!-- Transaction 4 -->
+        <div class="transaction-item">
+            <div class="trans-left">
+                <div class="trans-icon">📈</div>
+                <div class="trans-info">
+                    <div class="name">Intérêts créditeurs</div>
+                    <div class="date">01/06/2026</div>
+                </div>
+            </div>
+            <div class="trans-amount positive">+€8,42</div>
+        </div>
+
+        <!-- Transaction 5 -->
+        <div class="transaction-item">
+            <div class="trans-left">
+                <div class="trans-icon">🏷️</div>
+                <div class="trans-info">
+                    <div class="name">Abonnement Netflix</div>
+                    <div class="date">31/05/2026</div>
+                </div>
+            </div>
+            <div class="trans-amount negative">-€17,99</div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+    NAVIGATION BASSE (comme l'app Bunq)
+    ========================================== -->
+    <nav class="bottom-nav">
+        <a href="#" class="active">
+            <span class="nav-icon">🏠</span>
+            Accueil
+        </a>
+        <a href="#">
+            <span class="nav-icon">💳</span>
+            Cartes
+            <span class="badge-nav">2</span>
+        </a>
+        <a href="#">
+            <span class="nav-icon">↗️</span>
+            Virements
+        </a>
+        <a href="#">
+            <span class="nav-icon">📊</span>
+            Stats
+        </a>
+        <a href="#">
+            <span class="nav-icon">👤</span>
+            Profil
+        </a>
+    </nav>
+
+    <!-- ==========================================
+    SCRIPT - Interactions
+    ========================================== -->
+    <script>
+        // Animation des cartes au scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.animate-in').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(el);
+            });
+        });
+
+        // Clic sur les transactions
+        document.querySelectorAll('.transaction-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const name = this.querySelector('.name')?.textContent || 'Transaction';
+                alert('📋 Détail de : ' + name + '\n(Page en construction)');
+            });
+        });
+
+        // Clic sur les comptes
+        document.querySelectorAll('.account-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const label = this.querySelector('.acct-label')?.textContent || 'Compte';
+                alert('🏦 Détail du ' + label + '\n(Page en construction)');
+            });
+        });
+
+        // Notification de bienvenue
+        console.log('🏦 Warip Finance - Style Bunq chargé avec succès !');
+        console.log('💡 Clique sur un compte ou une transaction pour voir l\'interaction.');
     </script>
 
 </body>
