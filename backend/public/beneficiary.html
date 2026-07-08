@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Bénéficiaires - Warip Finance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f0f2f5; }
+        .gold { color: #e9b64a; }
+        .bg-gold { background: #e9b64a; }
+        .text-dark { color: #1a1a2e; }
+        .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 12px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 14px; transition: all 0.3s; display: inline-block; text-align: center; text-decoration: none; }
+        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.3); }
+        .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+        .beneficiary-card { transition: all 0.3s ease; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 8px; }
+        .beneficiary-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.06); }
+        .status-pending { background: #fef9c3; color: #854d0e; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-active { background: #dcfce7; color: #166534; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-rejected { background: #fee2e2; color: #991b1b; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .empty-state { color: #9ca3af; text-align: center; padding: 30px 20px; }
+        .empty-state i { font-size: 40px; color: #d1d5db; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+
+    <header class="gradient-header fixed w-full z-50 top-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="text-white font-bold text-xl"><span class="gold">Warip</span> Finance</a>
+                <a href="/" class="text-white hover:text-gray-300"><i class="fas fa-arrow-left mr-2"></i>Retour</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="pt-24 pb-8 px-4 md:px-8 max-w-3xl mx-auto">
+        <div class="bg-white rounded-2xl p-8 card-shadow">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-dark">👥 Mes bénéficiaires</h1>
+                    <p class="text-gray-500 text-sm">Gérez vos bénéficiaires de virement</p>
+                </div>
+                <a href="/add-beneficiary.html" class="btn-primary">
+                    <i class="fas fa-plus mr-2"></i>Ajouter
+                </a>
+            </div>
+
+            <div id="beneficiariesList">
+                <div class="empty-state"><i class="fas fa-user-plus"></i><p>Aucun bénéficiaire enregistré</p></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) { window.location.href = '/'; }
+
+        function loadBeneficiaries() {
+            const list = document.getElementById('beneficiariesList');
+
+            fetch('/api/beneficiaries', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.beneficiaries || data.beneficiaries.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><i class="fas fa-user-plus"></i><p>Aucun bénéficiaire enregistré</p></div>';
+                    return;
+                }
+                list.innerHTML = data.beneficiaries.map(b => {
+                    const statusClass = b.status === 'ACTIVE' ? 'status-active' : b.status === 'REJECTED' ? 'status-rejected' : 'status-pending';
+                    const statusLabel = b.status === 'ACTIVE' ? '✅ Validé' : b.status === 'REJECTED' ? '❌ Rejeté' : '⏳ En attente (24h)';
+                    return `
+                        <div class="beneficiary-card flex justify-between items-center">
+                            <div>
+                                <p class="font-semibold text-dark">${b.name}</p>
+                                <p class="text-xs text-gray-400 font-mono">${b.iban}</p>
+                                <span class="${statusClass}">${statusLabel}</span>
+                                ${b.rejection_reason ? `<p class="text-xs text-red-500 mt-1">Motif: ${b.rejection_reason}</p>` : ''}
+                            </div>
+                            <div>
+                                ${b.status === 'ACTIVE' ? `
+                                    <a href="/transfer.html?beneficiary=${b.id}" class="btn-primary px-3 py-1 text-xs">
+                                        <i class="fas fa-paper-plane mr-1"></i>Virement
+                                    </a>
+                                ` : ''}
+                                ${b.status === 'PENDING' ? '<span class="text-xs text-yellow-600">En attente de validation</span>' : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            })
+            .catch(() => {
+                list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>';
+            });
+        }
+
+        loadBeneficiaries();
+    </script>
+</body>
+</html>

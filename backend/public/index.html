@@ -13,72 +13,35 @@
         .bg-gold { background: #e9b64a; }
         .text-dark { color: #1a1a2e; }
         .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
-        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 12px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 14px; transition: all 0.3s; display: inline-block; text-align: center; text-decoration: none; }
         .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.3); }
-        .btn-outline { border: 2px solid #e9b64a; color: #e9b64a; background: transparent; font-weight: 600; padding: 8px 20px; border-radius: 50px; transition: all 0.3s; cursor: pointer; font-size: 13px; }
-        .btn-outline:hover { background: #e9b64a; color: #1a1a2e; transform: translateY(-2px); }
-        .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
-        .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
-        .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
         .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
         .balance-card { background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%); }
         .hidden { display: none !important; }
-        .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #e9b64a, #d4a03a); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: #1a1a2e; }
-        .nav-item { padding: 10px 16px; border-radius: 10px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #6b7280; }
-        .nav-item:hover { background: #f3f4f6; color: #1a1a2e; }
-        .nav-item.active { background: #e9b64a20; color: #e9b64a; font-weight: 600; }
-        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
-        .info-label { color: #6b7280; font-size: 14px; }
-        .info-value { color: #1a1a2e; font-weight: 500; font-size: 14px; }
-        .tab-btn { flex: 1; padding: 12px 16px; border-radius: 12px; text-align: center; font-size: 14px; font-weight: 500; transition: all 0.3s; cursor: pointer; border: none; background: transparent; color: #6b7280; }
-        .tab-btn:hover { background: #f3f4f6; }
-        .tab-btn.active { background: #e9b64a; color: #1a1a2e; font-weight: 600; }
-        .copy-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.3s; }
-        .copy-btn:hover { background: rgba(255,255,255,0.15); }
-        .beneficiary-card { transition: all 0.3s ease; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 8px; }
-        .beneficiary-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.06); }
-        .status-pending { background: #fef9c3; color: #854d0e; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .status-active { background: #dcfce7; color: #166534; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .status-rejected { background: #fee2e2; color: #991b1b; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .empty-state { color: #9ca3af; text-align: center; padding: 30px 20px; }
-        .empty-state i { font-size: 40px; color: #d1d5db; margin-bottom: 12px; }
-        .deposit-address-box { background: #f8fafc; border: 1px dashed #d1d5db; border-radius: 12px; padding: 16px; transition: all 0.3s; }
-        .deposit-address-box:hover { border-color: #e9b64a; background: #fefcf5; }
     </style>
 </head>
 <body>
 
-    <!-- HEADER -->
     <header class="gradient-header fixed w-full z-50 top-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <a href="/" class="text-white font-bold text-xl">
-                    <span class="gold">Warip</span> Finance
-                </a>
+                <a href="/" class="text-white font-bold text-xl"><span class="gold">Warip</span> Finance</a>
                 <div class="flex items-center gap-4">
-                    <button id="openLoginModal" class="btn-primary px-6 py-2 text-sm">
-                        <i class="fas fa-user mr-2"></i>Se connecter
-                    </button>
+                    <button id="openLoginModal" class="btn-primary px-6 py-2 text-sm"><i class="fas fa-user mr-2"></i>Se connecter</button>
                     <div id="userInfo" class="hidden flex items-center gap-3">
-                        <button id="openProfileBtn" class="btn-outline text-sm flex items-center gap-2" style="border-color: rgba(255,255,255,0.3); color: white;">
-                            <i class="fas fa-user-circle"></i> Mon profil
-                        </button>
+                        <a href="/profile.html" class="btn-primary px-4 py-2 text-sm" style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3);">
+                            <i class="fas fa-user-circle mr-2"></i>Mon profil
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- ========================================== -->
-    <!-- SECTION PUBLIQUE -->
-    <!-- ========================================== -->
     <div id="publicSection" class="pt-20">
-        <div id="authModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl max-w-md w-full p-8 relative card-shadow">
-                <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
-                    <i class="fas fa-times"></i>
-                </button>
-                <!-- LOGIN -->
+        <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl max-w-md w-full p-8 relative">
+                <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"><i class="fas fa-times"></i></button>
                 <div id="loginForm">
                     <h2 class="text-2xl font-bold text-dark mb-2">Connexion</h2>
                     <div id="loginError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
@@ -90,7 +53,6 @@
                     </form>
                     <p class="text-center text-gray-500 text-sm mt-4">Pas encore de compte ? <button id="showRegister" class="text-gold font-semibold hover:underline">Créer un compte</button></p>
                 </div>
-                <!-- REGISTER -->
                 <div id="registerForm" class="hidden">
                     <h2 class="text-2xl font-bold text-dark mb-2">Créer un compte</h2>
                     <div id="registerError" class="hidden bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4"></div>
@@ -104,7 +66,7 @@
                 </div>
             </div>
         </div>
-        <!-- HERO -->
+
         <section class="pt-28 pb-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid md:grid-cols-2 gap-12 items-center">
@@ -120,14 +82,11 @@
         <footer class="bg-dark text-gray-400 py-12">...</footer>
     </div>
 
-    <!-- ========================================== -->
-    <!-- SECTION DASHBOARD (connecté) -->
-    <!-- ========================================== -->
     <div id="dashboardSection" class="hidden pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-6">
             <div><h1 class="text-2xl font-bold text-dark">Bonjour <span id="userFirstName" class="gold">Client</span></h1><p class="text-gray-500 text-sm">Bienvenue sur votre espace client</p></div>
         </div>
-        <!-- SOLDE -->
+
         <div class="balance-card rounded-3xl p-6 md:p-8 text-white mb-8 card-shadow">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
@@ -139,137 +98,176 @@
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-3">
-                    <button id="btnDeposit" class="btn-primary bg-white text-dark hover:bg-gray-100"><i class="fas fa-arrow-down mr-2"></i>Déposer</button>
-                    <button id="btnAddBeneficiary" class="btn-outline border-white text-white hover:bg-white hover:text-dark"><i class="fas fa-user-plus mr-2"></i>Bénéficiaire</button>
+                    <a href="/deposit.html" class="btn-primary bg-white text-dark hover:bg-gray-100"><i class="fas fa-arrow-down mr-2"></i>Déposer</a>
+                    <a href="/beneficiary.html" class="btn-primary bg-white text-dark hover:bg-gray-100"><i class="fas fa-user-plus mr-2"></i>Bénéficiaire</a>
                 </div>
             </div>
         </div>
-        <!-- TABS -->
-        <div class="flex gap-2 mb-6 bg-white rounded-2xl p-1 card-shadow">
-            <button class="tab-btn active" data-tab="beneficiaries"><i class="fas fa-users mr-2"></i>Mes bénéficiaires</button>
-            <button class="tab-btn" data-tab="transfers"><i class="fas fa-history mr-2"></i>Mes virements</button>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <a href="/deposit.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition">
+                <div class="text-3xl gold mb-2"><i class="fas fa-arrow-down"></i></div>
+                <p class="font-semibold text-dark">Déposer</p>
+            </a>
+            <a href="/beneficiary.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition">
+                <div class="text-3xl gold mb-2"><i class="fas fa-users"></i></div>
+                <p class="font-semibold text-dark">Bénéficiaires</p>
+            </a>
+            <a href="/transfer.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition">
+                <div class="text-3xl gold mb-2"><i class="fas fa-paper-plane"></i></div>
+                <p class="font-semibold text-dark">Virement</p>
+            </a>
+            <a href="/profile.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition">
+                <div class="text-3xl gold mb-2"><i class="fas fa-user-circle"></i></div>
+                <p class="font-semibold text-dark">Mon profil</p>
+            </a>
         </div>
-        <!-- BÉNÉFICIAIRES -->
-        <div id="beneficiariesContent">
-            <div class="bg-white rounded-2xl p-6 card-shadow">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-semibold text-dark">Mes bénéficiaires</h3>
-                    <button id="btnAddBeneficiary2" class="btn-primary px-4 py-2 text-sm"><i class="fas fa-plus mr-1"></i>Ajouter</button>
-                </div>
-                <div id="beneficiariesList"><div class="empty-state"><i class="fas fa-user-plus"></i><p>Aucun bénéficiaire enregistré</p></div></div>
+
+        <div class="bg-white rounded-2xl p-6 card-shadow">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold text-dark">Mes bénéficiaires</h3>
+                <a href="/beneficiary.html" class="text-gold text-sm hover:underline">Voir tout</a>
             </div>
-        </div>
-        <!-- VIREMENTS -->
-        <div id="transfersContent" class="hidden">
-            <div class="bg-white rounded-2xl p-6 card-shadow">
-                <h3 class="font-semibold text-dark mb-4">Historique des virements</h3>
-                <div id="transfersList"><div class="empty-state"><i class="fas fa-exchange-alt"></i><p>Aucun virement effectué</p></div></div>
-            </div>
+            <div id="beneficiariesList"><p class="text-gray-400 text-sm">Chargement...</p></div>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL PROFIL -->
-    <!-- ========================================== -->
-    <div id="profileModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-2xl w-full p-8 relative card-shadow max-h-[90vh] overflow-y-auto">
-            <button id="closeProfileModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"><i class="fas fa-times"></i></button>
-            <div class="flex items-center gap-6 mb-6">
-                <div class="profile-avatar" id="profileAvatar">U</div>
-                <div>
-                    <h2 class="text-2xl font-bold text-dark" id="profileFullName">Client</h2>
-                    <p class="text-gray-500 text-sm" id="profileEmail">email@exemple.com</p>
-                    <span class="status-active text-xs" id="profileStatus">Actif</span>
-                </div>
-            </div>
-            <div class="flex flex-wrap border-b border-gray-200 mb-6">
-                <button class="nav-item active" data-tab="info"><i class="fas fa-info-circle"></i> Informations</button>
-                <button class="nav-item" data-tab="support"><i class="fas fa-headset"></i> Support</button>
-                <button class="nav-item" data-tab="logout" id="profileLogoutBtn"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
-            </div>
-            <div id="profileInfo" class="space-y-2">
-                <div class="info-row"><span class="info-label"><i class="fas fa-envelope gold mr-2"></i>Email</span><span class="info-value" id="pEmail">-</span></div>
-                <div class="info-row"><span class="info-label"><i class="fas fa-user gold mr-2"></i>Prénom</span><span class="info-value" id="pFirstName">-</span></div>
-                <div class="info-row"><span class="info-label"><i class="fas fa-user gold mr-2"></i>Nom</span><span class="info-value" id="pLastName">-</span></div>
-                <div class="info-row"><span class="info-label"><i class="fas fa-phone gold mr-2"></i>Téléphone</span><span class="info-value" id="pPhone">-</span></div>
-                <div class="info-row"><span class="info-label"><i class="fas fa-map-marker-alt gold mr-2"></i>Pays</span><span class="info-value" id="pCountry">-</span></div>
-                <div class="info-row"><span class="info-label"><i class="fas fa-city gold mr-2"></i>Ville</span><span class="info-value" id="pCity">-</span></div>
-                <div class="info-row"><span class="info-label"><i class="fas fa-mail-bulk gold mr-2"></i>Code postal</span><span class="info-value" id="pPostalCode">-</span></div>
-                <div class="info-row"><span class="info-label"><i class="fas fa-road gold mr-2"></i>Rue</span><span class="info-value" id="pStreet">-</span></div>
-                <div class="info-row"><span class="info-label"><i class="fas fa-hashtag gold mr-2"></i>Numéro de rue</span><span class="info-value" id="pStreetNumber">-</span></div>
-                <div class="info-row"><span class="info-label"><i class="fas fa-briefcase gold mr-2"></i>Profession</span><span class="info-value" id="pProfession">-</span></div>
-                <div class="info-row"><span class="info-label"><i class="fas fa-venus-mars gold mr-2"></i>Sexe</span><span class="info-value" id="pGender">-</span></div>
-                <div class="info-row"><span class="info-label"><i class="fas fa-heart gold mr-2"></i>Situation matrimoniale</span><span class="info-value" id="pMaritalStatus">-</span></div>
-                <div class="info-row"><span class="info-label"><i class="fas fa-circle gold mr-2"></i>Statut</span><span class="info-value" id="pStatus">-</span></div>
-            </div>
-            <div id="profileSupport" class="hidden">
-                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-                    <h3 class="font-semibold text-dark"><i class="fas fa-headset gold mr-2"></i>Service client</h3>
-                    <p class="text-gray-600 text-sm mb-4">Notre équipe est à votre disposition.</p>
-                    <a href="mailto:support@waripfinance.com" class="btn-primary inline-block text-sm"><i class="fas fa-envelope mr-2"></i>Contacter le support</a>
-                    <p class="text-xs text-gray-400 mt-3">Réponse sous 24h</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-500 mt-4">
-                    <p><i class="fas fa-phone gold mr-2"></i>+33 1 23 45 67 89</p>
-                    <p><i class="fas fa-clock gold mr-2"></i>Lun - Ven : 9h - 18h</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script>
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-    <!-- ========================================== -->
-    <!-- MODAL AJOUT BÉNÉFICIAIRE -->
-    <!-- ========================================== -->
-    <div id="addBeneficiaryModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-8 relative card-shadow">
-            <button id="closeAddBeneficiary" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"><i class="fas fa-times"></i></button>
-            <h2 class="text-2xl font-bold text-dark mb-2">Ajouter un bénéficiaire</h2>
-            <p class="text-gray-500 text-sm mb-6">Le bénéficiaire sera soumis à validation (24h).</p>
-            <div id="beneficiaryMessage" class="text-sm mb-4"></div>
-            <form id="addBeneficiaryForm">
-                <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">Nom</label><input type="text" id="beneficiaryName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div>
-                <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">IBAN</label><input type="text" id="beneficiaryIban" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div>
-                <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">BIC (optionnel)</label><input type="text" id="beneficiaryBic" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus"></div>
-                <button type="submit" id="addBeneficiaryBtn" class="w-full btn-primary py-3 text-lg"><i class="fas fa-save mr-2"></i>Enregistrer</button>
-            </form>
-        </div>
-    </div>
+        function showPublic() {
+            document.getElementById('publicSection').classList.remove('hidden');
+            document.getElementById('dashboardSection').classList.add('hidden');
+            document.getElementById('openLoginModal').classList.remove('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+        }
 
-    <!-- ========================================== -->
-    <!-- MODAL VIREMENT -->
-    <!-- ========================================== -->
-    <div id="transferModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-8 relative card-shadow">
-            <button id="closeTransferModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"><i class="fas fa-times"></i></button>
-            <h2 class="text-2xl font-bold text-dark mb-2">Virement SEPA</h2>
-            <div id="transferMessage" class="text-sm mb-4"></div>
-            <form id="transferForm">
-                <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">Bénéficiaire</label><select id="transferBeneficiary" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required><option value="">-- Sélectionnez --</option></select></div>
-                <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">Montant (EUR)</label><input type="number" id="transferAmount" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required step="0.01" min="0.01"></div>
-                <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">Référence (optionnel)</label><input type="text" id="transferRef" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus"></div>
-                <button type="submit" id="transferBtn" class="w-full btn-primary py-3 text-lg"><i class="fas fa-paper-plane mr-2"></i>Envoyer</button>
-            </form>
-        </div>
-    </div>
+        function showDashboard() {
+            document.getElementById('publicSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('openLoginModal').classList.add('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('userFirstName').textContent = user.first_name || 'Client';
+            document.getElementById('userBalance').textContent = (user.balance || 0).toFixed(2) + ' €';
+            loadBeneficiaries();
+        }
 
-    <!-- ========================================== -->
-    <!-- MODAL DÉPÔT -->
-    <!-- ========================================== -->
-    <div id="depositModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-8 relative card-shadow">
-            <button id="closeDepositModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"><i class="fas fa-times"></i></button>
-            <h2 class="text-2xl font-bold text-dark mb-2">Déposer des cryptos</h2>
-            <div id="depositAddresses">
-                <div class="deposit-address-box mb-3"><div class="flex justify-between items-center"><span class="text-2xl">₿</span><button onclick="copyAddress('btc')" class="copy-btn"><i class="fas fa-copy mr-1"></i>Copier</button></div><p id="btcAddress" class="text-gray-600 text-sm font-mono mt-2 bg-gray-50 p-2 rounded-lg">Chargement...</p><p class="text-xs text-gray-400">Réseau Bitcoin</p></div>
-                <div class="deposit-address-box"><div class="flex justify-between items-center"><span class="text-2xl">⟠</span><button onclick="copyAddress('eth')" class="copy-btn"><i class="fas fa-copy mr-1"></i>Copier</button></div><p id="ethAddress" class="text-gray-600 text-sm font-mono mt-2 bg-gray-50 p-2 rounded-lg">Chargement...</p><p class="text-xs text-gray-400">Réseau ERC20</p></div>
-            </div>
-            <div class="mt-4 p-3 bg-yellow-50 rounded-xl text-xs text-yellow-700"><i class="fas fa-exclamation-triangle mr-2"></i>Envoyez uniquement les cryptos correspondantes.</div>
-        </div>
-    </div>
+        if (token && user.email) { showDashboard(); } else { showPublic(); }
 
-    <!-- ========================================== -->
-    <!-- DASHBOARD.JS (toutes les actions) -->
-    <!-- ========================================== -->
-    <script src="/dashboard.js"></script>
+        const modal = document.getElementById('authModal');
+        document.getElementById('openLoginModal').addEventListener('click', () => modal.classList.remove('hidden'));
+        document.getElementById('heroOpenRegister').addEventListener('click', () => {
+            modal.classList.remove('hidden');
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        });
+        document.getElementById('closeModal').addEventListener('click', () => modal.classList.add('hidden'));
+
+        document.getElementById('showRegister').addEventListener('click', () => {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        });
+        document.getElementById('showLogin').addEventListener('click', () => {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+        });
+
+        document.getElementById('loginFormSubmit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorEl = document.getElementById('loginError');
+            errorEl.classList.add('hidden');
+
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.user) {
+                    errorEl.textContent = data.error || 'Email ou mot de passe incorrect';
+                    errorEl.classList.remove('hidden');
+                    return;
+                }
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                if (data.user.role === 'ADMIN') { window.location.href = '/admin.html'; }
+                else if (data.user.status === 'PENDING') { window.location.href = '/pending.html'; }
+                else { window.location.reload(); }
+            })
+            .catch(() => {
+                errorEl.textContent = 'Erreur de connexion au serveur';
+                errorEl.classList.remove('hidden');
+            });
+        });
+
+        document.getElementById('registerFormSubmit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const firstName = document.getElementById('regFirstName').value;
+            const lastName = document.getElementById('regLastName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const errorEl = document.getElementById('registerError');
+            errorEl.classList.add('hidden');
+
+            if (password.length < 8) {
+                errorEl.textContent = 'Le mot de passe doit contenir au moins 8 caractères';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ first_name: firstName, last_name: lastName, email, password, country: 'FR' })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) { window.location.href = '/pending.html'; }
+                else {
+                    errorEl.textContent = data.error || 'Erreur';
+                    errorEl.classList.remove('hidden');
+                }
+            })
+            .catch(() => {
+                errorEl.textContent = 'Erreur de connexion au serveur';
+                errorEl.classList.remove('hidden');
+            });
+        });
+
+        function apiCall(url, options = {}) {
+            const token = localStorage.getItem('token');
+            return fetch(url, {
+                ...options,
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', ...(options.headers || {}) }
+            }).then(res => res.json());
+        }
+
+        function loadBeneficiaries() {
+            const list = document.getElementById('beneficiariesList');
+            apiCall('/api/beneficiaries')
+                .then(data => {
+                    if (!data.beneficiaries || data.beneficiaries.length === 0) {
+                        list.innerHTML = '<p class="text-gray-400 text-sm">Aucun bénéficiaire enregistré</p>';
+                        return;
+                    }
+                    list.innerHTML = data.beneficiaries.slice(0, 3).map(b => `
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span class="text-dark">${b.name}</span>
+                            <span class="text-xs ${b.status === 'ACTIVE' ? 'text-green-500' : b.status === 'REJECTED' ? 'text-red-500' : 'text-yellow-500'}">
+                                ${b.status === 'ACTIVE' ? '✅ Validé' : b.status === 'REJECTED' ? '❌ Rejeté' : '⏳ En attente'}
+                            </span>
+                        </div>
+                    `).join('');
+                    if (data.beneficiaries.length > 3) {
+                        list.innerHTML += `<p class="text-xs text-gray-400 mt-2">+ ${data.beneficiaries.length - 3} autres</p>`;
+                    }
+                })
+                .catch(() => { list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>'; });
+        }
+    </script>
 </body>
 </html>
