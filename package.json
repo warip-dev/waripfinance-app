@@ -4,8 +4,7 @@
   "description": "Warip Finance - Banque nouvelle génération",
   "main": "backend/server.js",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js"
+    "start": "node backend/server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
