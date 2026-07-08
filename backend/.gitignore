@@ -1,0 +1,12 @@
+# Dossier node_modules
+node_modules/
+
+# Fichiers d'environnement
+.env
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
