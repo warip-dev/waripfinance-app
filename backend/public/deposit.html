@@ -8,24 +8,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         * { font-family: 'Inter', sans-serif; }
-        body { background: #f0f2f5; }
+        body { background: #f5f7fa; }
         .gold { color: #e9b64a; }
         .bg-gold { background: #e9b64a; }
         .text-dark { color: #1a1a2e; }
-        .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
-        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 12px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 14px; transition: all 0.3s; display: inline-block; text-align: center; text-decoration: none; }
-        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.3); }
+        .card-shadow { box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 12px 28px; border-radius: 12px; border: none; cursor: pointer; font-size: 14px; transition: all 0.3s; display: inline-block; text-align: center; text-decoration: none; }
+        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.25); }
         .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
-        .copy-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.3s; }
+        .copy-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 16px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.3s; }
         .copy-btn:hover { background: rgba(255,255,255,0.15); }
-        .deposit-address-box { background: #f8fafc; border: 1px dashed #d1d5db; border-radius: 12px; padding: 16px; transition: all 0.3s; }
+        .deposit-address-box { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 16px; padding: 20px; transition: all 0.3s; }
         .deposit-address-box:hover { border-color: #e9b64a; background: #fefcf5; }
     </style>
 </head>
 <body>
 
     <header class="gradient-header fixed w-full z-50 top-0">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <a href="/" class="text-white font-bold text-xl"><span class="gold">Warip</span> Finance</a>
                 <a href="/" class="text-white hover:text-gray-300"><i class="fas fa-arrow-left mr-2"></i>Retour</a>
@@ -35,10 +35,11 @@
 
     <div class="pt-24 pb-8 px-4 md:px-8 max-w-2xl mx-auto">
         <div class="bg-white rounded-2xl p-8 card-shadow">
-            <h1 class="text-2xl font-bold text-dark mb-2">📥 Déposer des cryptos</h1>
+            <h1 class="text-2xl font-bold text-dark mb-2">📥 Déposer</h1>
             <p class="text-gray-500 text-sm mb-6">Utilisez les adresses ci-dessous pour déposer vos cryptomonnaies.</p>
 
             <div id="depositAddresses">
+                <!-- BTC -->
                 <div class="deposit-address-box mb-4">
                     <div class="flex justify-between items-center">
                         <div>
@@ -50,8 +51,10 @@
                             <i class="fas fa-copy mr-1"></i>Copier
                         </button>
                     </div>
-                    <p id="btcAddress" class="text-gray-600 text-sm font-mono mt-2 break-all bg-gray-50 p-3 rounded-lg">Chargement...</p>
+                    <p id="btcAddress" class="text-gray-600 text-sm font-mono mt-3 break-all bg-gray-50 p-3 rounded-lg border border-gray-200">Chargement...</p>
                 </div>
+
+                <!-- ETH -->
                 <div class="deposit-address-box">
                     <div class="flex justify-between items-center">
                         <div>
@@ -63,13 +66,13 @@
                             <i class="fas fa-copy mr-1"></i>Copier
                         </button>
                     </div>
-                    <p id="ethAddress" class="text-gray-600 text-sm font-mono mt-2 break-all bg-gray-50 p-3 rounded-lg">Chargement...</p>
+                    <p id="ethAddress" class="text-gray-600 text-sm font-mono mt-3 break-all bg-gray-50 p-3 rounded-lg border border-gray-200">Chargement...</p>
                 </div>
             </div>
 
-            <div class="mt-6 p-4 bg-yellow-50 rounded-xl text-xs text-yellow-700">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
-                Envoyez uniquement les cryptos correspondantes sur ces adresses. Toute autre transaction sera perdue.
+            <div class="mt-6 p-4 bg-yellow-50 rounded-xl text-xs text-yellow-700 flex items-start gap-2">
+                <i class="fas fa-exclamation-triangle mt-0.5"></i>
+                <span>Envoyez uniquement les cryptos correspondantes sur ces adresses. Toute autre transaction sera perdue.</span>
             </div>
         </div>
     </div>

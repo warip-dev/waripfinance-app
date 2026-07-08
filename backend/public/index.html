@@ -6,153 +6,351 @@
     <title>Warip Finance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
         * { font-family: 'Inter', sans-serif; }
-        body { background: #f0f2f5; }
+        body { background: #f5f7fa; }
         .gold { color: #e9b64a; }
         .bg-gold { background: #e9b64a; }
         .text-dark { color: #1a1a2e; }
-        .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
-        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 12px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 14px; transition: all 0.3s; display: inline-block; text-align: center; text-decoration: none; }
-        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.3); }
-        .btn-secondary { background: transparent; color: #e9b64a; border: 2px solid #e9b64a; font-weight: 600; padding: 12px 24px; border-radius: 50px; cursor: pointer; font-size: 14px; transition: all 0.3s; display: inline-block; text-align: center; text-decoration: none; }
-        .btn-secondary:hover { background: #e9b64a; color: #1a1a2e; transform: translateY(-2px); }
-        .btn-danger { background: #ef4444; color: white; padding: 8px 16px; border-radius: 50px; border: none; cursor: pointer; font-size: 13px; transition: all 0.3s; }
-        .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
+        .text-muted { color: #6b7280; }
+        .card-shadow { box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 12px 28px; border-radius: 12px; border: none; cursor: pointer; font-size: 14px; transition: all 0.3s; display: inline-block; text-align: center; text-decoration: none; }
+        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.25); }
+        .btn-outline { background: transparent; color: #1a1a2e; border: 2px solid #e9b64a; font-weight: 600; padding: 10px 24px; border-radius: 12px; cursor: pointer; font-size: 14px; transition: all 0.3s; display: inline-block; text-align: center; text-decoration: none; }
+        .btn-outline:hover { background: #e9b64a; color: #1a1a2e; transform: translateY(-2px); }
         .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
-        .balance-card { background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%); }
+        .balance-card { background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%); border-radius: 20px; padding: 28px; }
+        .nav-item { padding: 10px 16px; border-radius: 10px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #6b7280; font-weight: 500; font-size: 14px; }
+        .nav-item:hover { background: #f3f4f6; color: #1a1a2e; }
+        .nav-item.active { background: #e9b64a20; color: #e9b64a; font-weight: 600; }
+        .nav-item i { width: 20px; text-align: center; font-size: 16px; }
+        .action-card { background: white; border-radius: 16px; padding: 24px; transition: all 0.3s; border: 1px solid #edf2f7; cursor: pointer; }
+        .action-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.06); border-color: #e9b64a; }
         .hidden { display: none !important; }
-        .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.2); }
-        .step-indicator { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; }
-        .step-dot { width: 10px; height: 10px; border-radius: 50%; background: #d1d5db; transition: all 0.3s; }
-        .step-dot.active { background: #e9b64a; width: 30px; border-radius: 20px; }
-        .step-dot.completed { background: #22c55e; }
-        .phone-prefix { display: inline-flex; align-items: center; padding: 0 12px; background: #f3f4f6; border: 1px solid #d1d5db; border-right: none; border-radius: 8px 0 0 8px; color: #374151; font-size: 14px; font-weight: 500; min-width: 50px; justify-content: center; }
-        .phone-input { border-radius: 0 8px 8px 0; flex: 1; }
+        .input-focus:focus { border-color: #e9b64a; box-shadow: 0 0 0 3px rgba(233, 182, 74, 0.15); }
+        .phone-prefix { display: inline-flex; align-items: center; padding: 0 14px; background: #f3f4f6; border: 1px solid #d1d5db; border-right: none; border-radius: 10px 0 0 10px; color: #374151; font-size: 14px; font-weight: 500; }
+        .phone-input { border-radius: 0 10px 10px 0; flex: 1; }
         .phone-wrapper { display: flex; align-items: stretch; }
+        .step-indicator { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 20px 0; }
+        .step-dot { width: 10px; height: 10px; border-radius: 50%; background: #d1d5db; transition: all 0.3s; }
+        .step-dot.active { background: #e9b64a; width: 36px; border-radius: 20px; }
+        .step-dot.completed { background: #22c55e; }
+        .error-message { background: #fee2e2; color: #dc2626; padding: 12px 16px; border-radius: 10px; border: 1px solid #fecaca; margin-bottom: 16px; font-size: 14px; }
+        .profile-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #e9b64a, #d4a03a); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #1a1a2e; }
         .country-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; background-size: 12px; }
-        .error-message { background: #fee2e2; color: #dc2626; padding: 12px; border-radius: 8px; border: 1px solid #fecaca; margin-bottom: 16px; font-size: 14px; }
     </style>
 </head>
 <body>
 
+    <!-- ========================================== -->
+    <!-- HEADER (style BUNQ) -->
+    <!-- ========================================== -->
     <header class="gradient-header fixed w-full z-50 top-0">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <a href="/" class="text-white font-bold text-xl"><span class="gold">Warip</span> Finance</a>
+                <a href="/" class="text-white font-bold text-xl flex items-center gap-2">
+                    <span class="gold">Warip</span>
+                    <span class="text-gray-300 font-light">Finance</span>
+                </a>
                 <div class="flex items-center gap-4">
-                    <button id="openLoginModal" class="btn-primary px-6 py-2 text-sm"><i class="fas fa-user mr-2"></i>Se connecter</button>
+                    <button id="openLoginModal" class="btn-primary px-6 py-2 text-sm">
+                        <i class="fas fa-user mr-2"></i>Se connecter
+                    </button>
                     <div id="userInfo" class="hidden flex items-center gap-3">
-                        <a href="/profile.html" class="btn-primary px-4 py-2 text-sm" style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3);">
-                            <i class="fas fa-user-circle mr-2"></i>Mon profil
-                        </a>
+                        <button id="openProfileBtn" class="flex items-center gap-2 text-white hover:text-gold transition text-sm">
+                            <div class="profile-avatar" id="headerAvatar">U</div>
+                            <span id="headerName" class="hidden sm:inline">Client</span>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <div id="publicSection" class="pt-20">
-        <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl max-w-2xl w-full p-8 relative card-shadow max-h-[90vh] overflow-y-auto">
-                <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"><i class="fas fa-times"></i></button>
+    <!-- ========================================== -->
+    <!-- MODAL CONNEXION / INSCRIPTION -->
+    <!-- ========================================== -->
+    <div id="authModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-8 relative card-shadow max-h-[90vh] overflow-y-auto">
+            <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"><i class="fas fa-times"></i></button>
 
-                <div id="loginForm">
-                    <h2 class="text-2xl font-bold text-dark mb-2">Connexion</h2>
-                    <div id="loginError" class="hidden error-message"></div>
-                    <form id="loginFormSubmit">
-                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" id="loginEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div>
-                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label><input type="password" id="loginPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div>
-                        <div class="text-right mb-6"><a href="/forgot-password.html" class="text-sm text-gold hover:underline">Mot de passe oublié ?</a></div>
-                        <button type="submit" class="w-full btn-primary py-3 text-lg">Se connecter</button>
+            <!-- LOGIN -->
+            <div id="loginForm">
+                <h2 class="text-2xl font-bold text-dark mb-2">Connexion</h2>
+                <p class="text-gray-500 text-sm mb-6">Accédez à votre espace client</p>
+                <div id="loginError" class="hidden error-message"></div>
+                <form id="loginFormSubmit">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="loginEmail" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                        <input type="password" id="loginPassword" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus" required>
+                    </div>
+                    <div class="text-right mb-6">
+                        <a href="/forgot-password.html" class="text-sm text-gold hover:underline">Mot de passe oublié ?</a>
+                    </div>
+                    <button type="submit" class="w-full btn-primary py-3 text-lg">Se connecter</button>
+                </form>
+                <p class="text-center text-gray-500 text-sm mt-4">
+                    Pas encore de compte ?
+                    <button id="showRegister" class="text-gold font-semibold hover:underline">Créer un compte</button>
+                </p>
+            </div>
+
+            <!-- REGISTER - 2 ÉTAPES -->
+            <div id="registerForm" class="hidden">
+                <h2 class="text-2xl font-bold text-dark mb-2">Créer un compte</h2>
+                <p class="text-gray-500 text-sm mb-2" id="stepLabel">Étape 1 sur 2 - Informations de connexion</p>
+                <div class="step-indicator">
+                    <span class="step-dot active" id="step1Dot"></span>
+                    <span class="step-dot" id="step2Dot"></span>
+                </div>
+                <div id="registerError" class="hidden error-message"></div>
+
+                <!-- ÉTAPE 1 -->
+                <div id="registerStep1">
+                    <form id="registerFormStep1" onsubmit="event.preventDefault(); goToStep2();">
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Prénom</label><input type="text" id="regFirstName" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus" required></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Nom</label><input type="text" id="regLastName" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus" required></div>
+                        </div>
+                        <div class="mb-3"><label class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" id="regEmail" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus" required></div>
+                        <div class="mb-3"><label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label><input type="password" id="regPassword" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus" required minlength="8"><p class="text-xs text-gray-400 mt-1">Au moins 8 caractères</p></div>
+                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">Confirmer le mot de passe</label><input type="password" id="regConfirmPassword" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus" required minlength="8"></div>
+                        <button type="submit" class="w-full btn-primary py-3 text-lg">Suivant <i class="fas fa-arrow-right ml-2"></i></button>
                     </form>
-                    <p class="text-center text-gray-500 text-sm mt-4">Pas encore de compte ? <button id="showRegister" class="text-gold font-semibold hover:underline">Créer un compte</button></p>
                 </div>
 
-                <div id="registerForm" class="hidden">
-                    <h2 class="text-2xl font-bold text-dark mb-2">Créer un compte</h2>
-                    <p class="text-gray-500 text-sm mb-4" id="stepLabel">Étape 1 sur 2 - Informations de connexion</p>
-                    <div class="step-indicator">
-                        <span class="step-dot active" id="step1Dot"></span>
-                        <span class="step-dot" id="step2Dot"></span>
-                    </div>
-                    <div id="registerError" class="hidden error-message"></div>
-
-                    <div id="registerStep1">
-                        <form id="registerFormStep1" onsubmit="event.preventDefault(); goToStep2();">
-                            <div class="grid grid-cols-2 gap-3 mb-3">
-                                <div><label class="block text-sm font-medium text-gray-700 mb-1">Prénom</label><input type="text" id="regFirstName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div>
-                                <div><label class="block text-sm font-medium text-gray-700 mb-1">Nom</label><input type="text" id="regLastName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div>
+                <!-- ÉTAPE 2 -->
+                <div id="registerStep2" class="hidden">
+                    <form id="registerFormStep2" onsubmit="event.preventDefault(); submitRegister();">
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                            <select id="regCountry" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus country-select" onchange="updateCountryInfo()">
+                                <option value="FR">🇫🇷 France (+33)</option>
+                                <option value="BE">🇧🇪 Belgique (+32)</option>
+                                <option value="CH">🇨🇭 Suisse (+41)</option>
+                                <option value="CA">🇨🇦 Canada (+1)</option>
+                                <option value="US">🇺🇸 États-Unis (+1)</option>
+                                <option value="GB">🇬🇧 Royaume-Uni (+44)</option>
+                                <option value="DE">🇩🇪 Allemagne (+49)</option>
+                                <option value="IT">🇮🇹 Italie (+39)</option>
+                                <option value="ES">🇪🇸 Espagne (+34)</option>
+                                <option value="PT">🇵🇹 Portugal (+351)</option>
+                                <option value="NL">🇳🇱 Pays-Bas (+31)</option>
+                                <option value="LU">🇱🇺 Luxembourg (+352)</option>
+                                <option value="MA">🇲🇦 Maroc (+212)</option>
+                                <option value="TN">🇹🇳 Tunisie (+216)</option>
+                                <option value="DZ">🇩🇿 Algérie (+213)</option>
+                                <option value="SN">🇸🇳 Sénégal (+221)</option>
+                                <option value="CI">🇨🇮 Côte d'Ivoire (+225)</option>
+                                <option value="CM">🇨🇲 Cameroun (+237)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Numéro de téléphone</label>
+                            <div class="phone-wrapper">
+                                <span id="countryCodeDisplay" class="phone-prefix">+33</span>
+                                <input type="tel" id="regPhone" class="phone-input px-4 py-3 border border-gray-300 focus:outline-none input-focus" required>
                             </div>
-                            <div class="mb-3"><label class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" id="regEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div>
-                            <div class="mb-3"><label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label><input type="password" id="regPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required minlength="8"><p class="text-xs text-gray-400 mt-1">Au moins 8 caractères</p></div>
-                            <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">Confirmer le mot de passe</label><input type="password" id="regConfirmPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required minlength="8"></div>
-                            <button type="submit" class="w-full btn-primary py-3 text-lg">Suivant <i class="fas fa-arrow-right ml-2"></i></button>
-                        </form>
-                    </div>
-
-                    <div id="registerStep2" class="hidden">
-                        <form id="registerFormStep2" onsubmit="event.preventDefault(); submitRegister();">
-                            <div class="mb-3"><label class="block text-sm font-medium text-gray-700 mb-1">Pays</label><select id="regCountry" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus country-select" onchange="updateCountryInfo()"><option value="FR">🇫🇷 France (+33)</option><option value="BE">🇧🇪 Belgique (+32)</option><option value="CH">🇨🇭 Suisse (+41)</option><option value="CA">🇨🇦 Canada (+1)</option><option value="US">🇺🇸 États-Unis (+1)</option><option value="GB">🇬🇧 Royaume-Uni (+44)</option><option value="DE">🇩🇪 Allemagne (+49)</option><option value="IT">🇮🇹 Italie (+39)</option><option value="ES">🇪🇸 Espagne (+34)</option><option value="PT">🇵🇹 Portugal (+351)</option><option value="NL">🇳🇱 Pays-Bas (+31)</option><option value="LU">🇱🇺 Luxembourg (+352)</option><option value="MA">🇲🇦 Maroc (+212)</option><option value="TN">🇹🇳 Tunisie (+216)</option><option value="DZ">🇩🇿 Algérie (+213)</option><option value="SN">🇸🇳 Sénégal (+221)</option><option value="CI">🇨🇮 Côte d'Ivoire (+225)</option><option value="CM">🇨🇲 Cameroun (+237)</option></select></div>
-                            <div class="mb-3"><label class="block text-sm font-medium text-gray-700 mb-1">Numéro de téléphone</label><div class="phone-wrapper"><span id="countryCodeDisplay" class="phone-prefix">+33</span><input type="tel" id="regPhone" class="phone-input px-4 py-3 border border-gray-300 focus:outline-none input-focus" required></div><p id="phoneHint" class="text-xs text-gray-400 mt-1">Ex: 612345678 (10 chiffres)</p></div>
-                            <div class="grid grid-cols-2 gap-3 mb-3"><div><label class="block text-sm font-medium text-gray-700 mb-1">Ville</label><input type="text" id="regCity" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div><div><label class="block text-sm font-medium text-gray-700 mb-1">Code postal</label><input type="text" id="regPostalCode" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required maxlength="5"><p class="text-xs text-gray-400 mt-1">Uniquement des chiffres</p></div></div>
-                            <div class="grid grid-cols-2 gap-3 mb-3"><div><label class="block text-sm font-medium text-gray-700 mb-1">Numéro de rue</label><input type="text" id="regStreetNumber" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div><div><label class="block text-sm font-medium text-gray-700 mb-1">Nom de rue</label><input type="text" id="regStreetName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div></div>
-                            <div class="mb-3"><label class="block text-sm font-medium text-gray-700 mb-1">Profession</label><input type="text" id="regProfession" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required></div>
-                            <div class="grid grid-cols-2 gap-3 mb-3"><div><label class="block text-sm font-medium text-gray-700 mb-1">Sexe</label><select id="regGender" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required><option value="">Sélectionner</option><option value="M">Masculin</option><option value="F">Féminin</option><option value="OTHER">Autre</option></select></div><div><label class="block text-sm font-medium text-gray-700 mb-1">Situation matrimoniale</label><select id="regMaritalStatus" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus" required><option value="">Sélectionner</option><option value="SINGLE">Célibataire</option><option value="MARRIED">Marié(e)</option><option value="DIVORCED">Divorcé(e)</option><option value="WIDOWED">Veuf(ve)</option><option value="PACSED">Pacsé(e)</option></select></div></div>
-                            <div class="flex gap-3"><button type="button" id="backToStep1" class="flex-1 btn-secondary py-3 text-lg"><i class="fas fa-arrow-left mr-2"></i>Retour</button><button type="submit" class="flex-1 btn-primary py-3 text-lg">Créer mon compte</button></div>
-                        </form>
-                    </div>
+                            <p id="phoneHint" class="text-xs text-gray-400 mt-1">Ex: 612345678 (10 chiffres)</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Ville</label><input type="text" id="regCity" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus" required></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Code postal</label><input type="text" id="regPostalCode" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus" required maxlength="5"><p class="text-xs text-gray-400 mt-1">Uniquement des chiffres</p></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Numéro de rue</label><input type="text" id="regStreetNumber" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus" required></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Nom de rue</label><input type="text" id="regStreetName" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus" required></div>
+                        </div>
+                        <div class="mb-3"><label class="block text-sm font-medium text-gray-700 mb-1">Profession</label><input type="text" id="regProfession" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus" required></div>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Sexe</label><select id="regGender" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus" required><option value="">Sélectionner</option><option value="M">Masculin</option><option value="F">Féminin</option><option value="OTHER">Autre</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Situation matrimoniale</label><select id="regMaritalStatus" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none input-focus" required><option value="">Sélectionner</option><option value="SINGLE">Célibataire</option><option value="MARRIED">Marié(e)</option><option value="DIVORCED">Divorcé(e)</option><option value="WIDOWED">Veuf(ve)</option><option value="PACSED">Pacsé(e)</option></select></div>
+                        </div>
+                        <div class="flex gap-3">
+                            <button type="button" id="backToStep1" class="flex-1 btn-outline py-3 text-lg"><i class="fas fa-arrow-left mr-2"></i>Retour</button>
+                            <button type="submit" class="flex-1 btn-primary py-3 text-lg">Créer mon compte</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
 
-        <section class="pt-28 pb-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- ========================================== -->
+    <!-- SECTION PUBLIQUE (non connecté) -->
+    <!-- ========================================== -->
+    <div id="publicSection" class="pt-16">
+        <section class="pt-28 pb-16 bg-gradient-to-b from-gray-50 to-white">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid md:grid-cols-2 gap-12 items-center">
-                    <div><h1 class="text-4xl md:text-5xl font-bold text-dark leading-tight">La banque qui <span class="gold">réinvente</span> votre argent</h1><p class="text-gray-600 text-lg mt-4 leading-relaxed">Ouvrez un compte en 5 minutes, gérez vos cryptos et vos euros en toute simplicité.</p><button id="heroOpenRegister" class="btn-primary mt-8"><i class="fas fa-rocket mr-2"></i>Ouvrir un compte</button></div>
-                    <div class="hidden md:block"><img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=400&fit=crop" alt="Banque" class="rounded-2xl shadow-xl w-full object-cover" /></div>
+                    <div>
+                        <h1 class="text-4xl md:text-5xl font-bold text-dark leading-tight">
+                            La banque qui <span class="gold">réinvente</span> votre argent
+                        </h1>
+                        <p class="text-gray-600 text-lg mt-4 leading-relaxed">
+                            Ouvrez un compte en 5 minutes, gérez vos cryptos et vos euros en toute simplicité.
+                        </p>
+                        <button id="heroOpenRegister" class="btn-primary mt-8"><i class="fas fa-rocket mr-2"></i>Ouvrir un compte</button>
+                    </div>
+                    <div class="hidden md:block">
+                        <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=400&fit=crop" alt="Banque" class="rounded-2xl shadow-xl w-full object-cover" />
+                    </div>
                 </div>
             </div>
         </section>
-        <footer class="bg-dark text-gray-400 py-12">...</footer>
+        <footer class="bg-dark text-gray-400 py-12">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-4 gap-8">
+                    <div><h3 class="text-white font-bold text-lg"><span class="gold">Warip</span> Finance</h3><p class="text-sm mt-2">La banque qui réinvente la crypto.</p></div>
+                    <div><h4 class="text-white font-semibold">Produits</h4><ul class="mt-2 space-y-1 text-sm"><li><a href="#" class="text-gray-400 hover:text-gold">Compte courant</a></li><li><a href="#" class="text-gray-400 hover:text-gold">Épargne</a></li><li><a href="#" class="text-gray-400 hover:text-gold">Crypto</a></li></ul></div>
+                    <div><h4 class="text-white font-semibold">À propos</h4><ul class="mt-2 space-y-1 text-sm"><li><a href="#" class="text-gray-400 hover:text-gold">Qui sommes-nous ?</a></li><li><a href="#" class="text-gray-400 hover:text-gold">Carrières</a></li><li><a href="#" class="text-gray-400 hover:text-gold">Contact</a></li></ul></div>
+                    <div><h4 class="text-white font-semibold">Légal</h4><ul class="mt-2 space-y-1 text-sm"><li><a href="#" class="text-gray-400 hover:text-gold">Mentions légales</a></li><li><a href="#" class="text-gray-400 hover:text-gold">Politique de confidentialité</a></li><li><a href="#" class="text-gray-400 hover:text-gold">CGU</a></li></ul></div>
+                </div>
+                <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">&copy; 2025 Warip Finance. Tous droits réservés.</div>
+            </div>
+        </footer>
     </div>
 
-    <div id="dashboardSection" class="hidden pt-20 pb-8 px-4 md:px-8 max-w-7xl mx-auto">
-        <div class="flex justify-between items-center mb-6"><div><h1 class="text-2xl font-bold text-dark">Bonjour <span id="userFirstName" class="gold">Client</span></h1><p class="text-gray-500 text-sm">Bienvenue sur votre espace client</p></div></div>
-        <div class="balance-card rounded-3xl p-6 md:p-8 text-white mb-8 card-shadow">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div><p class="text-gray-400 text-sm">Solde total</p><p class="text-3xl md:text-4xl font-bold" id="userBalance">0,00 €</p><div class="flex gap-6 mt-3 text-sm"><span class="text-gray-400">BTC: <span class="text-white font-mono" id="btcBalance">0,0000</span></span><span class="text-gray-400">ETH: <span class="text-white font-mono" id="ethBalance">0,0000</span></span></div></div>
+    <!-- ========================================== -->
+    <!-- SECTION DASHBOARD (connecté - style BUNQ) -->
+    <!-- ========================================== -->
+    <div id="dashboardSection" class="hidden pt-20 pb-8 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+
+        <!-- En-tête -->
+        <div class="flex justify-between items-center mt-4 mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-dark">Bonjour <span id="userFirstName" class="gold">Client</span></h1>
+                <p class="text-gray-500 text-sm">Bienvenue sur votre espace client</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="/deposit.html" class="btn-primary">
+                    <i class="fas fa-arrow-down mr-2"></i>Déposer
+                </a>
+                <button id="openProfileBtn2" class="btn-outline">
+                    <i class="fas fa-user mr-2"></i>Profil
+                </button>
             </div>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <a href="/deposit.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition"><div class="text-3xl gold mb-2"><i class="fas fa-arrow-down"></i></div><p class="font-semibold text-dark">Déposer</p></a>
-            <a href="/beneficiary.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition"><div class="text-3xl gold mb-2"><i class="fas fa-users"></i></div><p class="font-semibold text-dark">Bénéficiaires</p></a>
-            <a href="/transfer.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition"><div class="text-3xl gold mb-2"><i class="fas fa-paper-plane"></i></div><p class="font-semibold text-dark">Virement</p></a>
-            <a href="/profile.html" class="bg-white p-6 rounded-2xl card-shadow text-center hover:shadow-lg transition"><div class="text-3xl gold mb-2"><i class="fas fa-user-circle"></i></div><p class="font-semibold text-dark">Mon profil</p></a>
+
+        <!-- Solde -->
+        <div class="balance-card text-white mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div>
+                    <p class="text-gray-400 text-sm font-medium">Solde total</p>
+                    <p class="text-3xl md:text-4xl font-bold" id="userBalance">0,00 €</p>
+                    <div class="flex gap-6 mt-2 text-sm">
+                        <span class="text-gray-400">BTC: <span class="text-white font-mono" id="btcBalance">0,0000</span></span>
+                        <span class="text-gray-400">ETH: <span class="text-white font-mono" id="ethBalance">0,0000</span></span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="bg-white rounded-2xl p-6 card-shadow"><div class="flex justify-between items-center mb-4"><h3 class="font-semibold text-dark">Mes bénéficiaires</h3><a href="/beneficiary.html" class="text-gold text-sm hover:underline">Voir tout</a></div><div id="beneficiariesList"><p class="text-gray-400 text-sm">Chargement...</p></div></div>
+
+        <!-- Actions rapides (style BUNQ) -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+            <a href="/deposit.html" class="action-card text-center">
+                <div class="text-3xl gold mb-3"><i class="fas fa-arrow-down"></i></div>
+                <p class="font-semibold text-dark">Déposer</p>
+                <p class="text-xs text-gray-400">BTC / ETH</p>
+            </a>
+            <a href="#" class="action-card text-center">
+                <div class="text-3xl gold mb-3"><i class="fas fa-arrow-up"></i></div>
+                <p class="font-semibold text-dark">Retirer</p>
+                <p class="text-xs text-gray-400">Bientôt</p>
+            </a>
+            <a href="#" class="action-card text-center">
+                <div class="text-3xl gold mb-3"><i class="fas fa-exchange-alt"></i></div>
+                <p class="font-semibold text-dark">Échanger</p>
+                <p class="text-xs text-gray-400">Bientôt</p>
+            </a>
+        </div>
+
+        <!-- Bénéficiaires (aperçu) -->
+        <div class="bg-white rounded-2xl p-6 card-shadow">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold text-dark">Bénéficiaires</h3>
+                <a href="/beneficiary.html" class="text-gold text-sm font-medium hover:underline">Voir tout</a>
+            </div>
+            <div id="beneficiariesList">
+                <p class="text-gray-400 text-sm">Chargement...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL PROFIL -->
+    <!-- ========================================== -->
+    <div id="profileModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-8 relative card-shadow max-h-[90vh] overflow-y-auto">
+            <button id="closeProfileModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"><i class="fas fa-times"></i></button>
+            <div class="flex items-center gap-6 mb-6">
+                <div class="profile-avatar" style="width:64px;height:64px;font-size:28px;" id="profileAvatar">U</div>
+                <div>
+                    <h2 class="text-2xl font-bold text-dark" id="profileFullName">Client</h2>
+                    <p class="text-gray-500 text-sm" id="profileEmail">email@exemple.com</p>
+                    <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full" id="profileStatus">Actif</span>
+                </div>
+            </div>
+            <div class="flex flex-wrap border-b border-gray-200 mb-6">
+                <button class="nav-item active" data-tab="info"><i class="fas fa-info-circle"></i> Informations</button>
+                <button class="nav-item" data-tab="support"><i class="fas fa-headset"></i> Support</button>
+                <button class="nav-item" data-tab="logout" id="profileLogoutBtn"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
+            </div>
+            <div id="profileInfo">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><p class="text-xs text-gray-400">Email</p><p class="font-medium text-dark" id="pEmail">-</p></div>
+                    <div><p class="text-xs text-gray-400">Prénom</p><p class="font-medium text-dark" id="pFirstName">-</p></div>
+                    <div><p class="text-xs text-gray-400">Nom</p><p class="font-medium text-dark" id="pLastName">-</p></div>
+                    <div><p class="text-xs text-gray-400">Téléphone</p><p class="font-medium text-dark" id="pPhone">-</p></div>
+                    <div><p class="text-xs text-gray-400">Pays</p><p class="font-medium text-dark" id="pCountry">-</p></div>
+                    <div><p class="text-xs text-gray-400">Ville</p><p class="font-medium text-dark" id="pCity">-</p></div>
+                    <div><p class="text-xs text-gray-400">Code postal</p><p class="font-medium text-dark" id="pPostalCode">-</p></div>
+                    <div><p class="text-xs text-gray-400">Adresse</p><p class="font-medium text-dark" id="pAddress">-</p></div>
+                    <div><p class="text-xs text-gray-400">Profession</p><p class="font-medium text-dark" id="pProfession">-</p></div>
+                    <div><p class="text-xs text-gray-400">Sexe</p><p class="font-medium text-dark" id="pGender">-</p></div>
+                    <div><p class="text-xs text-gray-400">Situation</p><p class="font-medium text-dark" id="pMaritalStatus">-</p></div>
+                    <div><p class="text-xs text-gray-400">Statut</p><p class="font-medium text-dark" id="pStatus">-</p></div>
+                </div>
+            </div>
+            <div id="profileSupport" class="hidden">
+                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+                    <h3 class="font-semibold text-dark"><i class="fas fa-headset gold mr-2"></i>Service client</h3>
+                    <p class="text-gray-600 text-sm mb-4">Notre équipe est à votre disposition.</p>
+                    <a href="mailto:support@waripfinance.com" class="btn-primary inline-block text-sm"><i class="fas fa-envelope mr-2"></i>Contacter le support</a>
+                    <p class="text-xs text-gray-400 mt-3">Réponse sous 24h</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
+        // ============================================
+        // LISTE DES PAYS
+        // ============================================
         const countries = {
-            'FR': { code: '+33', format: 'XX XX XX XX XX', example: '6 12 34 56 78', length: 10 },
-            'BE': { code: '+32', format: 'XXX XX XX XX', example: '4 12 34 56 78', length: 10 },
-            'CH': { code: '+41', format: 'XX XXX XX XX', example: '7 12 34 56 78', length: 10 },
-            'CA': { code: '+1', format: 'XXX XXX XXXX', example: '514 123 4567', length: 10 },
-            'US': { code: '+1', format: 'XXX XXX XXXX', example: '212 123 4567', length: 10 },
-            'GB': { code: '+44', format: 'XXXX XXX XXX', example: '7700 123 456', length: 10 },
-            'DE': { code: '+49', format: 'XXX XXXX XXXX', example: '151 1234 5678', length: 11 },
-            'IT': { code: '+39', format: 'XXX XXX XXXX', example: '320 123 4567', length: 10 },
-            'ES': { code: '+34', format: 'XXX XX XX XX', example: '612 34 56 78', length: 9 },
-            'PT': { code: '+351', format: 'XXX XXX XXX', example: '912 123 456', length: 9 },
-            'NL': { code: '+31', format: 'XX XXX XX XX', example: '6 12 34 56 78', length: 10 },
-            'LU': { code: '+352', format: 'XXX XXX XXX', example: '621 123 456', length: 9 },
-            'MA': { code: '+212', format: 'XX XX XX XX XX', example: '6 12 34 56 78', length: 10 },
-            'TN': { code: '+216', format: 'XX XXX XXX', example: '12 345 678', length: 9 },
-            'DZ': { code: '+213', format: 'XX XXX XX XX', example: '55 12 34 56', length: 9 },
-            'SN': { code: '+221', format: 'XX XXX XX XX', example: '77 123 45 67', length: 9 },
-            'CI': { code: '+225', format: 'XX XX XX XX', example: '01 23 45 67', length: 8 },
-            'CM': { code: '+237', format: 'XX XX XX XX', example: '6 12 34 56 78', length: 9 }
+            'FR': { code: '+33', example: '6 12 34 56 78', length: 10 },
+            'BE': { code: '+32', example: '4 12 34 56 78', length: 10 },
+            'CH': { code: '+41', example: '7 12 34 56 78', length: 10 },
+            'CA': { code: '+1', example: '514 123 4567', length: 10 },
+            'US': { code: '+1', example: '212 123 4567', length: 10 },
+            'GB': { code: '+44', example: '7700 123 456', length: 10 },
+            'DE': { code: '+49', example: '151 1234 5678', length: 11 },
+            'IT': { code: '+39', example: '320 123 4567', length: 10 },
+            'ES': { code: '+34', example: '612 34 56 78', length: 9 },
+            'PT': { code: '+351', example: '912 123 456', length: 9 },
+            'NL': { code: '+31', example: '6 12 34 56 78', length: 10 },
+            'LU': { code: '+352', example: '621 123 456', length: 9 },
+            'MA': { code: '+212', example: '6 12 34 56 78', length: 10 },
+            'TN': { code: '+216', example: '12 345 678', length: 9 },
+            'DZ': { code: '+213', example: '55 12 34 56', length: 9 },
+            'SN': { code: '+221', example: '77 123 45 67', length: 9 },
+            'CI': { code: '+225', example: '01 23 45 67', length: 8 },
+            'CM': { code: '+237', example: '6 12 34 56 78', length: 9 }
         };
 
         function updateCountryInfo() {
@@ -165,6 +363,9 @@
             }
         }
 
+        // ============================================
+        // AUTHENTIFICATION
+        // ============================================
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -182,41 +383,53 @@
             document.getElementById('userInfo').classList.remove('hidden');
             document.getElementById('userFirstName').textContent = user.first_name || 'Client';
             document.getElementById('userBalance').textContent = (user.balance || 0).toFixed(2) + ' €';
+            document.getElementById('headerName').textContent = user.first_name || 'Client';
+            document.getElementById('headerAvatar').textContent = user.first_name ? user.first_name.charAt(0) : 'U';
             loadBeneficiaries();
         }
 
         if (token && user.email) { showDashboard(); } else { showPublic(); }
 
+        // ============================================
+        // MODAL LOGIN/REGISTER
+        // ============================================
         const modal = document.getElementById('authModal');
         document.getElementById('openLoginModal').addEventListener('click', () => modal.classList.remove('hidden'));
-        document.getElementById('heroOpenRegister').addEventListener('click', () => { modal.classList.remove('hidden'); showRegister(); });
+        document.getElementById('heroOpenRegister').addEventListener('click', () => {
+            modal.classList.remove('hidden');
+            showRegister();
+        });
         document.getElementById('closeModal').addEventListener('click', () => modal.classList.add('hidden'));
 
         function showLogin() {
-            loginForm.classList.remove('hidden');
-            registerForm.classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
             document.getElementById('loginError').classList.add('hidden');
             document.getElementById('registerError').classList.add('hidden');
         }
 
         function showRegister() {
-            loginForm.classList.add('hidden');
-            registerForm.classList.remove('hidden');
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
             document.getElementById('loginError').classList.add('hidden');
             document.getElementById('registerError').classList.add('hidden');
-            step1.classList.remove('hidden');
-            step2.classList.add('hidden');
-            step1Dot.className = 'step-dot active';
-            step2Dot.className = 'step-dot';
+            document.getElementById('registerStep1').classList.remove('hidden');
+            document.getElementById('registerStep2').classList.add('hidden');
+            document.getElementById('step1Dot').className = 'step-dot active';
+            document.getElementById('step2Dot').className = 'step-dot';
             document.getElementById('registerFormStep1').reset();
             document.getElementById('registerFormStep2').reset();
             updateCountryInfo();
             document.getElementById('registerError').classList.add('hidden');
+            document.getElementById('stepLabel').textContent = 'Étape 1 sur 2 - Informations de connexion';
         }
 
         document.getElementById('showRegister').addEventListener('click', showRegister);
         document.getElementById('showLogin').addEventListener('click', showLogin);
 
+        // ============================================
+        // PASSER À L'ÉTAPE 2
+        // ============================================
         function goToStep2() {
             const firstName = document.getElementById('regFirstName').value.trim();
             const lastName = document.getElementById('regLastName').value.trim();
@@ -243,23 +456,26 @@
                 return;
             }
 
-            step1.classList.add('hidden');
-            step2.classList.remove('hidden');
-            step1Dot.className = 'step-dot completed';
-            step2Dot.className = 'step-dot active';
+            document.getElementById('registerStep1').classList.add('hidden');
+            document.getElementById('registerStep2').classList.remove('hidden');
+            document.getElementById('step1Dot').className = 'step-dot completed';
+            document.getElementById('step2Dot').className = 'step-dot active';
             errorEl.classList.add('hidden');
             document.getElementById('stepLabel').textContent = 'Étape 2 sur 2 - Informations personnelles';
         }
 
         document.getElementById('backToStep1').addEventListener('click', function() {
-            step1.classList.remove('hidden');
-            step2.classList.add('hidden');
-            step1Dot.className = 'step-dot active';
-            step2Dot.className = 'step-dot';
+            document.getElementById('registerStep1').classList.remove('hidden');
+            document.getElementById('registerStep2').classList.add('hidden');
+            document.getElementById('step1Dot').className = 'step-dot active';
+            document.getElementById('step2Dot').className = 'step-dot';
             document.getElementById('registerError').classList.add('hidden');
             document.getElementById('stepLabel').textContent = 'Étape 1 sur 2 - Informations de connexion';
         });
 
+        // ============================================
+        // SOUMETTRE L'INSCRIPTION
+        // ============================================
         function submitRegister() {
             const firstName = document.getElementById('regFirstName').value.trim();
             const lastName = document.getElementById('regLastName').value.trim();
@@ -333,6 +549,9 @@
             });
         }
 
+        // ============================================
+        // CONNEXION
+        // ============================================
         document.getElementById('loginFormSubmit').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -377,7 +596,7 @@
                 } else if (data.user.status === 'PENDING') {
                     window.location.href = '/pending.html';
                 } else {
-                    window.location.href = '/';
+                    window.location.reload();
                 }
             })
             .catch(err => {
@@ -389,6 +608,22 @@
             });
         });
 
+        // ============================================
+        // LOGOUT
+        // ============================================
+        function handleLogout() {
+            if (confirm('Voulez-vous vous déconnecter ?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                document.getElementById('profileModal').classList.add('hidden');
+                window.location.reload();
+            }
+        }
+        document.getElementById('profileLogoutBtn').addEventListener('click', handleLogout);
+
+        // ============================================
+        // API CALL
+        // ============================================
         function apiCall(url, options = {}) {
             const token = localStorage.getItem('token');
             return fetch(url, {
@@ -401,6 +636,70 @@
             }).then(res => res.json());
         }
 
+        // ============================================
+        // PROFIL
+        // ============================================
+        function loadUserProfile() {
+            const u = user;
+            document.getElementById('profileFullName').textContent = (u.first_name || '') + ' ' + (u.last_name || '');
+            document.getElementById('profileEmail').textContent = u.email || '-';
+            document.getElementById('profileAvatar').textContent = u.first_name ? u.first_name.charAt(0) : 'U';
+            document.getElementById('pEmail').textContent = u.email || '-';
+            document.getElementById('pFirstName').textContent = u.first_name || '-';
+            document.getElementById('pLastName').textContent = u.last_name || '-';
+            document.getElementById('pPhone').textContent = u.phone || '-';
+            document.getElementById('pCountry').textContent = u.country || '-';
+            document.getElementById('pCity').textContent = u.city || '-';
+            document.getElementById('pPostalCode').textContent = u.postal_code || '-';
+            document.getElementById('pAddress').textContent = (u.street_number || '') + ' ' + (u.street_name || '') || '-';
+            document.getElementById('pProfession').textContent = u.profession || '-';
+            document.getElementById('pGender').textContent = u.gender === 'M' ? 'Masculin' : u.gender === 'F' ? 'Féminin' : u.gender || '-';
+            document.getElementById('pMaritalStatus').textContent = u.marital_status || '-';
+            document.getElementById('pStatus').textContent = u.status || '-';
+        }
+
+        document.getElementById('openProfileBtn').addEventListener('click', function() {
+            document.getElementById('profileModal').classList.remove('hidden');
+            loadUserProfile();
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelector('.nav-item[data-tab="info"]').classList.add('active');
+            document.getElementById('profileInfo').classList.remove('hidden');
+            document.getElementById('profileSupport').classList.add('hidden');
+        });
+
+        document.getElementById('openProfileBtn2').addEventListener('click', function() {
+            document.getElementById('profileModal').classList.remove('hidden');
+            loadUserProfile();
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelector('.nav-item[data-tab="info"]').classList.add('active');
+            document.getElementById('profileInfo').classList.remove('hidden');
+            document.getElementById('profileSupport').classList.add('hidden');
+        });
+
+        document.getElementById('closeProfileModal').addEventListener('click', function() {
+            document.getElementById('profileModal').classList.add('hidden');
+        });
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+                const tab = this.dataset.tab;
+                if (tab === 'info') {
+                    document.getElementById('profileInfo').classList.remove('hidden');
+                    document.getElementById('profileSupport').classList.add('hidden');
+                } else if (tab === 'support') {
+                    document.getElementById('profileInfo').classList.add('hidden');
+                    document.getElementById('profileSupport').classList.remove('hidden');
+                } else if (tab === 'logout') {
+                    handleLogout();
+                }
+            });
+        });
+
+        // ============================================
+        // BÉNÉFICIAIRES
+        // ============================================
         function loadBeneficiaries() {
             const list = document.getElementById('beneficiariesList');
             apiCall('/api/beneficiaries')
@@ -410,7 +709,7 @@
                         return;
                     }
                     list.innerHTML = data.beneficiaries.slice(0, 3).map(b => `
-                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-0">
                             <span class="text-dark">${b.name}</span>
                             <span class="text-xs ${b.status === 'ACTIVE' ? 'text-green-500' : b.status === 'REJECTED' ? 'text-red-500' : 'text-yellow-500'}">
                                 ${b.status === 'ACTIVE' ? '✅ Validé' : b.status === 'REJECTED' ? '❌ Rejeté' : '⏳ En attente'}
@@ -424,12 +723,18 @@
                 .catch(() => { list.innerHTML = '<p class="text-red-500 text-sm">Erreur de chargement</p>'; });
         }
 
+        // ============================================
+        // ESC
+        // ============================================
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 document.querySelectorAll('.modal-overlay').forEach(el => el.classList.add('hidden'));
             }
         });
 
+        // ============================================
+        // INIT
+        // ============================================
         updateCountryInfo();
         if (token && user.email) {
             loadBeneficiaries();

@@ -8,17 +8,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         * { font-family: 'Inter', sans-serif; }
-        body { background: #f0f2f5; }
+        body { background: #f5f7fa; }
         .gold { color: #e9b64a; }
         .bg-gold { background: #e9b64a; }
         .text-dark { color: #1a1a2e; }
-        .card-shadow { box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.02); }
-        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 14px 32px; border-radius: 50px; transition: all 0.3s; border: none; cursor: pointer; display: inline-block; text-decoration: none; font-size: 15px; }
-        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.3); }
+        .card-shadow { box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        .btn-primary { background: #e9b64a; color: #1a1a2e; font-weight: 600; padding: 12px 28px; border-radius: 12px; transition: all 0.3s; border: none; cursor: pointer; display: inline-block; text-decoration: none; font-size: 14px; }
+        .btn-primary:hover { background: #d4a03a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(233, 182, 74, 0.25); }
+        .btn-outline { border: 2px solid #e9b64a; color: #e9b64a; background: transparent; font-weight: 600; padding: 12px 28px; border-radius: 12px; transition: all 0.3s; cursor: pointer; display: inline-block; text-decoration: none; font-size: 14px; }
+        .btn-outline:hover { background: #e9b64a; color: #1a1a2e; transform: translateY(-2px); }
         .gradient-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
         .checkmark-bg { background: linear-gradient(135deg, #10b981, #059669); }
-        .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.06); }
     </style>
 </head>
 <body>
@@ -58,35 +58,9 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                        <div class="card-hover bg-gray-50 rounded-2xl p-5 text-center border border-gray-100">
-                            <div class="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center mx-auto mb-3">
-                                <i class="fas fa-user-check text-gold text-xl"></i>
-                            </div>
-                            <h4 class="font-semibold text-dark text-sm">1. Vérification</h4>
-                            <p class="text-gray-400 text-xs mt-1">Validation de vos documents</p>
-                        </div>
-                        <div class="card-hover bg-gray-50 rounded-2xl p-5 text-center border border-gray-100">
-                            <div class="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center mx-auto mb-3">
-                                <i class="fas fa-bell text-gold text-xl"></i>
-                            </div>
-                            <h4 class="font-semibold text-dark text-sm">2. Notification</h4>
-                            <p class="text-gray-400 text-xs mt-1">Réception de la confirmation</p>
-                        </div>
-                        <div class="card-hover bg-gray-50 rounded-2xl p-5 text-center border border-gray-100">
-                            <div class="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center mx-auto mb-3">
-                                <i class="fas fa-rocket text-gold text-xl"></i>
-                            </div>
-                            <h4 class="font-semibold text-dark text-sm">3. Accès</h4>
-                            <p class="text-gray-400 text-xs mt-1">Connexion à votre espace client</p>
-                        </div>
-                    </div>
-
                     <div class="flex flex-col sm:flex-row gap-4 justify-center">
                         <a href="/" class="btn-primary"><i class="fas fa-home mr-2"></i>Retour à l'accueil</a>
-                        <a href="/" class="btn-outline" style="border: 2px solid #e9b64a; color: #e9b64a; background: transparent; font-weight: 600; padding: 12px 30px; border-radius: 50px; transition: all 0.3s; cursor: pointer; display: inline-block; text-decoration: none; font-size: 15px;">
-                            <i class="fas fa-sign-in-alt mr-2"></i>Se connecter
-                        </a>
+                        <a href="/" class="btn-outline"><i class="fas fa-sign-in-alt mr-2"></i>Se connecter</a>
                     </div>
                 </div>
             </div>
