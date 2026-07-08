@@ -142,7 +142,10 @@
         // ============================================
         async function apiCall(url, options = {}) {
             const defaultOptions = {
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('admin_token') }
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('admin_token'),
+                    'Content-Type': 'application/json'
+                }
             };
             const mergedOptions = { ...defaultOptions, ...options };
             const response = await fetch(url, mergedOptions);
@@ -155,6 +158,7 @@
         function loadUsers() {
             const list = document.getElementById('usersList');
             list.innerHTML = '<div class="loading-spinner"></div>';
+
             apiCall('/api/admin/users')
                 .then(data => {
                     if (!data.users || data.users.length === 0) {
@@ -190,13 +194,42 @@
                 });
         }
 
+        // ============================================
+        // VALIDER / REJETER UN UTILISATEUR (CORRIGÉ)
+        // ============================================
         window.validateUser = function(id, status) {
-            if (!confirm(`Valider ou rejeter l'utilisateur ?`)) return;
+            if (!confirm(`Voulez-vous vraiment ${status === 'ACTIVE' ? 'valider' : 'rejeter'} cet utilisateur ?`)) return;
+
+            const btn = document.querySelector(`button[onclick="validateUser(${id}, '${status}')"]`);
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = '⏳...';
+            }
+
             apiCall(`/api/admin/users/${id}/validate`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status })
-            }).then(() => loadUsers());
+            })
+            .then(data => {
+                if (data.success) {
+                    alert(`✅ Utilisateur ${status === 'ACTIVE' ? 'validé' : 'rejeté'} avec succès !`);
+                    loadUsers();
+                } else {
+                    alert('❌ Erreur: ' + (data.error || 'Problème lors de la validation'));
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.textContent = status === 'ACTIVE' ? 'Valider' : 'Rejeter';
+                    }
+                }
+            })
+            .catch(err => {
+                alert('❌ Erreur de connexion au serveur');
+                console.error(err);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = status === 'ACTIVE' ? 'Valider' : 'Rejeter';
+                }
+            });
         };
 
         // ============================================
@@ -205,6 +238,7 @@
         function loadAdminBeneficiaries() {
             const list = document.getElementById('adminBeneficiariesList');
             list.innerHTML = '<div class="loading-spinner"></div>';
+
             apiCall('/api/admin/beneficiaries')
                 .then(data => {
                     if (!data.beneficiaries || data.beneficiaries.length === 0) {
@@ -244,11 +278,15 @@
         window.validateBeneficiary = function(id, status) {
             const reason = status === 'REJECTED' ? prompt('Motif du rejet:') : null;
             if (status === 'REJECTED' && !reason) return;
+
+            if (!confirm(`Valider ou rejeter ce bénéficiaire ?`)) return;
+
             apiCall(`/api/admin/beneficiaries/${id}/validate`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status, rejection_reason: reason })
-            }).then(() => loadAdminBeneficiaries());
+            })
+            .then(() => loadAdminBeneficiaries())
+            .catch(err => alert('Erreur: ' + err.message));
         };
 
         // ============================================
@@ -257,6 +295,7 @@
         function loadAdminTransfers() {
             const list = document.getElementById('adminTransfersList');
             list.innerHTML = '<div class="loading-spinner"></div>';
+
             apiCall('/api/admin/transfers')
                 .then(data => {
                     if (!data.transfers || data.transfers.length === 0) {
@@ -291,26 +330,30 @@
         window.validateTransfer = function(id, status) {
             const reason = status === 'REJECTED' ? prompt('Motif du rejet:') : null;
             if (status === 'REJECTED' && !reason) return;
+
+            if (!confirm(`Valider ou rejeter ce virement ?`)) return;
+
             apiCall(`/api/admin/transfers/${id}/validate`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status, admin_comment: reason })
-            }).then(() => loadAdminTransfers());
+            })
+            .then(() => loadAdminTransfers())
+            .catch(err => alert('Erreur: ' + err.message));
         };
 
         // ============================================
-        // ADRESSES (Admin) - Une seule par devise
+        // ADRESSES (Admin)
         // ============================================
         function loadAddresses() {
             const list = document.getElementById('addressesList');
             list.innerHTML = '<div class="loading-spinner"></div>';
+
             apiCall('/api/admin/deposit-addresses')
                 .then(data => {
                     if (!data.addresses || data.addresses.length === 0) {
                         list.innerHTML = '<p class="text-gray-400 text-sm">Aucune adresse configurée.</p>';
                         return;
                     }
-                    // Garder une seule adresse par devise
                     const uniqueMap = {};
                     data.addresses.forEach(a => {
                         if (!uniqueMap[a.currency]) {
@@ -345,9 +388,9 @@
             if (!newAddress) return;
             apiCall(`/api/admin/deposit-addresses/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ address: newAddress })
-            }).then(() => loadAddresses());
+            })
+            .then(() => loadAddresses());
         };
 
         // ============================================
