@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
     <style>
         /* ============================================
-                   RESET & BASE - STYLE BUNQ
+                   RESET & BASE
                    ============================================ */
         * {
             margin: 0;
@@ -40,11 +40,11 @@
         }
 
         /* ============================================
-                   HEADER - Style Bunq
+                   HEADER
                    ============================================ */
         .header {
             background: var(--bunq-blue);
-            padding: 20px 20px 30px 20px;
+            padding: 20px 20px 20px 20px;
             border-radius: 0 0 32px 32px;
             position: sticky;
             top: 0;
@@ -108,44 +108,12 @@
             font-size: 12px;
         }
 
-        .header-badge {
-            margin-top: 16px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: var(--bunq-radius-sm);
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .header-badge .text {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 13px;
-        }
-
-        .header-badge .text strong {
-            color: white;
-        }
-
-        .header-badge .badge-btn {
-            background: var(--bunq-yellow);
-            color: var(--bunq-blue);
-            border: none;
-            padding: 6px 18px;
-            border-radius: 40px;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-        }
-
         /* ============================================
-                   SOLDE TOTAL - Carte principale
+                   SOLDE TOTAL
                    ============================================ */
         .total-balance-card {
             background: white;
-            margin: -20px 16px 20px 16px;
+            margin: 0 16px 20px 16px;
             padding: 24px 24px 28px 24px;
             border-radius: var(--bunq-radius);
             box-shadow: var(--bunq-shadow);
@@ -176,18 +144,8 @@
             color: var(--bunq-gray);
         }
 
-        .total-balance-card .change {
-            display: inline-block;
-            background: var(--bunq-green-light);
-            color: var(--bunq-green);
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
         /* ============================================
-                   COMPTES - Cartes style Bunq
+                   COMPTES
                    ============================================ */
         .section-title {
             display: flex;
@@ -201,13 +159,6 @@
             font-size: 18px;
             font-weight: 700;
             color: var(--bunq-blue);
-        }
-
-        .section-title a {
-            color: var(--bunq-green);
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
         }
 
         .accounts-scroll {
@@ -279,7 +230,6 @@
             display: block;
         }
 
-        /* Couleurs des cartes */
         .card-yellow .acct-balance {
             color: #e8a800;
         }
@@ -291,7 +241,7 @@
         }
 
         /* ============================================
-                   ACTIONS RAPIDES (style Bunq)
+                   ACTIONS RAPIDES
                    ============================================ */
         .quick-actions {
             display: grid;
@@ -331,7 +281,7 @@
         }
 
         /* ============================================
-                   TRANSACTIONS RÉCENTES
+                   TRANSACTIONS
                    ============================================ */
         .transactions-list {
             background: white;
@@ -414,7 +364,7 @@
         }
 
         /* ============================================
-                   NAVIGATION BASSE (comme l'app Bunq)
+                   NAVIGATION BASSE
                    ============================================ */
         .bottom-nav {
             position: fixed;
@@ -618,27 +568,19 @@
                     <div class="avatar" id="userAvatar">U</div>
                 </div>
             </div>
-            <div class="header-badge">
-                <div class="text">
-                    🎯 <strong>+2,4%</strong> d'intérêts sur ton épargne
-                </div>
-                <button class="badge-btn" onclick="alert('Fonctionnalité à venir')">En savoir plus</button>
-            </div>
         </header>
 
         <!-- SOLDE TOTAL -->
         <div class="total-balance-card animate-in">
-            <div class="label">💰 Solde total</div>
+            <div class="label">Solde total</div>
             <div class="amount" id="totalBalance">
                 <span class="currency">€</span> 0,00
             </div>
-            <span class="change">↑ +2,8% ce mois</span>
         </div>
 
         <!-- COMPTES -->
         <div class="section-title">
-            <h2>🏦 Mes comptes</h2>
-            <a href="#" onclick="alert('Voir tous les comptes')">Voir tout →</a>
+            <h2>Mes comptes</h2>
         </div>
 
         <div class="accounts-scroll" id="accountsContainer">
@@ -667,8 +609,7 @@
 
         <!-- TRANSACTIONS -->
         <div class="section-title">
-            <h2>📋 Dernières opérations</h2>
-            <a href="#" onclick="alert('Voir toutes les transactions')">Voir tout →</a>
+            <h2>Dernières opérations</h2>
         </div>
 
         <div class="transactions-list animate-in" id="transactionsContainer">
@@ -689,10 +630,6 @@
             <a href="#" onclick="alert('Fonctionnalité à venir')">
                 <span class="nav-icon">↗️</span>
                 Virements
-            </a>
-            <a href="#" onclick="alert('Fonctionnalité à venir')">
-                <span class="nav-icon">📊</span>
-                Stats
             </a>
             <a href="#" onclick="logout()">
                 <span class="nav-icon">🚪</span>
@@ -720,22 +657,17 @@
         // AFFICHAGE DES DONNÉES UTILISATEUR
         // ==========================================
         function displayUserData() {
-            // Nom et email
             document.getElementById('userName').textContent = 'Bonjour, ' + userData.firstName;
             document.getElementById('userEmail').textContent = userData.email;
             document.getElementById('userAvatar').textContent = userData.firstName.charAt(0) + userData.lastName.charAt(0);
 
-            // Solde total
             const total = userData.accounts.current.balance + 
                          userData.accounts.savings.balance + 
                          userData.accounts.joint.balance;
             document.getElementById('totalBalance').innerHTML = 
                 `<span class="currency">€</span> ${total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")}`;
 
-            // Comptes
             displayAccounts();
-
-            // Transactions
             displayTransactions();
         }
 
@@ -784,7 +716,6 @@
         function displayTransactions() {
             const container = document.getElementById('transactionsContainer');
             
-            // Si l'utilisateur a des transactions, les afficher
             if (userData.transactions && userData.transactions.length > 0) {
                 const transactions = userData.transactions.slice(0, 5);
                 
@@ -814,7 +745,6 @@
                     `;
                 }).join('');
             } else {
-                // Transactions fictives si l'utilisateur n'en a pas encore
                 container.innerHTML = `
                     <div class="transaction-item" style="justify-content:center; color:#7a869a; padding:30px;">
                         <span>Aucune transaction récente</span>
@@ -823,29 +753,16 @@
                         <div class="trans-left">
                             <div class="trans-icon">🎉</div>
                             <div class="trans-info">
-                                <div class="name">Bienvenue chez Warip !</div>
+                                <div class="name">Bienvenue chez Warip</div>
                                 <div class="date">Commencez à utiliser votre compte</div>
                             </div>
                         </div>
                         <div class="trans-amount positive">+€0,00</div>
                     </div>
-                    <div class="transaction-item">
-                        <div class="trans-left">
-                            <div class="trans-icon">💡</div>
-                            <div class="trans-info">
-                                <div class="name">Astuce</div>
-                                <div class="date">Faites un virement pour commencer</div>
-                            </div>
-                        </div>
-                        <div class="trans-amount positive">↗️</div>
-                    </div>
                 `;
             }
         }
 
-        // ==========================================
-        // ICÔNES DES TRANSACTIONS
-        // ==========================================
         function getTransactionIcon(type) {
             const icons = {
                 'deposit': '📥',
@@ -858,9 +775,6 @@
             return icons[type] || icons.default;
         }
 
-        // ==========================================
-        // DÉCONNEXION
-        // ==========================================
         function logout() {
             if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
                 localStorage.removeItem('token');
@@ -869,20 +783,11 @@
             }
         }
 
-        // ==========================================
-        // MENU UTILISATEUR
-        // ==========================================
         function toggleUserMenu() {
-            if (confirm('Voir votre profil ?')) {
-                alert('👤 ' + userData.firstName + ' ' + userData.lastName + '\n📧 ' + userData.email);
-            }
+            alert('👤 ' + userData.firstName + ' ' + userData.lastName + '\n📧 ' + userData.email);
         }
 
-        // ==========================================
-        // INITIALISATION
-        // ==========================================
         document.addEventListener('DOMContentLoaded', function() {
-            // Afficher le loader puis le contenu
             setTimeout(() => {
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
