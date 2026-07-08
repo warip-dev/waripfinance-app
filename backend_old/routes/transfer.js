@@ -4,9 +4,6 @@ const Transfer = require('../models/Transfer');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-// ==========================================
-// MIDDLEWARE - Vérifier authentification
-// ==========================================
 const verifyAuth = async (req, res, next) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
@@ -31,9 +28,6 @@ const verifyAuth = async (req, res, next) => {
     }
 };
 
-// ==========================================
-// CRÉER UN VIREMENT
-// ==========================================
 router.post('/create', verifyAuth, async (req, res) => {
     try {
         const { beneficiaryName, beneficiaryLastName, iban, bic, reference, amount } = req.body;
@@ -80,9 +74,6 @@ router.post('/create', verifyAuth, async (req, res) => {
     }
 });
 
-// ==========================================
-// LISTE DES VIREMENTS D'UN UTILISATEUR
-// ==========================================
 router.get('/my-transfers', verifyAuth, async (req, res) => {
     try {
         const transfers = await Transfer.findByUser(req.user.id);

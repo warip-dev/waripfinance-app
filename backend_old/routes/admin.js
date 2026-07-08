@@ -5,9 +5,6 @@ const Transfer = require('../models/Transfer');
 const Settings = require('../models/Settings');
 const jwt = require('jsonwebtoken');
 
-// ==========================================
-// MIDDLEWARE - Vérifier si admin
-// ==========================================
 const verifyAdmin = async (req, res, next) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
@@ -29,9 +26,6 @@ const verifyAdmin = async (req, res, next) => {
     }
 };
 
-// ==========================================
-// STATISTIQUES
-// ==========================================
 router.get('/stats', verifyAdmin, async (req, res) => {
     try {
         const allUsers = await User.findAll();
@@ -53,9 +47,6 @@ router.get('/stats', verifyAdmin, async (req, res) => {
     }
 });
 
-// ==========================================
-// LISTE DES UTILISATEURS EN ATTENTE
-// ==========================================
 router.get('/pending-users', verifyAdmin, async (req, res) => {
     try {
         const users = await User.findPending();
@@ -65,9 +56,6 @@ router.get('/pending-users', verifyAdmin, async (req, res) => {
     }
 });
 
-// ==========================================
-// VALIDER UN UTILISATEUR
-// ==========================================
 router.put('/validate-user/:id', verifyAdmin, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -83,9 +71,6 @@ router.put('/validate-user/:id', verifyAdmin, async (req, res) => {
     }
 });
 
-// ==========================================
-// REJETER UN UTILISATEUR
-// ==========================================
 router.put('/reject-user/:id', verifyAdmin, async (req, res) => {
     try {
         const { reason } = req.body;
@@ -102,9 +87,6 @@ router.put('/reject-user/:id', verifyAdmin, async (req, res) => {
     }
 });
 
-// ==========================================
-// LISTE DES VIREMENTS EN ATTENTE
-// ==========================================
 router.get('/pending-transfers', verifyAdmin, async (req, res) => {
     try {
         const transfers = await Transfer.findPending();
@@ -114,9 +96,6 @@ router.get('/pending-transfers', verifyAdmin, async (req, res) => {
     }
 });
 
-// ==========================================
-// VALIDER UN VIREMENT
-// ==========================================
 router.put('/validate-transfer/:id', verifyAdmin, async (req, res) => {
     try {
         const transfer = await Transfer.findById(req.params.id);
@@ -142,9 +121,6 @@ router.put('/validate-transfer/:id', verifyAdmin, async (req, res) => {
     }
 });
 
-// ==========================================
-// REJETER UN VIREMENT
-// ==========================================
 router.put('/reject-transfer/:id', verifyAdmin, async (req, res) => {
     try {
         const { reason } = req.body;
@@ -161,9 +137,6 @@ router.put('/reject-transfer/:id', verifyAdmin, async (req, res) => {
     }
 });
 
-// ==========================================
-// MODIFIER LES ADRESSES CRYPTO
-// ==========================================
 router.put('/crypto-addresses', verifyAdmin, async (req, res) => {
     try {
         const { btcAddress, ethAddress } = req.body;
@@ -175,9 +148,6 @@ router.put('/crypto-addresses', verifyAdmin, async (req, res) => {
     }
 });
 
-// ==========================================
-// RÉCUPÉRER LES ADRESSES CRYPTO
-// ==========================================
 router.get('/crypto-addresses', verifyAdmin, async (req, res) => {
     try {
         const settings = await Settings.get();

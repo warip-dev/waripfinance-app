@@ -1,6 +1,5 @@
 const mysql = require('mysql2');
 
-// Configuration de la base de données Hostinger
 const pool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'u120682741_waripfina_user',
@@ -14,9 +13,6 @@ const pool = mysql.createPool({
 
 const promisePool = pool.promise();
 
-// ==========================================
-// TEST DE CONNEXION
-// ==========================================
 async function testConnection() {
     try {
         const connection = await promisePool.getConnection();
@@ -29,9 +25,6 @@ async function testConnection() {
     }
 }
 
-// ==========================================
-// INITIALISATION DES TABLES
-// ==========================================
 async function initDatabase() {
     try {
         const connected = await testConnection();
@@ -40,7 +33,6 @@ async function initDatabase() {
             return;
         }
 
-        // Table users
         await promisePool.execute(`
             CREATE TABLE IF NOT EXISTS users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -71,7 +63,6 @@ async function initDatabase() {
         `);
         console.log('✅ Table users créée/vérifiée');
 
-        // Table transfers
         await promisePool.execute(`
             CREATE TABLE IF NOT EXISTS transfers (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -90,7 +81,6 @@ async function initDatabase() {
         `);
         console.log('✅ Table transfers créée/vérifiée');
 
-        // Table settings
         await promisePool.execute(`
             CREATE TABLE IF NOT EXISTS settings (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -102,7 +92,6 @@ async function initDatabase() {
         `);
         console.log('✅ Table settings créée/vérifiée');
 
-        // Table transactions
         await promisePool.execute(`
             CREATE TABLE IF NOT EXISTS transactions (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -120,7 +109,6 @@ async function initDatabase() {
         `);
         console.log('✅ Table transactions créée/vérifiée');
 
-        // Créer un admin par défaut
         const [admins] = await promisePool.execute(
             'SELECT * FROM users WHERE role = "admin" LIMIT 1'
         );

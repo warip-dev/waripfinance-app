@@ -7,9 +7,6 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// ==========================================
-// MIDDLEWARES
-// ==========================================
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -18,27 +15,15 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ==========================================
-// SERVEUR DES FICHIERS STATIQUES
-// ==========================================
 const publicPath = path.join(__dirname, '../public');
 console.log('📁 Dossier public :', publicPath);
 
-// Créer le dossier public s'il n'existe pas
 if (!fs.existsSync(publicPath)) {
-    try {
-        fs.mkdirSync(publicPath, { recursive: true });
-        console.log('✅ Dossier public créé');
-    } catch (err) {
-        console.error('❌ Erreur création dossier public:', err);
-    }
+    fs.mkdirSync(publicPath, { recursive: true });
 }
 
 app.use(express.static(publicPath));
 
-// ==========================================
-// ROUTES
-// ==========================================
 try {
     const authRoutes = require('./routes/auth');
     const adminRoutes = require('./routes/admin');
@@ -52,9 +37,6 @@ try {
     console.error('❌ Erreur chargement routes:', err);
 }
 
-// ==========================================
-// ROUTE DE TEST
-// ==========================================
 app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'OK', 
@@ -63,17 +45,9 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// ==========================================
-// ROUTES PRINCIPALES
-// ==========================================
 app.get('/', (req, res) => {
     try {
-        const filePath = path.join(publicPath, 'dashboard.html');
-        if (fs.existsSync(filePath)) {
-            res.sendFile(filePath);
-        } else {
-            res.send('<h1>Warip Finance</h1><p>Bienvenue sur Warip Finance</p>');
-        }
+        res.sendFile(path.join(publicPath, 'dashboard.html'));
     } catch (err) {
         res.send('<h1>Warip Finance</h1><p>Bienvenue sur Warip Finance</p>');
     }
@@ -99,50 +73,34 @@ app.get('/admin', (req, res) => {
     try {
         res.sendFile(path.join(publicPath, 'admin', 'index.html'));
     } catch (err) {
-        res.send('<h1>Admin Panel</h1><p>Page d\'administration</p>');
+        res.send('<h1>Admin Panel</h1>');
     }
 });
 
-// ==========================================
-// GESTION DES ERREURS
-// ==========================================
 app.use((req, res) => {
-    res.status(404).json({ 
-        success: false, 
-        message: 'Route non trouvée' 
-    });
+    res.status(404).json({ success: false, message: 'Route non trouvée' });
 });
 
 app.use((err, req, res, next) => {
     console.error('❌ Erreur serveur:', err);
-    res.status(500).json({ 
-        success: false, 
-        message: 'Erreur interne du serveur' 
-    });
+    res.status(500).json({ success: false, message: 'Erreur interne' });
 });
 
-// ==========================================
-// INITIALISATION DE LA BASE DE DONNÉES
-// ==========================================
 async function initDatabaseWithRetry() {
     try {
         const { initDatabase } = require('./config/database');
         await initDatabase();
-        console.log('✅ Base de données initialisée avec succès');
+        console.log('✅ Base de données initialisée');
     } catch (err) {
         console.error('❌ Erreur initialisation:', err.message);
     }
 }
 
-// ==========================================
-// DÉMARRAGE
-// ==========================================
 const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Serveur Warip Finance démarré sur le port ${PORT}`);
     console.log(`🌐 http://localhost:${PORT}`);
     console.log(`🌐 Admin : http://localhost:${PORT}/admin`);
     console.log(`📁 Dossier public : ${publicPath}`);
-    
     initDatabaseWithRetry();
 });
 
